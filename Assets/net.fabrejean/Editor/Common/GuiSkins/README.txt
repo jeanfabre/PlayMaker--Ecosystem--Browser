@@ -1,0 +1,3 @@
+-- If you want to use these skins within your game, simply move them out of the "Editor" folder, anywhere you want in your assets. JF_plugins will still find them. 
+-- If you plan on modify these skins, that's fine, but then, prefer duplicating them completly to avoid corrupting them. Also, during updates, the package would overwrite your changes.
+-- contact me if you need the psd slices. http://fabrejean.net/new/contact.php
