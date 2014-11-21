@@ -1,0 +1,5 @@
+{
+"__ECO__":"__TEMPLATE__",
+"unitypackage":"PlayMaker/Ecosystem/Custom Templates/Logic/GetLoadedLevel.unitypackage",
+"pingAssetPath":"Assets/PlayMaker Custom Templates/Logic/GetLoadedLevel.asset"
+}

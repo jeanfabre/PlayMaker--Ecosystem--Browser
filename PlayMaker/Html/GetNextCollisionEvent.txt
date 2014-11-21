@@ -1,0 +1,54 @@
+<div id="actionImg"><p><img src="http://mywebsite.com/docs/img/GetNextCollisionEvent.png" title="" /></p></div>
+<div id="actionDesc">
+<p>
+Each time this action is called it gets the next Collision event for that frame. Use this on States triggered by the global event 'ON PARTICLE COLLISION'. This lets you quickly loop through all the collisions for a particular collision event. NOTE: PlayMakerShurikenProxy Required</p>
+</div>
+<div id="paramRow">
+	<div id="paramName">
+Game Object</div>
+	<div id="paramDesc">
+The GameObject you expect collisions to happen.</div>
+</div>
+
+<div id="paramRow">
+	<div id="paramName">
+Index</div>
+	<div id="paramDesc">
+Store this index of  the collision. Use this to exit early to avoid processing too much particles.</div>
+</div>
+
+<div id="paramRow">
+	<div id="paramName">
+Collision Normal</div>
+	<div id="paramDesc">
+Store this particular collision normal</div>
+</div>
+
+<div id="paramRow">
+	<div id="paramName">
+Collision Velocity</div>
+	<div id="paramDesc">
+Store this particular collision velocity</div>
+</div>
+
+<div id="paramRow">
+	<div id="paramName">
+Collision Intersection</div>
+	<div id="paramDesc">
+Store this particular collision intersection</div>
+</div>
+
+<div id="paramRow">
+	<div id="paramName">
+Loop Event</div>
+	<div id="paramDesc">
+Event to send to get the next child.</div>
+</div>
+
+<div id="paramRow">
+	<div id="paramName">
+Finished Event</div>
+	<div id="paramDesc">
+Event to send when there are no more children.</div>
+</div>
+
