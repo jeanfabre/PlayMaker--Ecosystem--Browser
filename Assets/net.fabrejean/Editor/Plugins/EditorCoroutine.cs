@@ -7,7 +7,7 @@ using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace net.fabrejean.editor.common
+namespace Net.FabreJean.UnityEditor
 {
 	public class EditorCoroutine
 	{
