@@ -9,19 +9,33 @@ using UnityEngine;
 
 namespace Net.FabreJean.UnityEditor
 {
+
 	public struct VersionInfo : IComparable<VersionInfo>
 	{
+		public enum VersionType {Alpha,Beta,ReleaseCandidate,Final};
+
 		public int Major;
 		public int Minor;
 		public int Patch;
+		public VersionType Type;
 		public int Build;
 		
-		
+
 		public VersionInfo( int major, int minor = 0, int patch = 0, int build = 0 )
 		{
 			Major = major;
 			Minor = minor;
 			Patch = patch;
+			Type  = VersionType.Final;
+			Build = build;
+		}
+
+		public VersionInfo( int major, int minor = 0, int patch = 0, VersionType type = VersionType.Final , int build = 0 )
+		{
+			Major = major;
+			Minor = minor;
+			Patch = patch;
+			Type  = type;
 			Build = build;
 		}
 
@@ -86,7 +100,65 @@ namespace Net.FabreJean.UnityEditor
 		{
 			return a.CompareTo( b ) > 0;
 		}
-		
+
+		public static VersionType GetVersionTypeFromString(string type)
+		{
+			if (string.IsNullOrEmpty(type))
+			{
+				return VersionType.Final;
+			}
+
+			switch (type.ToLower())
+			{
+			case "a": case "alpha":
+				return VersionType.Alpha;
+			case "b": case"beta":
+				return VersionType.Beta;
+			case "rc": case"releasecandidate":
+				return VersionType.ReleaseCandidate;
+			case "f": case"final":
+				return VersionType.Final;
+			}
+
+			return VersionType.Final;
+		}
+
+		public static string GetVersionTypeAsString(VersionType type)
+		{
+			if (type== VersionType.Alpha)
+			{
+				return "a";
+			}
+			if (type== VersionType.Beta)
+			{
+				return "b";
+			}
+			if (type== VersionType.ReleaseCandidate)
+			{
+				return "rc";
+			}
+
+			return "f";
+		}
+
+		public static string GetVersionTypeAsLongString(VersionType type)
+		{
+			if (type== VersionType.Alpha)
+			{
+				return "Alpha";
+			}
+			if (type== VersionType.Beta)
+			{
+				return "Beta";
+			}
+			if (type== VersionType.ReleaseCandidate)
+			{
+				return "Release Candidate";
+			}
+
+			return "Final";
+		}
+
 		
 		public override string ToString()
 		{
@@ -94,7 +166,7 @@ namespace Net.FabreJean.UnityEditor
 			{
 				return string.Format( "{0}.{1}.{2}", Major, Minor, Patch );
 			}
-			return string.Format( "{0}.{1}.{2} build {3}", Major, Minor, Patch, Build );
+			return string.Format( "{0}.{1}.{2} {3} {4}", Major, Minor, Patch, GetVersionTypeAsString(Type), Build );
 		}
 		
 		
@@ -104,7 +176,7 @@ namespace Net.FabreJean.UnityEditor
 			{
 				return string.Format( "{0}.{1}.{2}", Major, Minor, Patch );
 			}
-			return string.Format( "{0}.{1}.{2}b{3}", Major, Minor, Patch, Build );
+			return string.Format( "{0}.{1}.{2}{3}{4}", Major, Minor, Patch, GetVersionTypeAsString(Type), Build );
 		}
 		
 		
@@ -122,5 +194,8 @@ namespace Net.FabreJean.UnityEditor
 		{
 			return Major.GetHashCode() ^ Minor.GetHashCode() ^ Patch.GetHashCode() ^ Build.GetHashCode();
 		}
+
+
+
 	}
 }

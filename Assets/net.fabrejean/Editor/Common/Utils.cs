@@ -5,7 +5,9 @@ using System.IO;
 
 namespace Net.FabreJean.UnityEditor
 {
-
+	/// <summary>
+	/// Utility class for Editors done within this NameSpace.
+	/// </summary> 
 	public class Utils {
 		
 		public static bool isClassDefined(string classType)
@@ -74,12 +76,14 @@ namespace Net.FabreJean.UnityEditor
 				int Patch = (int)_version["Patch"];
 				int Build = (int)_version["Build"];
 
+				VersionInfo.VersionType Type = VersionInfo.GetVersionTypeFromString((string)_version["Type"]);
+
 				#if AUTHORING
 				Build++;
 				_version["Build"] = Build;
 				Utils.PutFileContents(versionSourcePath, JSON.JsonEncode(_version) );
 				#endif
-				return new VersionInfo(Major,Minor,Patch,Build);
+				return new VersionInfo(Major,Minor,Patch,Type,Build);
 			}else{
 				Debug.LogError("UpdateVersion Could not find "+versionSourcePath);
 			}
@@ -90,19 +94,29 @@ namespace Net.FabreJean.UnityEditor
 		public static string GetFileContents( string fileName )
 		{			
 			StreamReader streamReader = new StreamReader( fileName );
-			var fileContents = streamReader.ReadToEnd();
-			streamReader.Close();
-			
-			return fileContents;
+			if (streamReader!=null)
+			{
+				var fileContents = streamReader.ReadToEnd();
+				streamReader.Close();
+				return fileContents;
+			}else{
+				Debug.LogError("GetFileContents Could not find "+fileName);
+			}
+			return "";
+
 		}
-		
 		
 		public static void PutFileContents( string filePath, string content )
 		{
 			StreamWriter streamWriter = new StreamWriter( filePath );
-			streamWriter.Write( content.Trim() );
-			streamWriter.Flush();
-			streamWriter.Close();
+			if (streamWriter!=null)
+			{
+				streamWriter.Write( content.Trim() );
+				streamWriter.Flush();
+				streamWriter.Close();
+			}else{
+				Debug.LogError("PutFileContents Could not find "+filePath);
+			}
 		}
 		
 	}
