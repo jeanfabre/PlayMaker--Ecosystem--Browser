@@ -10,7 +10,7 @@ public class PlayMakerEcosystem_uTomateModel : UTNodeEditorModel {
 		return AddAction(action,Vector2.zero);
 	}
 
-	public UTAutomationPlanEntry AddAction(UTAction action, Vector2 position) {
+	public new UTAutomationPlanEntry AddAction(UTAction action, Vector2 position) {
 		var entry = AddEntry<UTAutomationPlanSingleActionEntry>(position);
 		entry.action = action;
 		return entry;
