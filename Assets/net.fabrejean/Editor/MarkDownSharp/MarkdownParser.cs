@@ -142,7 +142,7 @@ namespace Net.FabreJean.UnityEditor.MarkdownSharp
     /// Markdown allows you to write using an easy-to-read, easy-to-write plain text format, 
     /// then convert it to structurally valid XHTML (or HTML).
     /// </summary>
-    public class Markdown
+    public class MarkdownParser
     {
         private const string _version = "1.13";
 
@@ -151,7 +151,7 @@ namespace Net.FabreJean.UnityEditor.MarkdownSharp
         /// <summary>
         /// Create a new Markdown instance using default options
         /// </summary>
-        public Markdown() : this(false)
+		public MarkdownParser() : this(false)
         {
         }
 
@@ -167,7 +167,7 @@ namespace Net.FabreJean.UnityEditor.MarkdownSharp
         ///     Markdown.EncodeProblemUrlCharacters (true/false) 
         ///     
         /// </summary>
-        public Markdown(bool loadOptionsFromConfigFile)
+		public MarkdownParser(bool loadOptionsFromConfigFile)
         {
             if (!loadOptionsFromConfigFile) return;
 			/*
@@ -202,7 +202,7 @@ namespace Net.FabreJean.UnityEditor.MarkdownSharp
         /// <summary>
         /// Create a new Markdown instance and set the options from the MarkdownOptions object.
         /// </summary>
-        public Markdown(MarkdownOptions options)
+		public MarkdownParser(MarkdownOptions options)
         {
             _autoHyperlink = options.AutoHyperlink;
             _autoNewlines = options.AutoNewlines;
@@ -325,7 +325,7 @@ namespace Net.FabreJean.UnityEditor.MarkdownSharp
         /// <summary>
         /// In the static constuctor we'll initialize what stays the same across all transforms.
         /// </summary>
-        static Markdown()
+        static MarkdownParser()
         {
             // Table of hash values for escaped characters:
             _escapeTable = new Dictionary<string, string>();
@@ -358,7 +358,6 @@ namespace Net.FabreJean.UnityEditor.MarkdownSharp
         }
 
 		bool RunDry = false; // flag to let all parsers know they shoud not output any formating, just the pure text
-		string dryText = ""; // this is the actual text without the rich text formating
 
         /// <summary>
         /// Transforms the provided Markdown-formatted text to HTML;  
@@ -391,7 +390,7 @@ namespace Net.FabreJean.UnityEditor.MarkdownSharp
 
 
 			//replace all hypertext flags and note the start and end char pos
-			Debug.Log("link count "+hyperTextList.Count); 
+			//Debug.Log("link count "+hyperTextList.Count); 
 			for(int i = 0; i<hyperTextList.Count;i++)
 			{
 				HyperTextLUT link = hyperTextList[i];
@@ -402,8 +401,8 @@ namespace Net.FabreJean.UnityEditor.MarkdownSharp
 				string token = "%%URL%%"+(i+1)+"%%URL%%";
 				link.startPos= text.IndexOf(token) + prefix.Length;
 
-				link.EndPos = link.startPos+link.text.Length + suffix.Length;
-				Debug.Log("link "+i+" "+link.startPos+"-"+link.EndPos);
+				link.EndPos = link.startPos+link.text.Length+ suffix.Length;
+				//Debug.Log("link "+i+" "+link.startPos+"-"+link.EndPos);
 
 
 				if (RunDry)
@@ -428,8 +427,8 @@ namespace Net.FabreJean.UnityEditor.MarkdownSharp
 				for(int i = 0; i<hyperTextList.Count;i++)
 				{
 					HyperTextLUT link = hyperTextList[i];
-					Debug.Log("checking  "+i+ " "+link.startPos);
-					if (link.startPos<=pos && pos<=link.EndPos)
+					Debug.Log("checking  "+i+ " at pos "+pos+" between "+link.startPos+" excluded and "+link.EndPos+" included");
+					if (link.startPos<pos && pos<=link.EndPos)
 					{
 						success = true;
 						return link;
@@ -1510,9 +1509,14 @@ namespace Net.FabreJean.UnityEditor.MarkdownSharp
         private string DoHardBreaks(string text)
         {
             if (_autoNewlines)
-                text = Regex.Replace(text, @"\n", string.Format("<br{0}\n", _emptyElementSuffix));
-            else
-                text = Regex.Replace(text, @" {2,}\n", string.Format("<br{0}\n", _emptyElementSuffix));
+			{
+		 		// we don't do anything here
+              //  text = Regex.Replace(text, @"\n", string.Format("<br{0}\n", _emptyElementSuffix)); // JFF
+			}else
+			{
+				// we don't do anything here
+               // text = Regex.Replace(text, @" {2,}\n", string.Format("<br{0}\n", _emptyElementSuffix)); // JFF
+			}
             return text;
         }
 

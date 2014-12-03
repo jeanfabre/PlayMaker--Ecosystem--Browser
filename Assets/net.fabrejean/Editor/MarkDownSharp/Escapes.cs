@@ -1,9 +1,14 @@
-﻿using System;
+﻿/* Copyright (c) 2004 John Gruber
+ * http://daringfireball.net/projects/markdown/
+ * It's as is, but I changed the namespace to avoid conflict
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace MarkdownSharp
+namespace Net.FabreJean.UnityEditor.MarkdownSharp
 {
 	internal static class Escapes
 	{

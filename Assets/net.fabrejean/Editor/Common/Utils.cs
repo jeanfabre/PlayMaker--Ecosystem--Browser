@@ -6,7 +6,7 @@ using System.IO;
 namespace Net.FabreJean.UnityEditor
 {
 	/// <summary>
-	/// Utility class for Editors done within this NameSpace.
+	/// Utility class for Editors from Net.FabreJean namespace
 	/// </summary> 
 	public class Utils {
 		
@@ -43,6 +43,7 @@ namespace Net.FabreJean.UnityEditor
 			{
 				assetPath = "";
 				Debug.LogWarning("Could not find GuiSkin "+guiSkinName);
+				return null;
 			}
 	//		Debug.Log(_pathDelimiter);
 

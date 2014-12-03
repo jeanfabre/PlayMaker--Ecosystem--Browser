@@ -21,6 +21,15 @@ namespace Net.FabreJean.UnityEditor
 		public int Build;
 		
 
+		public VersionInfo( int major, int minor = 0, int patch = 0 )
+		{
+			Major = major;
+			Minor = minor;
+			Patch = patch;
+			Type  = VersionType.Final;
+			Build = 0;
+		}
+
 		public VersionInfo( int major, int minor = 0, int patch = 0, int build = 0 )
 		{
 			Major = major;
@@ -37,6 +46,27 @@ namespace Net.FabreJean.UnityEditor
 			Patch = patch;
 			Type  = type;
 			Build = build;
+		}
+
+		public VersionInfo( string version )
+		{
+			if (string.IsNullOrEmpty(version))
+			{
+				Major = 0;
+				Minor = 0;
+				Patch=0;
+				Type = VersionType.Final;
+				Build=0;
+
+			}else{
+				var match = Regex.Match(version, @"^(\d+)\.(\d+)\.(\d+)" );	
+
+				Major = Convert.ToInt32( match.Groups[1].Value );
+				Minor = Convert.ToInt32( match.Groups[2].Value );
+				Patch = Convert.ToInt32( match.Groups[3].Value );
+				Type = VersionType.Final;
+				Build = 0;
+			}
 		}
 
 		public static VersionInfo UnityVersion()

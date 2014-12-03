@@ -1,5 +1,7 @@
 ﻿
 using System;
+using System.Collections.Generic;
+
 using UnityEditor;
 using UnityEngine;
 using Net.FabreJean.UnityEditor.MarkdownSharp;
@@ -8,135 +10,103 @@ using Net.FabreJean.UnityEditor.MarkdownSharp;
 
 namespace Net.FabreJean.UnityEditor
 {
-	/*
-Will become a heading
-==============
-
-Will become a sub heading
---------------
-
-*This will be Italic*
-
-**This will be Bold**
-
-- This will be a list item
-- This will be a list item
-
-Numbered list:
-
-1. apples
-2. oranges
-3. pears
-
-
-
-*/
 	[CustomEditor(typeof(ChangeLog))]
 	public class ChangeLogInspector : Editor{
 
-		GUIContent processedContent = GUIContent.none;
+		//MarkdownGUI _markdownGui = new MarkdownGUI();
 
-		GUISkin UnityDarkPLus;
+		string editedContent ="";
 
-	
-		Markdown _md;
+		Dictionary<ChangeLogEntry,MarkdownGUI> EntryMarkDownGuiLUT = new Dictionary<ChangeLogEntry, MarkdownGUI>();
 
-		bool isMouseDown;
+		ChangeLogEntry _currentLogEntry = new ChangeLogEntry();
 
 		public override void OnInspectorGUI ()
 		{
-
-			if (UnityDarkPLus==null)
-			{
-				UnityDarkPLus = Utils.GetGuiSkin("UnityDarkPlus");
-			}
-
+		
 			ChangeLog _target = target as ChangeLog;
-			DrawDefaultInspector();
-			EditorGUILayout.Space();
-
-			EditorGUILayout.LabelField("Version","1.3.1b123");
-			//EditorGUILayout.HelpBox("You can directly run this plan from here.", MessageType.Warning);
-			EditorGUILayout.BeginHorizontal();
-			GUILayout.FlexibleSpace();
-			if (GUILayout.Button("Run this plan")) {
-
-				_md = new Markdown();
-				_target.processedContent = _md.Transform(_target.content);
-				//dryText = _md.Transform(_target.content,true);
-			
-				processedContent = new GUIContent(_target.processedContent);
 
 
-			}
-			EditorGUILayout.EndHorizontal();
+			EditorGUILayout.Separator();
 
-			if(Event.current.type == EventType.MouseDown && Event.current.button == 0) {
-
-				isMouseDown = true;
-
-			}
-
-			//_target.processedContent = GUI.TextArea(new Rect(8, 8, 200, 200), _target.processedContent);
-			GUI.skin = UnityDarkPLus;
-			_target.processedContent = GUILayout.TextArea(_target.processedContent,"MarkDownTextArea");
-			GUI.skin = null;
-			TextEditor editor = (TextEditor)GUIUtility.GetStateObject(typeof(TextEditor), GUIUtility.keyboardControl);
-			
-			GUILayout.Label(string.Format("Selected text: {0}\nPos: {1}\nSelect pos: {2}",
-			                                                    editor.SelectedText,
-			                                                    editor.pos,
-			                                                    editor.selectPos));
-
-			if (_md!=null && isMouseDown)
+			if (_target.RequestEditingFlag)
 			{
-				Debug.Log("MouseDown "+editor.pos+ editor.selectPos);
-				isMouseDown = false;
-				if (editor.pos == editor.selectPos )
-				{
-					bool isDownOnLink;
-					HyperTextLUT _link = _md.TryGetHyperLinkAt(editor.pos,out isDownOnLink);
-					if (isDownOnLink)
-					{
-						editor.pos = 0;
-						editor.selectPos = 0;
-						editor.SelectNone();
-						Application.OpenURL(_link.url);
-					}
-				}
-
+				EditorGUILayout.LabelField("Are you sure?");
 				Repaint();
-			}else{
-				if (!string.IsNullOrEmpty(editor.SelectedText))
-				{
-					editor.SelectNone();
-				}
 			}
+			//EditorGUILayout.LabelField("Current Version",_target.CurrentVersion .ToString());
 
-
-			if (_md!=null && _md.hyperTextList!=null)
+			if (_currentLogEntry.Text==null)
 			{
-				GUILayout.Label(""+_md.hyperTextList.Count);
+				_currentLogEntry.Version = new VersionInfo();
+				_currentLogEntry.Text = "";
 			}
-			//if (GUILayout.Button( "Insert Tab"))
-			//	_target.processedContent = _target.processedContent.Insert(editor.pos, "\t");
 
-		//	GUI.FocusControl("asd");
+			_currentLogEntry.Text = GUILayout.TextField(_currentLogEntry.Text,500,GUILayout.Height(200));
 
-		
+			if (GUILayout.Button("Save"))
+			{
+				if (ArrayUtility.Contains<ChangeLogEntry>(_target.Log,_currentLogEntry))
+				{
+					EntryMarkDownGuiLUT[_currentLogEntry].ProcessSource(_currentLogEntry.Text);
+					Repaint();
+					return;
+					//ArrayUtility. <ChangeLogEntry>(ref _target.Log,_currentLogEntry);
+				}else{
+					ArrayUtility.Insert<ChangeLogEntry>(ref _target.Log,0,_currentLogEntry);
+				}
+				EditorUtility.SetDirty(_target);
+			}
 
-			//GUILayout.TextArea(_target.processedContent,style);
-			//GUI.SetNextControlName("test");
-			//GUILayout.TextArea(_target.processedContent,style);
-			//GUI.FocusControl("test");
-			//Rect _lastpos = GUILayoutUtility.GetLastRect();
-			//int controlID = EditorGUIUtility.GetControlID(_lastpos.GetHashCode(), FocusType.Keyboard);          
-			//TextEditor editor = (TextEditor)EditorGUIUtility.GetStateObject(typeof(TextEditor), controlID -1 );
-		
-			
-			//int stringIndex = editor.pos;//style.GetCursorStringIndex(_lastpos,processedContent,Event.current.mousePosition);
-		//	GUILayout.Label("String Index "+editor.content.text);
-			//EditorGUILayout.LabelField("String Index ",stringIndex.ToString());
+
+			foreach(ChangeLogEntry entry in _target.Log)
+			{
+				GUILayout.BeginHorizontal();
+				GUILayout.Label("Version "+entry.Version.ToShortString());
+				GUILayout.FlexibleSpace();
+
+				if(GUILayout.Button("Edit"))
+				{
+					_currentLogEntry = entry;
+					Repaint();
+				}
+
+				if (GUILayout.Button("Delete"))
+				{
+					ArrayUtility.Remove<ChangeLogEntry>(ref _target.Log,entry);
+					EditorUtility.SetDirty(_target);
+					return;
+				}
+
+				GUILayout.EndHorizontal();
+
+				if (!EntryMarkDownGuiLUT.ContainsKey(entry))
+				{
+					MarkdownGUI _mdGui = new MarkdownGUI();
+					_mdGui.ProcessSource(entry.Text);
+
+					EntryMarkDownGuiLUT.Add(entry,_mdGui);
+				}
+
+				EntryMarkDownGuiLUT[entry].OnGUILayout_MardkDownTextArea();
+			}
+
+
+			//EditorGUILayout.BeginHorizontal();
+			//GUILayout.FlexibleSpace();
+			/*
+			if (!_markdownGui.HasContent)
+			{
+				_target.processedContent =	_markdownGui.ProcessSource(_target.content);
+			//	Debug.Log(_target.processedContent);
+			}
+
+			_markdownGui.OnGUILayout_MardkDownTextArea();
+
+			//EditorGUILayout.EndHorizontal();
+*/
+
+
 		}
 	}
 }
