@@ -1,21 +1,14 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 using UnityEditor;
 using UnityEngine;
 using Net.FabreJean.UnityEditor.MarkdownSharp;
 
-
-
 namespace Net.FabreJean.UnityEditor
 {
 	[CustomEditor(typeof(ChangeLog))]
 	public class ChangeLogInspector : Editor{
-
-		//MarkdownGUI _markdownGui = new MarkdownGUI();
-
-		string editedContent ="";
 
 		Dictionary<ChangeLogEntry,MarkdownGUI> EntryMarkDownGuiLUT = new Dictionary<ChangeLogEntry, MarkdownGUI>();
 

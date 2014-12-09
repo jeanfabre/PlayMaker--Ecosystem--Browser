@@ -81,7 +81,14 @@ namespace Net.FabreJean.UnityEditor
 			};
 		}
 		
-		
+		/// <summary>
+		/// I haven't digged into this but if I assign a struct from a variable to another does that create a shallow copy or it remains the same in memory?
+		/// like myversion == someother version ? what happens there? 
+		/// </summary>
+		public VersionInfo Clone() { 
+			return new VersionInfo(Major, Minor, Patch,Type,Build); 
+		}
+
 		public int CompareTo( VersionInfo other )
 		{
 			if (Major < other.Major) return -1;
