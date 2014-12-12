@@ -1823,7 +1823,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 							}
 						}catch(Exception e)
 						{
-							if (Debug_on) Debug.LogError(e.Message);
+							if (Debug_on) Debug.Log(e.Message);
 						}
 
 						
