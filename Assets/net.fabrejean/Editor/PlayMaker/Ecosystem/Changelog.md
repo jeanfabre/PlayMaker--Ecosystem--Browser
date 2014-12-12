@@ -2,7 +2,7 @@
 
 
 ###0.4.0
-**Note:** **_Breaking Build_**. The "Net.FabreJean" folder **MUST** be deleted first
+**Note:** **_Breaking Build_**. The "net.fabrejean" folder **MUST** be deleted first
 
 **New:** Version Type to match Unity and PlayMaker version info.  
 **New:** Interactive versioning with Build being representative of the number of compilation.   
@@ -22,11 +22,11 @@ This is based on [InControl](https://github.com/pbhogan/InControl) by Patrick Ho
  
 **Improvement:** Improved code base, make use of namespace to avoid potential conflict
 **Improvement:** started moving item based code into its own class to free up the browser class itself, make sense and will scale better  
-**Improvement:** Dedicated [Trello board](https://trello.com/b/U0AH0SHy/ecosystem) to keep track of this overwhelming project :)
-**Improvement:** code is now using a repository for security
-**Improvement:** remove discrete bar glitch when recompiling
-**Improvement:** MarkDownGUI allow for custom guiskin and style
-**Improvement:** Ecosystem disclaimer uses MarkDown now
+**Improvement:** Dedicated [Trello board](https://trello.com/b/U0AH0SHy/ecosystem) to keep track of this overwhelming project :)   
+**Improvement:** code is now using a repository for security   
+**Improvement:** remove discrete bar glitch when recompiling   
+**Improvement:** MarkDownGUI allow for custom guiskin and style   
+**Improvement:** Ecosystem disclaimer uses MarkDown now   
 
 
 ###0.3.0
@@ -37,7 +37,7 @@ This is based on [InControl](https://github.com/pbhogan/InControl) by Patrick Ho
 **New:**	Template and Sample  
 **New:**	Filtering of items
 
-**Improvement:** custom search bar, to match the UI skin
+**Improvement:** custom search bar, to match the UI skin   
 **Improvement:** better handling of debug logs with a proper settings to turn it on and off
 
 

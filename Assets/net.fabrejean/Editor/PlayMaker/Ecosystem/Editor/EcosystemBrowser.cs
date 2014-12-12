@@ -2034,7 +2034,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 		void ShowBrowserUpdateInfo()
 		{
-			Application.OpenURL("https://hutonggames.fogbugz.com/default.asp?W1181");
+			OnTools_ShowUpdateInfo();
 		}
 
 		/// <summary>
@@ -2160,7 +2160,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 		void OnTools_ShowUpdateInfo()
 		{
-			Help.BrowseURL("https://hutonggames.fogbugz.com/default.asp?W1181");
+			Help.BrowseURL("https://github.com/jeanfabre/PlayMaker--Ecosystem--Browser/blob/master/Assets/net.fabrejean/Editor/PlayMaker/Ecosystem/Changelog.md");
 		}
 
 		void OnTools_DownloadAndInstallUpdate()
