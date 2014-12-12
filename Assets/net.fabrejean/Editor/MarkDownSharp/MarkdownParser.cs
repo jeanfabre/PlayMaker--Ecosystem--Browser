@@ -421,13 +421,13 @@ namespace Net.FabreJean.UnityEditor.MarkdownSharp
 
 		public HyperTextLUT TryGetHyperLinkAt(int pos,out bool success)
 		{
-			Debug.Log("TryGetHyperLinkAt "+pos);
+			//Debug.LogWarning("This is an experimental attemp, unfortunatly Unity seems to return the wrong position in text when text is wrapped.. TryGetHyperLinkAt "+pos);
 			if (hyperTextList!=null)
 			{
 				for(int i = 0; i<hyperTextList.Count;i++)
 				{
 					HyperTextLUT link = hyperTextList[i];
-					Debug.Log("checking  "+i+ " at pos "+pos+" between "+link.startPos+" excluded and "+link.EndPos+" included");
+				//	Debug.Log("checking  "+i+ " at pos "+pos+" between "+link.startPos+" excluded and "+link.EndPos+" included");
 					if (link.startPos<pos && pos<=link.EndPos)
 					{
 						success = true;

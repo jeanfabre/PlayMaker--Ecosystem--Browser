@@ -99,6 +99,22 @@ namespace Net.FabreJean.UnityEditor.MarkdownSharp
 		}
 
 		/// <summary>
+		/// Let the user define the skin to use. If not overriden in OnGUILayout_MardkDownTextArea, it will expect 
+		/// MarkdownTextAreaDark and MarkdownTextAreaLight styles definition.
+		/// </summary>
+		/// <param name="skin">Skin.</param>
+		public void UserGuiSkin(GUISkin skin)
+		{
+			UserSkin = skin;
+		}
+
+		/// <summary>
+		/// The user defined skin.
+		/// </summary>
+		private GUISkin UserSkin;
+
+
+		/// <summary>
 		/// Processes markdown syntax from a source 
 		/// </summary>
 		/// <returns>The processed source as Unity rich text</returns>
@@ -116,7 +132,7 @@ namespace Net.FabreJean.UnityEditor.MarkdownSharp
 		/// <summary>
 		/// Display a Text Area GUILayout element with the processed source
 		/// </summary>
-		public bool OnGUILayout_MardkDownTextArea()
+		public bool OnGUILayout_MardkDownTextArea(string style = null)
 		{
 			if (_markdownSkin==null) 
 			{
@@ -127,11 +143,20 @@ namespace Net.FabreJean.UnityEditor.MarkdownSharp
 				_isMouseDown = true;
 			}
 
-			GUI.skin = _markdownSkin;
-			string style = "MarkdownTextArea" + (EditorGUIUtility.isProSkin?"Dark":"Light");
-			GUILayout.TextArea(_processedText,style);
+			GUISkin _currentSkin = GUI.skin;
+			GUI.skin = UserSkin!=null?UserSkin:_markdownSkin;
+
+			string _style = "MarkdownTextArea" + (EditorGUIUtility.isProSkin?"Dark":"Light");
+
+			if (! string.IsNullOrEmpty(style))
+			{
+				_style = style;
+			}
+			GUILayout.TextArea(_processedText,_style);
 			Rect rect = GUILayoutUtility.GetLastRect();
-			GUI.skin = null;
+
+			GUI.skin = _currentSkin;
+
 			TextEditor editor = (TextEditor)GUIUtility.GetStateObject(typeof(TextEditor), GUIUtility.keyboardControl);
 
 			/*
@@ -146,7 +171,7 @@ namespace Net.FabreJean.UnityEditor.MarkdownSharp
 			{
 				if (Event.current.type == EventType.Repaint && rect.Contains(Event.current.mousePosition))
 				{
-					Debug.Log("MouseDown "+Event.current.mousePosition+" on"+rect);
+					//Debug.Log("MouseDown "+Event.current.mousePosition+" on"+rect);
 					_isMouseDown = false;
 					if (editor.pos == editor.selectPos )
 					{

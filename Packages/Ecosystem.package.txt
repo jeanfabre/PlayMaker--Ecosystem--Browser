@@ -1,4 +1,0 @@
-{
-"__ECO__":"__BROWSERPACKAGE__",
-"unitypackage":"Packages/Ecosystem.unitypackage"
-}

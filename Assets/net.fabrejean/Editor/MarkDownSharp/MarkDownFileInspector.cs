@@ -39,7 +39,7 @@ namespace Net.FabreJean.UnityEditor
 			
 			if ( _markdownGui.OnGUILayout_MardkDownTextArea())
 			{
-				Debug.Log("hello");
+				//Debug.Log("hello");
 				Repaint();
 			}
 

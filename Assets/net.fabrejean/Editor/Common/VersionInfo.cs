@@ -203,7 +203,7 @@ namespace Net.FabreJean.UnityEditor
 			{
 				return string.Format( "{0}.{1}.{2}", Major, Minor, Patch );
 			}
-			return string.Format( "{0}.{1}.{2} {3} {4}", Major, Minor, Patch, GetVersionTypeAsString(Type), Build );
+			return string.Format( "{0}.{1}.{2} {3} {4}", Major, Minor, Patch, GetVersionTypeAsLongString(Type), Build );
 		}
 		
 		
@@ -214,6 +214,22 @@ namespace Net.FabreJean.UnityEditor
 				return string.Format( "{0}.{1}.{2}", Major, Minor, Patch );
 			}
 			return string.Format( "{0}.{1}.{2}{3}{4}", Major, Minor, Patch, GetVersionTypeAsString(Type), Build );
+		}
+
+		/// <summary>
+		/// Custom format if wanted. {0} is Major, {1} is Minor, {2} is Patch, {3} is short Type, {4} is long type, 5 is Build
+		/// </summary>
+		/// <returns>The string.</returns>
+		/// <param name="format">Format. default to "{0}.{1}.{2}{3}{5}"</param>
+		public string ToString(string format = "{0}.{1}.{2}{3}{5}")
+		{
+			return string.Format("{0}.{1}.{2}{3}{5}", 
+			                     /* 0 */ Major, 
+			                     /* 1 */ Minor, 
+			                     /* 2 */ Patch,
+			                     /* 3 */ GetVersionTypeAsString(Type),
+			                     /* 4 */ GetVersionTypeAsLongString(Type),
+			                     /* 5 */  Build);
 		}
 		
 		
