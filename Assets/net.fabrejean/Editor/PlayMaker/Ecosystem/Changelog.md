@@ -4,6 +4,8 @@
 ###0.4.0
 **Note:** **_Breaking Build_**. The "net.fabrejean" folder **MUST** be deleted first
 
+**New:** Soft Integration of PlayMaker version check, to not throw error if PlayMaker not installed
+**New:** Visual feedback if PlayMaker is not installed, with button to open the asset store 
 **New:** Version Type to match Unity and PlayMaker version info.  
 **New:** Interactive versioning with Build being representative of the number of compilation.   
 This is based on [InControl](https://github.com/pbhogan/InControl) by Patrick Hogan   
