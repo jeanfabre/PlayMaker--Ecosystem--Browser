@@ -238,6 +238,15 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 			
 			yield break;
 		}
+
+		/// <summary>
+		/// Loads the meta data.
+		/// </summary>
+		/// <returns>The meta data.</returns>
+		IEnumerator LoadMetaData()
+		{
+			yield break;
+		}
 	}
 
 }

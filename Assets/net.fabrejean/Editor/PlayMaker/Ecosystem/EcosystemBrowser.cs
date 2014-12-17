@@ -285,27 +285,8 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 		void OnGUI_Main()
 		{
-			/*
-				if (rssFeed==null)
-				{
-					rssFeed = RssReader.Create("http://feeds.feedburner.com/PlaymakerEcosystem");
-				}
-				*/
-			
-			//GUILayout.Label(_lastError);
-			/*
-		//	Debug.Log(typeof(HutongGames.PlayMaker.FsmVar).AssemblyQualifiedName);
-			//Type t = Type.GetType("HutongGames.PlayMaker.FsmVar");// FsmEditor.Instance != null
-			if (FsmEditor.Instance == null ) {
-				OnGUI_Warning("PlayMaker Editor must be opened for the ecosystem to work");
-				//GUILayout.Label("PlayMaker Editor must be opened for the ecosystem to work");
-				if (GUILayout.Button("Open PlayMaker Editor","Button Medium"))
-				{
-					EditorApplication.ExecuteMenuItem("PlayMaker/PlayMaker Editor");
-				}
-				return;
-			}
-*/
+
+
 
 			if(!Application.isPlaying && _disclaimer_pass && !ShowDisclaimer)
 			{
@@ -337,6 +318,9 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 					if (GUILayout.Button("?","Button Small",GUILayout.Width(20)))
 					{
+						Debug.Log("ECO_BrowserVersion:"+ECO_BrowserVersion);
+						Debug.Log("CurrentVersion:"+CurrentVersion);
+
 						ShowBrowserUpdateInfo();
 					}
 
@@ -354,7 +338,10 @@ In doubt, do not use this and get in touch with us to learn more before you work
 					GUILayout.EndHorizontal();
 				}
 
-				OnGUI_ToolBar();
+				if (Utils.isPlayMakerInstalled())
+				{
+					OnGUI_ToolBar();
+				}
 			}
 			
 			
@@ -363,7 +350,28 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				OnGUI_Disclaimer();
 				return;
 			}
-			
+
+			if (! Utils.isPlayMakerInstalled() ) {
+				GUILayout.Space(10);
+				GUILayout.BeginHorizontal();
+				GUILayout.FlexibleSpace();
+				GUILayout.BeginHorizontal("Table Row Red Last",GUILayout.Width(position.width+3));
+				
+				GUILayout.Label("PlayMaker must be installed for the ecosystem to be useful","Label Row Red");
+				GUILayout.EndHorizontal();
+				GUILayout.FlexibleSpace();
+				GUILayout.EndHorizontal();
+
+
+				GUILayout.Space(15);
+				if (GUILayout.Button("Open PlayMaker on the AssetStore","Button Medium"))
+				{
+					Application.OpenURL("com.unity3d.kharma:content/368");
+				}
+				return;
+			}
+
+
 			if (Application.isPlaying)
 			{
 				GUILayout.Label("Application is playing. Saves performances to not process anything during playback.");
@@ -389,8 +397,8 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			
 			OnGUI_ItemList();
 
+
 		
-			OnGUI_BottomPanel();
 
 			// detect mouse over top area of the browser window to toggle the toolbar visibility if required
 			if (Event.current.type == EventType.Repaint)
@@ -615,9 +623,31 @@ In doubt, do not use this and get in touch with us to learn more before you work
 		}
 
 
+
+
 		void OnGUI () { wantsMouseMove = true;
 
+			
+			// check for compiling status
+			// refresh versioning as well.
+			if (isCompiling!=EditorApplication.isCompiling)
+			{
+				isCompiling = EditorApplication.isCompiling;
+				
+				if (!isCompiling)
+				{
+					//Debug.Log("Compiling Ecosystem "+EditorApplication.isCompiling);
+					CurrentVersion = Utils.UpdateVersion(pathToVersionInfoSource);
+					CurrentVersionAsString = CurrentVersion.ToShortString();
+				}
+				
+			}else if (string.IsNullOrEmpty(CurrentVersionAsString))
+			{
+				CurrentVersion = Utils.UpdateVersion(pathToVersionInfoSource);
+				CurrentVersionAsString = CurrentVersion.ToShortString();
+			}
 
+			
 			if (Event.current.type == EventType.MouseMove) Repaint ();
 
 			// init skin
@@ -639,13 +669,10 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			// TODO: should design the scroll widgets so that it can be matching the skin.
 			GUI.skin = editorSkin;
 
-			/*
-			if (BrowserToViewTransition_animfloat!=null)
-			{
-				//BrowserToViewTransition_animfloat;
-			}
-*/
+
 			OnGUI_Main();
+
+			OnGUI_BottomPanel();
 
 		}
 
@@ -1121,23 +1148,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 
 
-			// feedback
-			if (isCompiling!=EditorApplication.isCompiling)
-			{
-				isCompiling = EditorApplication.isCompiling;
 
-				if (!isCompiling)
-				{
-					//Debug.Log("Compiling Ecosystem "+EditorApplication.isCompiling);
-					CurrentVersion = Utils.UpdateVersion(pathToVersionInfoSource);
-					CurrentVersionAsString = CurrentVersion.ToShortString();
-				}
-
-			}else if (string.IsNullOrEmpty(CurrentVersionAsString))
-			{
-				CurrentVersion = Utils.UpdateVersion(pathToVersionInfoSource);
-				CurrentVersionAsString = CurrentVersion.ToShortString();
-			}
 
 
 			if ( EditorApplication.isCompiling)
@@ -1530,7 +1541,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 			
 			if (
-				HutongGames.PlayMakerEditor.VersionInfo.GetAssemblyInformationalVersion().Contains("b")
+				Utils.GetPlayMakerVersion().Contains("b")
 			    )
 			{
 				mask += "PB";
@@ -1543,7 +1554,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			// put the all the versions as well
 			url += "&EcosystemVersion="+CurrentVersion;
 			url += "&UnityVersion="+Application.unityVersion;
-			url += "&PlayMakerVersion="+HutongGames.PlayMakerEditor.VersionInfo.GetAssemblyInformationalVersion();
+			url += "&PlayMakerVersion="+Utils.GetPlayMakerVersion();
 
 			if (Debug_on) Debug.Log(url);
 
@@ -1631,6 +1642,8 @@ In doubt, do not use this and get in touch with us to learn more before you work
 					}
 			//	}
 			}
+
+
 
 			Repaint();
 		}	

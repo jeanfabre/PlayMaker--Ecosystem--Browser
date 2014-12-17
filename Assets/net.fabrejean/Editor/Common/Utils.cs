@@ -1,6 +1,9 @@
 using UnityEditor;
 using UnityEngine;
+
+using System;
 using System.Collections;
+using System.Reflection;
 using System.IO;
 
 namespace Net.FabreJean.UnityEditor
@@ -9,7 +12,56 @@ namespace Net.FabreJean.UnityEditor
 	/// Utility class for Editors from Net.FabreJean namespace
 	/// </summary> 
 	public class Utils {
-		
+
+		/// <summary>
+		/// caching the reflected method to Get the PlayMaker version, jsut to avoid doing the work everytime.
+		/// </summary>
+		static MethodInfo _GetAssemblyInformationalVersion_Method;
+
+		/// <summary>
+		/// Gets the playMaker version via reflection so that no errors is fired if PlayMaker is not installed
+		/// </summary>
+		/// <returns>The play maker version.</returns>
+		public static string GetPlayMakerVersion()
+		{
+			if (_GetAssemblyInformationalVersion_Method==null)
+			{
+				string path = Application.dataPath+"/PlayMaker/Editor/PlayMakerEditor.dll";
+				Debug.Log(path);
+				try{
+					Type[] typelist = System.Reflection.Assembly.LoadFile(path).GetTypes();
+					foreach(var item in typelist )
+					{
+						if (item.IsClass && item.Name.Equals("VersionInfo"))
+						{
+							_GetAssemblyInformationalVersion_Method = item.GetMethod("GetAssemblyInformationalVersion");
+							break;
+						}
+					}
+				}catch(Exception e)
+				{
+					return "n/a";
+				}
+			}
+
+			if (_GetAssemblyInformationalVersion_Method!=null)
+			{
+				return _GetAssemblyInformationalVersion_Method.Invoke(null,null) as string;
+			}
+
+			return "n/a";
+		}
+
+		/// <summary>
+		/// Check if PlayMaker is installed. Doesn't throw exceptions if PlayMaker is not installed.
+		/// </summary>
+		/// <returns><c>true</c>, if play maker installed was ised, <c>false</c> otherwise.</returns>
+		public static bool isPlayMakerInstalled()
+		{
+			return isClassDefined("HutongGames.PlayMakerEditor.AboutWindow");
+		}
+
+
 		public static bool isClassDefined(string classType)
 		{
 			bool _classFound = System.Type.GetType(classType) != null;
@@ -22,6 +74,7 @@ namespace Net.FabreJean.UnityEditor
 		
 			return _classFound;
 		}
+
 		public static GUISkin GetGuiSkin(string guiSkinName)
 		{
 			string path = "";
