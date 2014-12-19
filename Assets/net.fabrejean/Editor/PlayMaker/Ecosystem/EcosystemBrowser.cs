@@ -154,7 +154,6 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 
 			// init static vars
 			PlayMakerEcosystemFiltersLength = Enum.GetNames(typeof(PlayMakerEcosystemFilters)).Length;
-
 		}
 
 		#region Disclaimer
@@ -190,7 +189,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 		private MarkdownGUI _disclaimerMarkdownGUI ;
 
-		private GUIContent _youtubeQuickintroGUIContent;
+		private GUIContent _youtubeQuickIntroGUIContent;
 
 		void OnGUI_Disclaimer()
 		{
@@ -217,15 +216,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 				GUILayout.FlexibleSpace();
 
-			if (_youtubeQuickintroGUIContent==null)
-			{
-				_youtubeQuickintroGUIContent = new GUIContent(
-					" Quick Intro",
-					editorSkin.FindStyle("YouTube Play Icon").normal.background as Texture
-					);
-			}
-
-			if ( GUILayout.Button(_youtubeQuickintroGUIContent,"Button",GUILayout.Width(200)) )
+			if ( GUILayout.Button(_youtubeQuickIntroGUIContent,"Button",GUILayout.Width(200)) )
 				{
 					Application.OpenURL ("https://hutonggames.fogbugz.com/default.asp?W1181");
 				}
@@ -286,6 +277,8 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 		private WWW _test;
 
+		private GUIContent _youtubeWatchVideoButtonGuiContent;
+
 		void OnGUI_SetUpSkin()
 		{
 			// set up the skin if not done yet.
@@ -307,6 +300,13 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				}
 				GUI.DrawTextureWithTexCoords(new Rect(0,0,position.width,position.height),bg,new Rect(0, 0, position.width / bg.width, position.height / bg.height));
 			}
+
+			// init cached content
+			Texture _youtubeTexture = editorSkin.FindStyle("YouTube Play Icon").normal.background as Texture;
+
+			_youtubeWatchVideoButtonGuiContent = new GUIContent(" Watch Video",_youtubeTexture);
+			_youtubeQuickIntroGUIContent = new GUIContent(" Quick Intro",_youtubeTexture);
+
 
 		}
 
@@ -1118,12 +1118,12 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				if (item.HasVideo)
 				{
 					GUILayout.BeginHorizontal();
-					GUILayout.Label("Watch a video:","Label Medium");
-					if (GUILayout.Button("","Button Youtube Play"))
+					GUILayout.FlexibleSpace();
+					if (GUILayout.Button(_youtubeWatchVideoButtonGuiContent,"Button",GUILayout.Width(300)))
 					{
-					Application.OpenURL(item.GetUrl(Item.urltypes.YouTube,0)); // get the first video 
+						Application.OpenURL(item.GetUrl(Item.urltypes.YouTube,0)); // get the first video 
 					}
-
+					GUILayout.FlexibleSpace();
 					GUILayout.EndHorizontal();
 				}
 				// content

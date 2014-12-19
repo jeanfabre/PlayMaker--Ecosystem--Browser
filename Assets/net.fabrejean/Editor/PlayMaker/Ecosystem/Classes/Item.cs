@@ -344,7 +344,7 @@ metadata
 			
 				if (canDecode)
 				{
-					Debug.Log("decode attempt for item"+Name+" from url <"+url+"> content:"+jsonString);
+					if (EcosystemBrowser.IsDebugOn)Debug.Log("decode attempt for item"+Name+" from url <"+url+"> content:"+jsonString);
 					try{
 						Hashtable _meta = (Hashtable)JSON.JsonDecode(jsonString);
 						RawData["metaData"] = _meta;
@@ -353,12 +353,12 @@ metadata
 					}catch(Exception e)
 					{
 						MetaDataStatus = AsynchContentStatus.Unavailable;
-						Debug.LogError(e);
-						Debug.LogError("could not decode json string for item"+Name+" from url <"+url+"> content:"+jsonString);
+						if (EcosystemBrowser.IsDebugOn) Debug.LogError(e);
+						if (EcosystemBrowser.IsDebugOn) Debug.LogError("could not decode json string for item"+Name+" from url <"+url+"> content:"+jsonString);
 					}
 				}
 			}else{
-				Debug.LogError("LoadMetaData error for "+Name+" with url <"+url+"> : "+_www.error);
+				if (EcosystemBrowser.IsDebugOn) Debug.LogError("LoadMetaData error for "+Name+" with url <"+url+"> : "+_www.error);
 				MetaDataStatus = AsynchContentStatus.Unavailable;
 			}
 
@@ -403,7 +403,7 @@ metadata
 				_www.LoadImageIntoTexture(_t2d);
 				DocumentationImage_Cache[DocumentationImageUrl] = _t2d as Texture;
 			}else{
-				Debug.LogError("LoadDocumentation error for "+Name+" : "+_www.error);
+				if (EcosystemBrowser.IsDebugOn) Debug.LogError("LoadDocumentation error for "+Name+" : "+_www.error);
 				DocumentationImageStatus = AsynchContentStatus.Unavailable;
 			}
 
