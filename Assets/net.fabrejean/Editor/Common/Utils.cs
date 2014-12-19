@@ -38,7 +38,7 @@ namespace Net.FabreJean.UnityEditor
 							break;
 						}
 					}
-				}catch(Exception e)
+				}catch
 				{
 					return "n/a";
 				}
@@ -171,6 +171,20 @@ namespace Net.FabreJean.UnityEditor
 			}else{
 				Debug.LogError("PutFileContents Could not find "+filePath);
 			}
+		}
+
+		public static string GetAssetAbsolutePath(string path)
+		{
+			string assetPath = Application.dataPath;
+			
+			if (path.StartsWith("Assets"))
+			{
+				assetPath += path.Substring(6);
+			}else{
+				assetPath = assetPath.TrimEnd("Assets/".ToCharArray()) +"/";
+				assetPath = assetPath + path;
+			}
+			return assetPath;
 		}
 		
 	}

@@ -43,7 +43,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 		/// <summary>
 		/// The live version package, this is the update to get if version is newer.
 		/// </summary>
-		static string ECO_BrowserVersion_package;
+		//static string ECO_BrowserVersion_package;
 
 		#endregion
 
@@ -54,7 +54,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 
 		static private bool _disclaimer_pass = false;
 
-		static private string __REST_URL_BASE__ = "http://www.fabrejean.net/projects/playmaker_ecosystem/";
+		static public string __REST_URL_BASE__ = "http://www.fabrejean.net/projects/playmaker_ecosystem/";
 
 		//static private string RepositoryPath = "jeanfabre/PlayMakerCustomActions";//"pbhogan/InControl";
 
@@ -190,6 +190,8 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 		private MarkdownGUI _disclaimerMarkdownGUI ;
 
+		private GUIContent _youtubeQuickintroGUIContent;
+
 		void OnGUI_Disclaimer()
 		{
 			GUILayout.BeginVertical();
@@ -204,17 +206,47 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 			_disclaimerMarkdownGUI.OnGUILayout_MardkDownTextArea("Label Medium");
 
-			GUILayout.Label(_disclaimer_license_label,"Label Small");
-		
-				if ( GUILayout.Button("Learn more (online help)","Button") )
+			GUILayout.Label(_disclaimer_license_label,"Label FinePrint");
+
+
+			GUILayout.BeginHorizontal();
+				if ( GUILayout.Button("Learn more (online)","Button",GUILayout.Width(200)) )
 				{
 					Application.OpenURL ("https://hutonggames.fogbugz.com/default.asp?W1181");
 				}
+
+				GUILayout.FlexibleSpace();
+
+			if (_youtubeQuickintroGUIContent==null)
+			{
+				_youtubeQuickintroGUIContent = new GUIContent(
+					" Quick Intro",
+					editorSkin.FindStyle("YouTube Play Icon").normal.background as Texture
+					);
+			}
+
+			if ( GUILayout.Button(_youtubeQuickintroGUIContent,"Button",GUILayout.Width(200)) )
+				{
+					Application.OpenURL ("https://hutonggames.fogbugz.com/default.asp?W1181");
+				}
+			/*
+				if (
+					GUILayout.Button("","Button YouTube")
+					||
+					GUILayout.Button("","Button YouTube Play")
+					)
+				{
+					Application.OpenURL ("https://hutonggames.fogbugz.com/default.asp?W1181");
+				}
+				*/
+		
+			GUILayout.EndHorizontal();
+				
 				GUILayout.Space(5);
 
 				if (!_disclaimer_pass)
 				{
-					if ( GUILayout.Button("Use the ecosystem!","Button") )
+					if ( GUILayout.Button("Use the ecosystem!","Button Green") )
 					{
 						_disclaimer_pass = true;
 						//Debug.Log(_disclaimerPass_key+"-"+Application.dataPath);
@@ -437,6 +469,8 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				}
 				
 			}
+
+			OnGUI_BottomPanel();
 
 			// User click on a row.
 			if (Event.current.type == EventType.mouseDown && mouseOverRowIndex!=-1)
@@ -672,7 +706,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 			OnGUI_Main();
 
-			OnGUI_BottomPanel();
+
 
 		}
 
@@ -739,6 +773,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			GUILayout.EndHorizontal();
 		}
 	
+
 		void OnGUI_ToolBar()
 		{
 			Event e = Event.current;
@@ -1080,6 +1115,17 @@ In doubt, do not use this and get in touch with us to learn more before you work
 					
 				GUILayout.EndHorizontal();
 
+				if (item.HasVideo)
+				{
+					GUILayout.BeginHorizontal();
+					GUILayout.Label("Watch a video:","Label Medium");
+					if (GUILayout.Button("","Button Youtube Play"))
+					{
+					Application.OpenURL(item.GetUrl(Item.urltypes.YouTube,0)); // get the first video 
+					}
+
+					GUILayout.EndHorizontal();
+				}
 				// content
 				if (item.DocumentationImageStatus == Item.AsynchContentStatus.Available)
 				{
@@ -1296,7 +1342,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			if (!item.RawData.ContainsKey("projectPath")) // Cache the project path to avoid process the same thing over and over again.
 			{
 				forceloading = true;
-				item.RawData["projectPath"] = GetAssetFullPath(itemPath);
+				item.RawData["projectPath"] = Utils.GetAssetAbsolutePath(itemPath);
 			//	Debug.Log(item.RawData["projectPath"]);
 			}
 
@@ -1717,7 +1763,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				if (_metaData.ContainsKey("ECO_BrowserVersion"))
 				{
 					ECO_BrowserVersion = new VersionInfo((string)_metaData["ECO_BrowserVersion"]);
-					ECO_BrowserVersion_package = (string)_metaData["ECO_BrowserVersion_package"];
+					//ECO_BrowserVersion_package = (string)_metaData["ECO_BrowserVersion_package"];
 					// only force the update banner if the live version is greater then the time when the user choose to dismiss it.
 					if (ECO_BrowserVersion>LastUpdateBannerVersion)
 					{
@@ -1788,21 +1834,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			}
 		}
 
-		string GetAssetFullPath(string itemPath)
-		{
-			string assetPath = Application.dataPath;
-			
-			if (itemPath.StartsWith("Assets"))
-			{
-				assetPath += itemPath.Substring(6);
-			}else{
-				assetPath = assetPath.TrimEnd("Assets/".ToCharArray()) +"/";
-				assetPath = assetPath + itemPath;
-			}
-			//if (debug) Debug.Log(itemPath+" -> asset path -> "+assetPath);
 
-			return assetPath;
-		}
 
 		Hashtable LoadItemMetaData(Hashtable item,bool forceLoading)
 		{
@@ -1845,7 +1877,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 					if (_meta.ContainsKey("pingAssetPath") && !_meta.ContainsKey("pingAssetProjectPath"))
 					{
-						_meta["pingAssetProjectPath"] = GetAssetFullPath((string)_meta["pingAssetPath"]);
+						_meta["pingAssetProjectPath"] =  Utils.GetAssetAbsolutePath((string)_meta["pingAssetPath"]);
 					}
 
 				}
@@ -1860,10 +1892,6 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 		void ImportItem(Item item)
 		{
-			string itemPath = (string)item.RawData["path"];
-			Hashtable rep = (Hashtable)item.RawData["repository"];
-			string repositoryPath = (string)rep["full_name"];
-
 			// KEEP THIS: this is a big where the guid persists even if you deleted the file.
 			//string guid = AssetDatabase.AssetPathToGUID(itemPath);
 			//Debug.Log(itemPath+" -> "+guid);
@@ -1872,17 +1900,12 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			//	Debug.Log(itemPath+" already exists");
 			//}else{
 
-			string itemPathEscaped = itemPath.Replace(" ","%20");
+		
 
-			//string url = "https://github.com/jeanfabre/"+RepositoryPath+"/blob/master/"+itemPathEscaped;
-			//string url = "https://raw.github.com/"+RepositoryPath+"/master/"+itemPathEscaped;
-			string url = __REST_URL_BASE__ +"download?repository="+ Uri.EscapeDataString(repositoryPath)+"&file="+ Uri.EscapeDataString(itemPathEscaped);
+			string url = item.GetUrl(Item.urltypes.RestDownload);
+			string assetPath =  Utils.GetAssetAbsolutePath(item.Path);
 
-			item.RawData["RepositoryRawUrl"] = url;
-
-			if (Debug_on) Debug.Log("ImportItem "+url);
-
-			string assetPath = GetAssetFullPath(itemPath);
+			if (Debug_on) Debug.Log("ImportItem "+url+" to "+assetPath);
 
 			DownloadRawContent(assetPath,url,item);
 		}

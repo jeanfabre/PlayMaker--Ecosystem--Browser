@@ -6,6 +6,7 @@ using System;
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 using Net.FabreJean.UnityEditor;
 
@@ -32,6 +33,19 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
         }
     }
 }
+
+metadata
+{
+"__ECO__":"__PACKAGE__",
+"Type":"Unity Module",
+"UnityModules":["UI"],
+"Version":"1.0.0",
+"UnityMinimumVersion":"4.6.0",
+"PlayMakerMinimumVersion":"1.7.0",
+"unitypackage":"PlayMaker/Ecosystem/Custom Packages/uGui/uGuiProxy.unitypackage",
+"pingAssetPath":"Assets/PlayMaker uGui/PlayMakerUGuiComponentProxy.cs",
+"YoutubeVideos":["http://www.youtube.com/playlist?list=PLFXYYxmSM-Ge4Qxx80EnT6xiLHQXKGHW3"]
+}
 */
 	
 	public class Item {
@@ -39,7 +53,11 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 		#region Enums
 		public enum ItemTypes {Action,Template,Sample,Package};
 		public enum AsynchContentStatus {Pending,Downloading,Available,Unavailable};
+
+		public enum urltypes {RestDownload,GithubPreview,GithubRaw,YouTube};
+
 		#endregion
+
 		#region Define
 
 
@@ -174,8 +192,17 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 			}
 		}
 
-
 		public AsynchContentStatus DocumentationImageStatus = AsynchContentStatus.Pending;
+		public AsynchContentStatus MetaDataStatus = AsynchContentStatus.Pending;
+
+		bool _hasVideo;
+		public bool HasVideo
+		{
+			get{
+				return _hasVideo;
+			}
+		}
+
 
 		#endregion
 
@@ -185,7 +212,86 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 
 		#endregion
 
+
+		#region Public Methods
+
+		/// <summary>
+		/// Go over the metaData if exists and extract informations for direct access. Will reset related properties
+		/// </summary>
+		public void ProcessMetaData()
+		{
+			_hasVideo = false;
+
+			if (!RawData.ContainsKey("metaData"))
+			{
+				Debug.Log("ProcessMetaData: metaData key not found in RawData");
+				return;
+			}
+
+			Hashtable metaData = (Hashtable)RawData["metaData"];
+			if (metaData!=null)
+			{
+				_hasVideo = metaData.ContainsKey("YoutubeVideos");
+			}
+		}
+		/// <summary>
+		/// Return a url for this item within a specific context, github, rest.
+		/// </summary>
+		/// <returns>The URL</returns>
+		/// <param name="urlType">URL type.</param>
+		public string GetUrl(urltypes urlType,params object[] parameters)
+		{
+
+			if (urlType == urltypes.YouTube)
+			{
+				int index = 0;
+
+				if (parameters.Length>0)
+				{
+					index = Mathf.Max(0,(int)parameters[0]);
+				}
+
+
+				Hashtable metaData = (Hashtable)RawData["metaData"];
+				if (metaData!=null)
+				{
+					ArrayList _list = (ArrayList)metaData["YoutubeVideos"];
+					if (_list!=null && _list.Count>index)
+						return (string)_list[index];
+				}
+				return null;
+			}
+
+
+			string itemPath = (string)RawData["path"];
+			Hashtable rep = (Hashtable)RawData["repository"];
+			string repositoryPath = (string)rep["full_name"];
+			string itemPathEscaped = itemPath.Replace(" ","%20");
+
+
+			switch (urlType)
+			{
+			case urltypes.RestDownload:
+					string url = EcosystemBrowser.__REST_URL_BASE__ +"download?repository="+ Uri.EscapeDataString(repositoryPath)+"&file="+ Uri.EscapeDataString(itemPathEscaped);
+					
+					RawData["RepositoryRawUrl"] = url;
+
+					return url;
+
+			case urltypes.GithubRaw:
+				return "https://raw.github.com/"+ repositoryPath+"/master/"+ itemPathEscaped;
+
+			case urltypes.GithubPreview:
+				return "https://github.com/"+ repositoryPath+"/blob/master/"+ itemPathEscaped;
+			}
+
+			return null;
+		}
+
+		#endregion
+
 		public delegate void ProcessLoadDocumentation();
+
 		public void LoadDocumentation()
 		{
 			if (EcosystemBrowser.IsDebugOn) Debug.Log("LoadDocumentation for <"+Name+"> status:"+DocumentationImageStatus);
@@ -194,9 +300,75 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 			{
 				EditorCoroutine.start(LoadDocumentationImage());
 			}
-			//EditorCoroutine.start(GetDocumentationDescription());
+			if(MetaDataStatus == AsynchContentStatus.Pending)
+			{
+				EditorCoroutine.start(LoadMetaData());
+			}
 		}
 
+		/// <summary>
+		/// Loads the meta data. output will be in json within the item raw data or the metadata property.
+		/// Process is Asynchrone
+		/// </summary>
+		IEnumerator LoadMetaData()
+		{
+			if (EcosystemBrowser.IsDebugOn) Debug.Log("LoadMetaData for <"+Name+">");
+
+			string url = GetUrl(urltypes.GithubRaw);
+			MetaDataStatus = AsynchContentStatus.Downloading;
+			WWW _www = new WWW(url);
+			while (!_www.isDone) yield return null;
+			
+			if (string.IsNullOrEmpty(_www.error))
+			{
+				MetaDataStatus = AsynchContentStatus.Available;
+
+				string jsonString = _www.text;
+
+				bool canDecode = true;
+				if (Type== ItemTypes.Action)
+				{
+					// we have to find the meta data within the script
+					Match match = Regex.Match(jsonString,@"(?<=EcoMetaStart)[^>]*(?=EcoMetaEnd)",RegexOptions.IgnoreCase);
+					
+					// Here we check the Match instance.
+					if (match.Success)
+					{
+						//	Debug.Log("we have meta data :" + match.Value);
+						jsonString = match.Value;
+					}else{
+						canDecode = false;
+						MetaDataStatus = AsynchContentStatus.Unavailable;
+					}
+				}
+			
+				if (canDecode)
+				{
+					Debug.Log("decode attempt for item"+Name+" from url <"+url+"> content:"+jsonString);
+					try{
+						Hashtable _meta = (Hashtable)JSON.JsonDecode(jsonString);
+						RawData["metaData"] = _meta;
+
+						ProcessMetaData();
+					}catch(Exception e)
+					{
+						MetaDataStatus = AsynchContentStatus.Unavailable;
+						Debug.LogError(e);
+						Debug.LogError("could not decode json string for item"+Name+" from url <"+url+"> content:"+jsonString);
+					}
+				}
+			}else{
+				Debug.LogError("LoadMetaData error for "+Name+" with url <"+url+"> : "+_www.error);
+				MetaDataStatus = AsynchContentStatus.Unavailable;
+			}
+
+			yield break;
+		}
+
+		/// <summary>
+		/// Loads the documentation image. Output will be saved in DocumentationImage_Cache
+		/// Process is Asynchrone
+		/// </summary>
 		IEnumerator LoadDocumentationImage()
 		{
 
@@ -215,7 +387,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 				}
 				DocumentationImageUrl = DocumentationImageUrl.Replace(" ","%20");
 
-//				Debug.Log(DocumentationImageUrl);
+				//Debug.Log(DocumentationImageUrl);
 			}
 			 
 			if (EcosystemBrowser.IsDebugOn) Debug.Log("LoadDocumentation for <"+Name+"> url:"+DocumentationImageUrl);
@@ -235,18 +407,12 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 				DocumentationImageStatus = AsynchContentStatus.Unavailable;
 			}
 
-			
 			yield break;
 		}
+	
 
-		/// <summary>
-		/// Loads the meta data.
-		/// </summary>
-		/// <returns>The meta data.</returns>
-		IEnumerator LoadMetaData()
-		{
-			yield break;
-		}
+
+
 	}
 
 }
