@@ -2,7 +2,7 @@
 
 
 ###0.4.0
-**Note:** **_Breaking Build_**. The "net.fabrejean" folder **MUST** be deleted first
+**Note:** **_Breaking Build_**. The "net.fabrejean" or the "jf_plugins" folder **MUST** be deleted first
 
 **New:** MetaData download for documentation   
 **New:** Youtube Link in Documentation when defined in metaData   

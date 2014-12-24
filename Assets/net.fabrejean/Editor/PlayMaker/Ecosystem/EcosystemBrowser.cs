@@ -145,10 +145,8 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 			// Get existing open window or if none, make a new one:
 			Instance = (EcosystemBrowser)EditorWindow.GetWindow (typeof (EcosystemBrowser));
 
-			Instance.position = new Rect(100,100, 410,400);
-			Instance.minSize = new Vector2(410,100);
-			//WindowInstance. = new Vector2(410,100);
-
+			Instance.position = new Rect(100,100, 430,400);
+			Instance.minSize = new Vector2(430,100);
 			Instance.title = "Ecosystem";
 
 
@@ -211,25 +209,16 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			GUILayout.BeginHorizontal();
 				if ( GUILayout.Button("Learn more (online)","Button",GUILayout.Width(200)) )
 				{
-					Application.OpenURL ("https://hutonggames.fogbugz.com/default.asp?W1181");
+
+					Help.BrowseURL(__REST_URL_BASE__+ "link/wiki");
 				}
 
 				GUILayout.FlexibleSpace();
 
-			if ( GUILayout.Button(_youtubeQuickIntroGUIContent,"Button",GUILayout.Width(200)) )
+				if ( GUILayout.Button(_youtubeQuickIntroGUIContent,"Button",GUILayout.Width(200)) )
 				{
-					Application.OpenURL ("https://hutonggames.fogbugz.com/default.asp?W1181");
+					Help.BrowseURL(__REST_URL_BASE__+ "youtube/intro");
 				}
-			/*
-				if (
-					GUILayout.Button("","Button YouTube")
-					||
-					GUILayout.Button("","Button YouTube Play")
-					)
-				{
-					Application.OpenURL ("https://hutonggames.fogbugz.com/default.asp?W1181");
-				}
-				*/
 		
 			GUILayout.EndHorizontal();
 				
@@ -1121,7 +1110,10 @@ In doubt, do not use this and get in touch with us to learn more before you work
 					GUILayout.FlexibleSpace();
 					if (GUILayout.Button(_youtubeWatchVideoButtonGuiContent,"Button",GUILayout.Width(300)))
 					{
-						Application.OpenURL(item.GetUrl(Item.urltypes.YouTube,0)); // get the first video 
+						string _url = item.GetUrl(Item.urltypes.YouTube,0); // get the first video 
+
+						if (Debug_on) Debug.Log(_url);
+						Application.OpenURL(_url); 
 					}
 					GUILayout.FlexibleSpace();
 					GUILayout.EndHorizontal();
@@ -1545,9 +1537,8 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			}
 			*/
 
-			string url = "http://www.fabrejean.net/projects/playmaker_ecosystem/search";
+			string url = __REST_URL_BASE__+"search/"+WWW.EscapeURL(searchString);
 
-			url += "/"+WWW.EscapeURL(searchString);
 
 
 			// CONTENT MASKING
@@ -2190,19 +2181,20 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 		void OnTools_Help() 
 		{
-			Help.BrowseURL("https://hutonggames.fogbugz.com/default.asp?W1181");
+			Help.BrowseURL(__REST_URL_BASE__+"link/wiki");
+			
 		}
 
 
 		void OnTools_ShowUpdateInfo()
 		{
-			Help.BrowseURL("https://github.com/jeanfabre/PlayMaker--Ecosystem--Browser/blob/master/Assets/net.fabrejean/Editor/PlayMaker/Ecosystem/Changelog.md");
+			Help.BrowseURL(__REST_URL_BASE__+"link/changelog");
 		}
 
 		void OnTools_DownloadAndInstallUpdate()
 		{
 			// let's make it simple right now, I'll deal with a proper internal download later.
-			Help.BrowseURL("https://hutonggames.fogbugz.com/default.asp?W1181");
+			Help.BrowseURL(__REST_URL_BASE__+"link/wiki");
 
 		}
 		

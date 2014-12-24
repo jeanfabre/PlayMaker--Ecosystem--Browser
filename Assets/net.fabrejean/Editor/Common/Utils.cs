@@ -27,7 +27,7 @@ namespace Net.FabreJean.UnityEditor
 			if (_GetAssemblyInformationalVersion_Method==null)
 			{
 				string path = Application.dataPath+"/PlayMaker/Editor/PlayMakerEditor.dll";
-				Debug.Log(path);
+
 				try{
 					Type[] typelist = System.Reflection.Assembly.LoadFile(path).GetTypes();
 					foreach(var item in typelist )
@@ -58,7 +58,9 @@ namespace Net.FabreJean.UnityEditor
 		/// <returns><c>true</c>, if play maker installed was ised, <c>false</c> otherwise.</returns>
 		public static bool isPlayMakerInstalled()
 		{
-			return isClassDefined("HutongGames.PlayMakerEditor.AboutWindow");
+			string path = Application.dataPath+"/PlayMaker/Editor/PlayMakerEditor.dll";
+			return File.Exists(path);
+			//return isClassDefined("HutongGames.PlayMakerEditor.AboutWindow"); // doens't always work.. odd
 		}
 
 
