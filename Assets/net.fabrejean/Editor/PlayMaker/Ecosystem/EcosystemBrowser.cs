@@ -7,7 +7,6 @@ using System.IO;
 
 using UnityEngine;
 using UnityEditor;
-using UnityEditor.AnimatedValues;
 
 using Net.FabreJean.UnityEditor;
 using Net.FabreJean.UnityEditor.MarkdownSharp;
@@ -1432,7 +1431,13 @@ In doubt, do not use this and get in touch with us to learn more before you work
 					GUILayout.Space(5);
 				}
 
-				 if (fileExists)
+				if (GUILayout.Button("Github","Button Small",GUILayout.Width(60)))
+				{
+					ViewOnGithub(item);
+					return;
+				}
+
+				if (fileExists)
 				{
 
 					if (GUILayout.Button("Delete","Button Small Red",GUILayout.Width(50)))
@@ -1880,6 +1885,20 @@ In doubt, do not use this and get in touch with us to learn more before you work
 		}
 
 
+		/// <summary>
+		/// Open the browser to view an item source on github
+		/// </summary>
+		/// <param name="item">Item.</param>
+		void ViewOnGithub(Item item)
+		{
+
+			string _url = item.GetUrl(Item.urltypes.GithubPreview);
+			
+			if (Debug_on) Debug.Log(_url);
+
+			Application.OpenURL(_url); 
+
+		}
 
 		void ImportItem(Item item)
 		{

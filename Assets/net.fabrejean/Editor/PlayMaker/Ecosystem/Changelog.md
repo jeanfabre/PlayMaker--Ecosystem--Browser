@@ -1,5 +1,8 @@
 #Ecosystem Changelog
 
+###0.4.1
+
+**New** Added "Github" button to open an item on github. Very handy to reference and access content source.
 
 ###0.4.0
 **Note:** **_Breaking Build_**. The "net.fabrejean" or the "jf_plugins" folder **MUST** be deleted first
