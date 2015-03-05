@@ -1,8 +1,9 @@
-#Ecosystem Changelog
+#Ecosystem Change log
 
 ###0.4.1
 
-**New** Added "Github" button to open an item on github. Very handy to reference and access content source.
+**New** Added "Github" button to open an item on Github. Very handy to reference and access content source.
+**Fix:** Support for Unity 5 context. Warning some content will be obsolete nonnettes, especially physics based samples
 
 ###0.4.0
 **Note:** **_Breaking Build_**. The "net.fabrejean" or the "jf_plugins" folder **MUST** be deleted first
@@ -15,12 +16,12 @@
 **New:** Version Type to match Unity and PlayMaker version info.  
 **New:** Interactive versioning with Build being representative of the number of compilation.   
 This is based on [InControl](https://github.com/pbhogan/InControl) by Patrick Hogan   
-**New:** ChangeLog based on MarkDown. Ain't that funcky, hyperlinks in regular Unity GUI!!! never seen that before :)  
+**New:** ChangeLog based on MarkDown. Ain't that funky, hyperlinks in regular Unity GUI!!! never seen that before :)  
 **New:** Documentation of items using a png image, using PlayMaker documentation tool for actions and up to the discretion of publishers for other content  
-( like screenshot of the component inspector, or even the game view or anything.   
- Dark and Light skin of Unity are conventioned,   
+( like screenshot of the component inspector, or even the game view or anything)   
+ Dark and Light skin of Unity are supported with explicit path convention,   
  so the file path for doc images must be respected or it will not be found.   
-**New:** IsDebugOn static public bool for surounding classes to follow debug convention   
+**New:** IsDebugOn static public bool for surrounding classes to follow debug convention   
 **New:** UI Update prompter and menus, currently only redirecting to the wiki page.
 
 **Fix:** Fixed Editor Prefs, and improve prefs handling   

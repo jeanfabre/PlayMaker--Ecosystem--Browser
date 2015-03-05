@@ -1580,7 +1580,11 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			{
 				mask += "U4";
 			}
-
+			if (Application.unityVersion.StartsWith("5."))
+			{
+				mask += "U4";
+				mask += "U5";
+			}
 			
 			if (
 				Utils.GetPlayMakerVersion().Contains("b")
