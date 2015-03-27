@@ -8,7 +8,10 @@ using System.IO;
 using UnityEngine;
 using UnityEditor;
 
+using MyUtils = Net.FabreJean.UnityEditor; // conflict with Unity Remote utils public class... odd
+
 using Net.FabreJean.UnityEditor;
+
 using Net.FabreJean.UnityEditor.MarkdownSharp;
 
 //using Net.FabreJean.UnityEditor.Parse;
@@ -272,7 +275,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			// set up the skin if not done yet.
 			if (editorSkin==null)
 			{
-				editorSkin =  Utils.GetGuiSkin("VolcanicGuiSkin",out editorSkinPath);
+				editorSkin =  MyUtils.Utils.GetGuiSkin("VolcanicGuiSkin",out editorSkinPath);
 				bg = (Texture2D)(Resources.LoadAssetAtPath(editorSkinPath+"images/bg.png",typeof(Texture2D))); // Get the texture manually as we have some trickes for bg tiling
 				
 				//GUIStyleArrowInBuildSettings = editorSkin.FindStyle("Help Arrow 90 degree");
@@ -358,7 +361,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 					GUILayout.EndHorizontal();
 				}
 
-				if (Utils.isPlayMakerInstalled())
+				if (MyUtils.Utils.isPlayMakerInstalled())
 				{
 					OnGUI_ToolBar();
 				}
@@ -371,7 +374,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				return;
 			}
 
-			if (! Utils.isPlayMakerInstalled() ) {
+			if (! MyUtils.Utils.isPlayMakerInstalled() ) {
 				GUILayout.Space(10);
 				GUILayout.BeginHorizontal();
 				GUILayout.FlexibleSpace();
@@ -659,13 +662,13 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				if (!isCompiling)
 				{
 					//Debug.Log("Compiling Ecosystem "+EditorApplication.isCompiling);
-					CurrentVersion = Utils.UpdateVersion(pathToVersionInfoSource);
+					CurrentVersion = MyUtils.Utils.UpdateVersion(pathToVersionInfoSource);
 					CurrentVersionAsString = CurrentVersion.ToShortString();
 				}
 				
 			}else if (string.IsNullOrEmpty(CurrentVersionAsString))
 			{
-				CurrentVersion = Utils.UpdateVersion(pathToVersionInfoSource);
+				CurrentVersion = MyUtils.Utils.UpdateVersion(pathToVersionInfoSource);
 				CurrentVersionAsString = CurrentVersion.ToShortString();
 			}
 
@@ -1333,7 +1336,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			if (!item.RawData.ContainsKey("projectPath")) // Cache the project path to avoid process the same thing over and over again.
 			{
 				forceloading = true;
-				item.RawData["projectPath"] = Utils.GetAssetAbsolutePath(itemPath);
+				item.RawData["projectPath"] = MyUtils.Utils.GetAssetAbsolutePath(itemPath);
 			//	Debug.Log(item.RawData["projectPath"]);
 			}
 
@@ -1587,7 +1590,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			}
 			
 			if (
-				Utils.GetPlayMakerVersion().Contains("b")
+				MyUtils.Utils.GetPlayMakerVersion().Contains("b")
 			    )
 			{
 				mask += "PB";
@@ -1600,7 +1603,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			// put the all the versions as well
 			url += "&EcosystemVersion="+CurrentVersion;
 			url += "&UnityVersion="+Application.unityVersion;
-			url += "&PlayMakerVersion="+Utils.GetPlayMakerVersion();
+			url += "&PlayMakerVersion="+MyUtils.Utils.GetPlayMakerVersion();
 
 			if (Debug_on) Debug.Log(url);
 
@@ -1877,7 +1880,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 					if (_meta.ContainsKey("pingAssetPath") && !_meta.ContainsKey("pingAssetProjectPath"))
 					{
-						_meta["pingAssetProjectPath"] =  Utils.GetAssetAbsolutePath((string)_meta["pingAssetPath"]);
+						_meta["pingAssetProjectPath"] =  MyUtils.Utils.GetAssetAbsolutePath((string)_meta["pingAssetPath"]);
 					}
 
 				}
@@ -1917,7 +1920,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 		
 
 			string url = item.GetUrl(Item.urltypes.RestDownload);
-			string assetPath =  Utils.GetAssetAbsolutePath(item.Path);
+			string assetPath =  MyUtils.Utils.GetAssetAbsolutePath(item.Path);
 
 			if (Debug_on) Debug.Log("ImportItem "+url+" to "+assetPath);
 

@@ -10,6 +10,8 @@ using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 
+using MyUtils = Net.FabreJean.UnityEditor; // conflict with Unity Remote utils public class... odd
+
 using Net.FabreJean.UnityEditor;
 
 public class ScenesBrowser : EditorWindow {
@@ -79,7 +81,7 @@ public class ScenesBrowser : EditorWindow {
 		// set up the skin if not done yet.
 		if (editorSkin==null)
 		{
-			editorSkin = Utils.GetGuiSkin("VolcanicGuiSkin",out editorSkinPath);
+			editorSkin = MyUtils.Utils.GetGuiSkin("VolcanicGuiSkin",out editorSkinPath);
 			bg = (Texture2D)(Resources.LoadAssetAtPath(editorSkinPath+"images/bg.png",typeof(Texture2D))); // Get the texture manually as we have some trickes for bg tiling
 			
 			GUIStyleArrowInBuildSettings = editorSkin.FindStyle("Help Arrow 90 degree");
