@@ -1,8 +1,13 @@
 #Ecosystem Change log
 
+###0.4.2
+**New:** [Snipt](https://snipt.net/) online repository initiative for simple scripts and easier publishing for contributors  
+
+**Improvement:** Renamed "github" UI button "Preview" to be agnostic to the source itself.  
+
 ###0.4.1
 
-**New** Added "Github" button to open an item on Github. Very handy to reference and access content source.
+**New:** Added "Github" button to open an item on Github. Very handy to reference and access content source.
 **Fix:** Support for Unity 5 context. Warning some content will be obsolete nonnettes, especially physics based samples
 
 ###0.4.0

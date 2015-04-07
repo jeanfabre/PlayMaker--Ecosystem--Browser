@@ -58,15 +58,11 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 
 		static public string __REST_URL_BASE__ = "http://www.fabrejean.net/projects/playmaker_ecosystem/";
 
-		//static private string RepositoryPath = "jeanfabre/PlayMakerCustomActions";//"pbhogan/InControl";
-
 		string searchString = "";
-	//	string searchStringFeedback = "";
+
 		string lastSearchString = "";
 
 		string rawSearchResult="";
-
-	//	string searchUrlBase = "https://api.github.com/search/";
 
 		WWW wwwSearch;
 
@@ -1325,7 +1321,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 			// find details about the item itself
 			string url = (string)item.RawData["RepositoryRawUrl"];
-			bool downloading = !string.IsNullOrEmpty(url) && downloadsLUT.ContainsKey(url) ;
+			bool downloading = !string.IsNullOrEmpty(url) && downloadsLUT!=null && downloadsLUT.ContainsKey(url) ;
 
 			string itemPath = (string)item.RawData["path"];
 			string category = (string)item.RawData["category"];
@@ -1434,9 +1430,9 @@ In doubt, do not use this and get in touch with us to learn more before you work
 					GUILayout.Space(5);
 				}
 
-				if (GUILayout.Button("Github","Button Small",GUILayout.Width(60)))
+				if (GUILayout.Button("Preview","Button Small",GUILayout.Width(60)))
 				{
-					ViewOnGithub(item);
+					Preview(item);
 					return;
 				}
 
@@ -1777,7 +1773,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 
 			int searchResultCount = (int)searchResultHash["total_count"];
-			if (Debug_on)Debug.Log("Server search result count"+searchResultCount);
+			if (Debug_on)Debug.Log("Server search result count: "+searchResultCount);
 
 			// reset LUT
 			itemsLUT = null;
@@ -1891,25 +1887,23 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			return (Hashtable)item["metaData"];
 		}
 
-
 		/// <summary>
-		/// Open the browser to view an item source on github
+		/// Open the browser to view an item source online
 		/// </summary>
 		/// <param name="item">Item.</param>
-		void ViewOnGithub(Item item)
+		void Preview(Item item)
 		{
-
-			string _url = item.GetUrl(Item.urltypes.GithubPreview);
+			string _url = item.GetUrl(Item.urltypes.Preview);
 			
 			if (Debug_on) Debug.Log(_url);
-
+			
 			Application.OpenURL(_url); 
-
 		}
+
 
 		void ImportItem(Item item)
 		{
-			// KEEP THIS: this is a big where the guid persists even if you deleted the file.
+			// KEEP THIS: this is a big bug where the guid persists even if you deleted the file.
 			//string guid = AssetDatabase.AssetPathToGUID(itemPath);
 			//Debug.Log(itemPath+" -> "+guid);
 			//if (! string.IsNullOrEmpty(guid))

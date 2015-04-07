@@ -23,13 +23,15 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
     "unity_version": "3",
     "beta": "false",
     "repository": {
-        "id": 17312600,
+		"type": "snipt", || Github
+		"id": "138880",
+		"raw_url": "https://snipt.net/raw/e61f68c609f0000528613833abbc3bb6/", ( snipt only)
+		"preview_url": "https://jeanfabre.snipt.net/anykey-d56e7086/", ( snipt only)
         "name": "PlayMakerCustomActions_U3",
-        "full_name": "jeanfabre/PlayMakerCustomActions_U3",
+        "full_name": "jeanfabre/PlayMakerCustomActions_U3", ( Github only)
         "owner": {
             "login": "jeanfabre",
-            "id": 1140265,
-            "gravatar_id": ""
+            "id": 1140265
         }
     }
 }
@@ -52,9 +54,12 @@ metadata
 
 		#region Enums
 		public enum ItemTypes {Action,Template,Sample,Package};
+		public enum RepositoryTypes {Github,Snipt};
+
 		public enum AsynchContentStatus {Pending,Downloading,Available,Unavailable};
 
-		public enum urltypes {RestDownload,GithubPreview,GithubRaw,YouTube};
+		public enum urltypes {RestDownload,Preview,Raw,YouTube};
+
 
 		#endregion
 
@@ -113,6 +118,18 @@ metadata
 			_FolderPath = _Path.Substring(0,_Path.LastIndexOf('/'));
 
 			Hashtable rep = (Hashtable)RawData["repository"];
+
+			switch ((string)rep["type"])
+			{
+			case "Github":
+				_RepositoryType = RepositoryTypes.Github;
+				break;
+			case "Snipt":
+				_RepositoryType = RepositoryTypes.Snipt;
+				break;
+			} 
+
+
 			_RepositoryFullNamePath = (string)rep["full_name"];
 			//...
 		}
@@ -184,13 +201,24 @@ metadata
 			}
 		}
 
+		RepositoryTypes _RepositoryType;
+		public RepositoryTypes RepositoryType
+		{
+			get{
+				return _RepositoryType;
+			}
+		}
+
+
 		string _RepositoryFullNamePath;
+		/*
 		public string RepositoryFullNamePath
 		{
 			get{
 				return _RepositoryFullNamePath;
 			}
 		}
+		*/
 
 		public AsynchContentStatus DocumentationImageStatus = AsynchContentStatus.Pending;
 		public AsynchContentStatus MetaDataStatus = AsynchContentStatus.Pending;
@@ -263,28 +291,57 @@ metadata
 			}
 
 
+
 			string itemPath = (string)RawData["path"];
 			Hashtable rep = (Hashtable)RawData["repository"];
-			string repositoryPath = (string)rep["full_name"];
-			string itemPathEscaped = itemPath.Replace(" ","%20");
 
 
-			switch (urlType)
+
+			if (_RepositoryType == RepositoryTypes.Github)
 			{
-			case urltypes.RestDownload:
-					string url = EcosystemBrowser.__REST_URL_BASE__ +"download?repository="+ Uri.EscapeDataString(repositoryPath)+"&file="+ Uri.EscapeDataString(itemPathEscaped);
+				string itemPathEscaped = itemPath.Replace(" ","%20");
+				string repositoryPath = (string)rep["full_name"];
+
+				switch (urlType)
+				{
+				case urltypes.RestDownload:
+					string url = EcosystemBrowser.__REST_URL_BASE__ +"download?type=Github&repository="+ Uri.EscapeDataString(repositoryPath)+"&file="+ Uri.EscapeDataString(itemPathEscaped);
 					
 					RawData["RepositoryRawUrl"] = url;
-
+					
 					return url;
+					
+				case urltypes.Raw:
+					return "https://raw.github.com/"+ repositoryPath+"/master/"+ itemPathEscaped;
+					
+				case urltypes.Preview:
+					return "https://github.com/"+ repositoryPath+"/blob/master/"+ itemPathEscaped;
+				}
 
-			case urltypes.GithubRaw:
-				return "https://raw.github.com/"+ repositoryPath+"/master/"+ itemPathEscaped;
 
-			case urltypes.GithubPreview:
-				return "https://github.com/"+ repositoryPath+"/blob/master/"+ itemPathEscaped;
+			}else if (_RepositoryType == RepositoryTypes.Snipt)
+			{
+				switch (urlType)
+				{
+				case urltypes.RestDownload:
+					string url = EcosystemBrowser.__REST_URL_BASE__ +"download?type=Snipt&url="+ Uri.EscapeDataString((string)rep["raw_url"])+"&slug="+ Uri.EscapeDataString((string)RawData["slug"]);
+					
+					RawData["RepositoryRawUrl"] = url;
+					
+					return url;
+					
+				case urltypes.Raw:
+					return (string)rep["raw_url"];
+					
+				case urltypes.Preview:
+					return (string)rep["preview_url"];
+				}
 			}
 
+
+
+
+		
 			return null;
 		}
 
@@ -314,7 +371,7 @@ metadata
 		{
 			if (EcosystemBrowser.IsDebugOn) Debug.Log("LoadMetaData for <"+Name+">");
 
-			string url = GetUrl(urltypes.GithubRaw);
+			string url = GetUrl(urltypes.Raw);
 			MetaDataStatus = AsynchContentStatus.Downloading;
 			WWW _www = new WWW(url);
 			while (!_www.isDone) yield return null;
