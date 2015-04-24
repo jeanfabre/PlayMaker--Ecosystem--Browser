@@ -4,6 +4,9 @@
 **New:** [Snipt](https://snipt.net/) online repository initiative for simple scripts and easier publishing for contributors  
 
 **Improvement:** Renamed "github" UI button "Preview" to be agnostic to the source itself.  
+**Improvement:** Disclaimer page now features github and snipt links to inform people where content is pooled from 
+
+**Fix:** *Server side*: Unity version tag for items, now content from Unity 5 online rep are tagged "Unity 5" properly
 
 ###0.4.1
 

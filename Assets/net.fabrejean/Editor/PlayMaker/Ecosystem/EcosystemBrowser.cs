@@ -115,7 +115,8 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 		private string editorSkinPath;
 		
 		private GUISkin editorSkin;
-		
+		private GUISkin EcosystemSkin;
+
 		private Vector2 lastMousePosition;
 		private int mouseOverRowIndex;
 		private Rect[] rowsArea;
@@ -143,8 +144,8 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 			// Get existing open window or if none, make a new one:
 			Instance = (EcosystemBrowser)EditorWindow.GetWindow (typeof (EcosystemBrowser));
 
-			Instance.position = new Rect(100,100, 430,400);
-			Instance.minSize = new Vector2(430,100);
+			Instance.position = new Rect(100,100, 430,500);
+			Instance.minSize = new Vector2(430,500);
 			Instance.title = "Ecosystem";
 
 
@@ -238,18 +239,51 @@ In doubt, do not use this and get in touch with us to learn more before you work
 						
 					}
 				}
-			GUILayout.FlexibleSpace();
-			GUILayout.BeginHorizontal();
-			if( GUILayout.Button("","Label UI Kit Credit") )
-			{
-				Application.OpenURL("http://www.killercreations.co.uk/volcanic-ui-kit.php");
-			}
-			GUILayout.FlexibleSpace();
-			if (GUILayout.Button("","Label Jean Fabre Url") )
-			{
-				Application.OpenURL("http://hutonggames.com/playmakerforum/index.php?action=profile;u=33");
-			}
-			GUILayout.EndHorizontal();
+
+				GUILayout.FlexibleSpace();
+
+				GUILayout.BeginVertical("Box");
+
+					GUILayout.BeginHorizontal();
+						GUILayout.FlexibleSpace();
+						GUILayout.Label("Repositories services used by the Ecosystem");
+
+						GUILayout.FlexibleSpace();
+					GUILayout.EndHorizontal();
+					GUILayout.BeginHorizontal();
+						
+						GUISkin _currentSkin = GUI.skin;
+						GUI.skin = EcosystemSkin;
+						GUILayout.FlexibleSpace();
+						if( GUILayout.Button("","Snipt Logo") )
+						{
+							Application.OpenURL("https://snipt.net/");
+						}
+						GUILayout.FlexibleSpace();
+						if (GUILayout.Button("","Github Logo") )
+						{
+							Application.OpenURL("https://github.com/");
+						}
+						GUI.skin = _currentSkin;
+						GUILayout.FlexibleSpace();
+					GUILayout.EndHorizontal();
+				GUILayout.EndVertical();
+
+					GUILayout.FlexibleSpace();
+					
+
+					GUILayout.BeginHorizontal();
+					if( GUILayout.Button("","Label UI Kit Credit") )
+					{
+						Application.OpenURL("http://www.killercreations.co.uk/volcanic-ui-kit.php");
+					}
+					GUILayout.FlexibleSpace();
+					if (GUILayout.Button("","Label Jean Fabre Url") )
+					{
+						Application.OpenURL("http://hutonggames.com/playmakerforum/index.php?action=profile;u=33");
+					}
+				GUILayout.EndHorizontal();
+
 			GUILayout.EndVertical();
 
 		}
@@ -265,6 +299,10 @@ In doubt, do not use this and get in touch with us to learn more before you work
 		private WWW _test;
 
 		private GUIContent _youtubeWatchVideoButtonGuiContent;
+
+
+		//private GUIContent _sniptLogoGuiContent;
+		//private GUIContent _githubLogoGuiContent;
 
 		void OnGUI_SetUpSkin()
 		{
@@ -293,6 +331,20 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 			_youtubeWatchVideoButtonGuiContent = new GUIContent(" Watch Video",_youtubeTexture);
 			_youtubeQuickIntroGUIContent = new GUIContent(" Quick Intro",_youtubeTexture);
+
+			// set up the Ecosystem skin if not done yet.
+			if (EcosystemSkin==null)
+			{
+				string _PlayMakerEcosystemGuiSkinPath = string.Empty;
+				EcosystemSkin =  MyUtils.Utils.GetGuiSkin("PlayMakerEcosystemGuiSkin",out _PlayMakerEcosystemGuiSkinPath);
+				/*
+				Texture _sniptLogoTexture = EcosystemSkin.FindStyle("Snipt Logo").normal.background as Texture;
+				_sniptLogoGuiContent = new GUIContent(_sniptLogoTexture);
+
+				Texture _githubLogoTexture = EcosystemSkin.FindStyle("Github Logo").normal.background as Texture;
+				_githubLogoGuiContent = new GUIContent(_githubLogoTexture);
+				*/
+			}
 
 
 		}
