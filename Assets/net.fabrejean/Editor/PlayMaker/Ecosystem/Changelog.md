@@ -1,5 +1,8 @@
 #Ecosystem Change log
 
+###0.4.3  
+**Improvement:** Support for flexible dependancies injection with plain urls. The url, if not a unityPackage should have a _assetFilePath_ query parameter defining the file path within the Project (i.e Assets/xxx/y.cs), unescaped. if not defined, 
+
 ###0.4.2
 **New:** [Snipt](https://snipt.net/) online repository initiative for simple scripts and easier publishing for contributors  
 

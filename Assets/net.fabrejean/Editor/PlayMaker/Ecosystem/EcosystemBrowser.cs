@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using System.IO;
+using System.Web;
 
 using UnityEngine;
 using UnityEditor;
@@ -1977,7 +1978,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 		void DownloadRawContent(string assetPath,string url,Item item)
 		{
-		//	Debug.Log("DownloadRawContent "+assetPath+" "+url);
+			if  (Debug_on) Debug.Log("DownloadRawContent assetPath:"+assetPath+" url:"+url);
 			if (downloadsLUT==null)
 			{
 				downloadsLUT = new Dictionary<string, string>();
@@ -2061,16 +2062,34 @@ In doubt, do not use this and get in touch with us to learn more before you work
 					foreach(object dScript in _dependancies)
 					{
 						string _dscript = (string)dScript;
-						//Debug.Log(_dscript);
 
-					//	string itemPathEscaped = _dscript.Replace(" ","%20");
+						string dscripturl = ""; ;
+
+						if (_dscript.StartsWith("Assets/")) // we are local to the file repository
+						{
+							//string dscripturl = "https://raw.github.com/"+RepositoryPath+"/master/"+itemPathEscaped;
+							dscripturl = __REST_URL_BASE__ +"download?repository="+ Uri.EscapeDataString(repositoryPath)+"&file="+ Uri.EscapeDataString(_dscript);
+						}else if (_dscript.StartsWith("http")){ // we have a straight url
 						
-						//string dscripturl = "https://raw.github.com/"+RepositoryPath+"/master/"+itemPathEscaped;
-						string dscripturl = __REST_URL_BASE__ +"download?repository="+ Uri.EscapeDataString(repositoryPath)+"&file="+ Uri.EscapeDataString(_dscript);
 
-						//Debug.Log(dscripturl);
+							Uri _uri = new Uri(_dscript);
+							dscripturl = _uri.GetLeftPart(UriPartial.Path);
+
+							//Debug.Log("Will download dependancy "+dscripturl);
+						 	Dictionary<string,string> _queries = EcosystemUtils.ParseQueryString(_uri.Query);
+
+							if (_queries.ContainsKey("assetFilePath"))
+							{
+								_dscript = _queries["assetFilePath"];
+							}else{
+								_dscript = "Assets/"+_uri.LocalPath;
+							}
+							//string _assetFolderPath = HttpUtility.ParseQueryString(_uri.Query).Get("assetFolderPath");
+
+							//Debug.LogWarning("Dependancy injection not formated properly, please contact the author :"+_dscript);
+						}
+
 						DownloadRawContent(_dscript,dscripturl,item);
-
 					}
 				}
 			}
