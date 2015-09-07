@@ -6,18 +6,34 @@ namespace Net.FabreJean.UnityEditor
 {
 	public class HttpWrapper {
 
-		public WWW GET(string url)
-		{
 
+		public WWW GET(string url,Action<WWW> action)
+		{
+			CancelFlag = false;
 			WWW www = new WWW(url);
-			EditorCoroutine.start(ProcessRequest(www));
+			EditorCoroutine.start(ProcessRequest(www,action));
 			return www;
 		}
 
-		IEnumerator ProcessRequest(WWW www)
+		bool CancelFlag;
+		public void Cancel()
+		{
+			CancelFlag = true;
+		}
+
+		IEnumerator ProcessRequest(WWW www,Action<WWW> action)
 		{
 		
-			while (!www.isDone) yield return null;
+			while (!www.isDone)
+			{
+				if (CancelFlag)
+				{
+					yield break;
+				}
+				yield return null;
+			}
+				
+			action(www);
 		}
 	}
 }

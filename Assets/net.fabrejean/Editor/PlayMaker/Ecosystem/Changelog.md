@@ -1,5 +1,21 @@
 #Ecosystem Change log
 
+###0.4.4
+**ReleaseDate:** 02/09/2015 
+ 
+**Fix:** MarkDown api compatibility with Unity 5.2  
+
+**change:** Menu to access the ecosystem browser is now *PlayMaker/Addons/Ecosystem/Ecosystem Browser*  
+
+**New:** VersionInfo now takes into account potential appendix to a version like uTomate *1.5.0 LE* edition  
+**New:** Project Scanner tool, early version, used for bug reporting mainly  
+**New:** Ecosystem Icon on EditorWindow tab for Unity 5.x version
+**New:** Update button on installed assets, for easier process ( rather than "delete", then "get").
+
+**Improvment:** Updated api to avoid Unity 5 updater process for `Resources.LoadAssetAtPath` to`AssetDatabase.LoadAssetAtPath`  
+
+**Note:** Authoring and publishing features in development but ignored for now, so many utils and tools not in used yet for this release  
+
 ###0.4.3  
 **Improvement:** Support for flexible dependancies injection with plain urls. The url, if not a unityPackage should have a _assetFilePath_ query parameter defining the file path within the Project (i.e Assets/xxx/y.cs), unescaped. if not defined, 
 

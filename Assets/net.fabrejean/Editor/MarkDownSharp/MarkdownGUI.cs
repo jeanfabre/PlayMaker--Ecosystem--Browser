@@ -173,18 +173,37 @@ namespace Net.FabreJean.UnityEditor.MarkdownSharp
 				{
 					//Debug.Log("MouseDown "+Event.current.mousePosition+" on"+rect);
 					_isMouseDown = false;
+					#if UNITY_4_3 || UNITY_4_4 || UNITY_4_5 || UNITY_4_6 || UNITY_5_0 || UNITY_5_1
 					if (editor.pos == editor.selectPos )
 					{
 						bool isDownOnLink;
 						HyperTextLUT _link = _markdownParser.TryGetHyperLinkAt(editor.pos,out isDownOnLink);
 						if (isDownOnLink)
 						{
-
-
+							
+							
 							Application.OpenURL(_link.url);
-
+							
 						}
 					}
+
+				#else
+
+					if (editor.cursorIndex == editor.selectIndex )
+					{
+						bool isDownOnLink;
+						HyperTextLUT _link = _markdownParser.TryGetHyperLinkAt(editor.cursorIndex,out isDownOnLink);
+						if (isDownOnLink)
+						{
+							
+							
+							Application.OpenURL(_link.url);
+							
+						}
+					}
+
+
+				#endif
 
 
 

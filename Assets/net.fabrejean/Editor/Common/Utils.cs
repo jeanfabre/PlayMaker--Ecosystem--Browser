@@ -11,7 +11,8 @@ namespace Net.FabreJean.UnityEditor
 	/// <summary>
 	/// Utility class for Editors from Net.FabreJean namespace
 	/// </summary> 
-	public class Utils {
+	public class Utils
+	{
 
 		/// <summary>
 		/// caching the reflected method to Get the PlayMaker version, jsut to avoid doing the work everytime.
@@ -62,6 +63,24 @@ namespace Net.FabreJean.UnityEditor
 			return File.Exists(path);
 			//return isClassDefined("HutongGames.PlayMakerEditor.AboutWindow"); // doens't always work.. odd
 		}
+
+		/// <summary>
+		/// Check if an file exists in the Assets folder of the current Project. 
+		/// </summary>
+		/// <returns><c>true</c>, if file found, <c>false</c> otherwise.</returns>
+		public static bool DoesFileExistsAssets(string _filePath)
+		{
+			string path = Application.dataPath;
+			if (!_filePath.StartsWith("/"))
+			{
+				path += "/";
+			}
+			 path += _filePath;
+
+			return File.Exists(path);
+	
+		}
+		
 
 
 		public static bool isClassDefined(string classType)
@@ -188,6 +207,19 @@ namespace Net.FabreJean.UnityEditor
 			}
 			return assetPath;
 		}
-		
+
+
+		public static void OnGUILayout_BeginHorizontalCentered()
+		{
+			GUILayout.BeginHorizontal();
+			GUILayout.FlexibleSpace();
+		}
+
+		public static void OnGUILayout_EndHorizontalCentered()
+		{
+			GUILayout.FlexibleSpace();
+			GUILayout.EndHorizontal();
+
+		}
 	}
 }

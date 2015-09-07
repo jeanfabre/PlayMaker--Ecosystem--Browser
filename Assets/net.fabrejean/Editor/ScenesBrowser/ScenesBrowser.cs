@@ -91,8 +91,13 @@ public class ScenesBrowser : EditorWindow {
 		// draw the bg properly. Haven't found a way to do it with guiskin only
 		if(bg!=null)
 		{
+			if (bg.wrapMode!= TextureWrapMode.Repeat)
+			{
+				bg.wrapMode = TextureWrapMode.Repeat;
+			}
 			GUI.DrawTextureWithTexCoords(new Rect(0,0,position.width,position.height),bg,new Rect(0, 0, position.width / bg.width, position.height / bg.height));
 		}
+
 		
 		
 		if (scenes==null)

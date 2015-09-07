@@ -11,6 +11,7 @@ namespace Net.FabreJean.UnityEditor
 {
 	public class EditorCoroutine
 	{
+
 		public static EditorCoroutine start( IEnumerator _routine )
 		{
 			EditorCoroutine coroutine = new EditorCoroutine(_routine);

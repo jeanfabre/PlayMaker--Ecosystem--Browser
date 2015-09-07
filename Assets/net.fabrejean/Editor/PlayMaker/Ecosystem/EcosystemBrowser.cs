@@ -9,7 +9,7 @@ using System.Web;
 using UnityEngine;
 using UnityEditor;
 
-using MyUtils = Net.FabreJean.UnityEditor; // conflict with Unity Remote utils public class... odd
+using MyUtils = Net.FabreJean.UnityEditor.Utils; // conflict with Unity Remote utils public class... odd
 
 using Net.FabreJean.UnityEditor;
 
@@ -23,7 +23,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 
 		private static bool ShowToolBar = false;
 		private static bool ShowDisclaimer = false;
-
+		private static bool ShowProjectScanner = false;
 
 
 		#region EDITOR SETTINGS
@@ -134,8 +134,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 
 		public static EcosystemBrowser Instance;
 
-		// Add menu named "My Window" to the Window menu
-		[MenuItem ("PlayMaker/Addons/Ecosystem &e")]
+		[MenuItem ("PlayMaker/Addons/Ecosystem/Ecosystem Browser &e",false,1)]
 		static void Init () {
 		
 			//Debug.Log("################ Init");
@@ -145,9 +144,19 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 			// Get existing open window or if none, make a new one:
 			Instance = (EcosystemBrowser)EditorWindow.GetWindow (typeof (EcosystemBrowser));
 
-			Instance.position = new Rect(100,100, 430,500);
-			Instance.minSize = new Vector2(430,500);
+			Instance.position = new Rect(100,100, 430,600);
+			Instance.minSize = new Vector2(430,600);
+		#if UNITY_4_3 || UNITY_4_4 || UNITY_4_5 || UNITY_4_5 || UNITY_4_6 || UNITY_5_0
 			Instance.title = "Ecosystem";
+		#else
+			string _ecosystemSkinPath ="";
+			GUISkin _ecosystemSkin =  MyUtils.Utils.GetGuiSkin("PlayMakerEcosystemGuiSkin",out _ecosystemSkinPath);
+
+			Texture _iconTexture = _ecosystemSkin.FindStyle("Ecosystem Logo Embossed @12px").normal.background as Texture;
+			
+			Instance.titleContent = new GUIContent("Ecosystem",_iconTexture,"The Ecosystem Browser");
+		#endif
+
 
 
 			// init static vars
@@ -291,6 +300,253 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 		#endregion
 
+		#region ProjectScanner
+
+
+		void OnGUI_ProjectScanner()
+		{
+			GUILayout.Space(5);
+				GUILayout.Label("The Ecosystem can scan your project and detect known modules, tools, assets and plugins","Label Medium");
+				GUILayout.Label("Use this as a report when you have an issue in your project, this helps us know what your project is made up with","Label Medium");
+			GUILayout.Space(5);
+
+				if (ProjectScanner.instance.IsScanning)
+				{
+					MyUtils.OnGUILayout_BeginHorizontalCentered();
+						if ( GUILayout.Button("Cancel","Button Medium",GUILayout.Width(150)) )
+						{
+							ProjectScanner.instance.CancelScanningProcess();
+						}
+					MyUtils.OnGUILayout_EndHorizontalCentered();
+					MyUtils.OnGUILayout_BeginHorizontalCentered();
+						GUILayout.Label("Scanning in progress");
+					MyUtils.OnGUILayout_EndHorizontalCentered();
+
+				}else{
+					MyUtils.OnGUILayout_BeginHorizontalCentered();
+						if ( GUILayout.Button("Scan Project","Button Medium",GUILayout.Width(150)) )
+						{
+							ProjectScanner.ScanProject();
+						}
+					MyUtils.OnGUILayout_EndHorizontalCentered();
+					
+				if (ProjectScanner.instance.isProjectScanned)
+					{
+						MyUtils.OnGUILayout_BeginHorizontalCentered();
+							GUILayout.Label(ProjectScanner.instance.foundAssetsCountInProject+" Assets found from "+ProjectScanner.instance.AssetsCount+" Known Assets.");
+						MyUtils.OnGUILayout_EndHorizontalCentered();
+						MyUtils.OnGUILayout_BeginHorizontalCentered();
+							if ( GUILayout.Button("Copy To ClipBoard","Button Medium",GUILayout.Width(150)) )
+							{
+								EditorGUIUtility.systemCopyBuffer = ProjectScanner.instance.GetScanSummary();
+							}
+						MyUtils.OnGUILayout_EndHorizontalCentered();
+					}
+					
+				}
+
+
+
+			OnGUI_scannerItemList();
+
+		}
+
+		/// <summary>
+		/// Draw the GUI List of scanned items from ProjectScanner
+		/// </summary>
+		void OnGUI_scannerItemList()
+		{
+			if (ProjectScanner.instance.AssetsCount == 0)
+			{
+				return;
+			}
+			
+			if (Event.current.type == EventType.Repaint)
+				rowsArea = new Rect[ProjectScanner.instance.AssetsCount];
+
+			GUILayout.Space(5);
+			Vector2 _scrollNew = GUILayout.BeginScrollView(_scroll);
+			
+			if (_scrollNew!=_scroll)
+			{
+				_scroll = _scrollNew;
+				lastMousePosition = Vector2.zero;
+				Repaint();
+			}
+			
+			int i=0;
+			
+			foreach(KeyValuePair<string,AssetItem> _entry in ProjectScanner.instance.AssetsList)
+			{
+				OnGUI_ScannerItem(_entry.Value,i);
+				i++;
+			}
+			GUILayout.EndScrollView();
+			ActionListRect = GUILayoutUtility.GetLastRect();
+			GUILayout.Space(5);
+		}
+
+		void OnGUI_ScannerItem(AssetItem item,int rowIndex)
+		{
+			// get the row style
+			string rowStyle ="Middle";
+			if (ProjectScanner.instance.AssetsCount==1)
+			{
+				rowStyle = "Alone";
+			}else if (rowIndex==0) 
+			{
+				rowStyle = "First";
+			}else if (rowIndex == (ProjectScanner.instance.AssetsCount-1) )
+			{
+				rowStyle = "Last";
+			}
+
+			// define the row style based on the item properties.
+			string rowStyleType = "Plain";
+
+			if (item.FoundInProject)
+			{
+				rowStyleType = "Green";
+			}
+
+			GUILayout.BeginVertical(GUIContent.none,"Table Row "+rowStyleType+" "+rowStyle);
+			GUILayout.BeginHorizontal();
+
+			string itemLabelSkin = "";
+			switch(item.Type)
+			{
+			case "PlayMaker":
+				itemLabelSkin = "Label Round Green Small";	break;
+			case "AssetStore":
+				itemLabelSkin = "Label Round Violet Small";	break;
+			case "Addon":
+				itemLabelSkin = "Label Round Cyan Small";	break;
+			default:
+				itemLabelSkin = "Label Round Blue Small";	break;
+			}
+
+			
+			GUILayout.Label(item.Type,itemLabelSkin,GUILayout.Width(70));
+			GUI.backgroundColor = Color.white;
+
+
+			GUILayout.Label(item.Name,"Label Row "+rowStyleType,GUILayout.MinWidth(0));
+			
+			GUILayout.FlexibleSpace();
+
+
+			if(mouseOverRowIndex==rowIndex )
+			{
+
+				if (!ShowActionDetails)
+				{
+					if (GUILayout.Button("?","Button Small",GUILayout.Width(20)))
+					{
+						SelectedIndex = rowIndex;
+						ShowActionDetails = true;
+						Repaint();
+					}
+					GUILayout.Space(5);
+				}
+
+				if (item.AssetStoreId>0)
+				{
+					if (GUILayout.Button("Asset Store","Button Small",GUILayout.Width(70)))
+					{
+						Application.OpenURL("com.unity3d.kharma:content/"+item.AssetStoreId);
+						return;
+					}
+				}
+
+				if (!string.IsNullOrEmpty(item.Url))
+				{
+					if (GUILayout.Button("Website","Button Small",GUILayout.Width(70)))
+					{
+						Application.OpenURL(item.Url);
+						return;
+					}
+				}
+
+				/*
+				if (false)
+				{
+					
+					if (GUILayout.Button("Update","Button Small Red",GUILayout.Width(50)))
+					{
+						//DeleteItem(item);
+						//ImportItem(item);
+						Repaint ();
+						GUIUtility.ExitGUI();
+						return;
+					}
+					
+					if (GUILayout.Button("Delete","Button Small Red",GUILayout.Width(50)))
+					{
+						//DeleteItem(item);
+						//Repaint ();
+						GUIUtility.ExitGUI();
+						return;
+					}
+					
+					
+					GUILayout.Label("imported","Label Row "+rowStyleType,GUILayout.Width(50));
+					
+				}else{
+					if (GUILayout.Button("Get","Button Small",GUILayout.Width(50)))
+					{
+						//ImportItem(item);
+						Repaint ();
+						GUIUtility.ExitGUI();
+						return;
+					}
+				}
+				*/
+				
+
+			}
+			GUILayout.EndHorizontal();
+			
+			// tags
+			
+			GUILayout.BeginHorizontal();
+			
+			
+			if (item.FoundInProject)
+			{
+				GUILayout.Label(item.ProjectVersion.ToShortString(),"Tag Small "+rowStyleType);
+			}
+			//GUILayout.Label(category,"Tag Small "+rowStyleType);
+			
+			//GUILayout.Label(url,"Tag Small "+rowStyleType);
+
+			/*
+			if ((string)item.RawData["beta"]=="true")
+			{
+				GUI.contentColor = Color.yellow;
+				GUILayout.Label("Beta","Tag Small "+rowStyleType);
+				GUI.contentColor = Color.white;
+			}
+			*/
+			GUILayout.FlexibleSpace();
+			
+
+			GUILayout.EndHorizontal();
+			GUILayout.EndVertical();
+			
+			
+			
+			if(rowsArea!=null && rowIndex<rowsArea.Length)
+			{
+				rowsArea[rowIndex] = GUILayoutUtility.GetLastRect();
+			}
+			
+			
+		}
+
+
+		#endregion
+
+
 		private void OnFocus()
 		{
 			RefreshDisclaimerPref();
@@ -310,8 +566,8 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			// set up the skin if not done yet.
 			if (editorSkin==null)
 			{
-				editorSkin =  MyUtils.Utils.GetGuiSkin("VolcanicGuiSkin",out editorSkinPath);
-				bg = (Texture2D)(Resources.LoadAssetAtPath(editorSkinPath+"images/bg.png",typeof(Texture2D))); // Get the texture manually as we have some trickes for bg tiling
+				editorSkin =  MyUtils.GetGuiSkin("VolcanicGuiSkin",out editorSkinPath);
+				bg = (Texture2D)(AssetDatabase.LoadAssetAtPath(editorSkinPath+"images/bg.png",typeof(Texture2D))); // Get the texture manually as we have some trickes for bg tiling
 				
 				//GUIStyleArrowInBuildSettings = editorSkin.FindStyle("Help Arrow 90 degree");
 				
@@ -337,7 +593,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			if (EcosystemSkin==null)
 			{
 				string _PlayMakerEcosystemGuiSkinPath = string.Empty;
-				EcosystemSkin =  MyUtils.Utils.GetGuiSkin("PlayMakerEcosystemGuiSkin",out _PlayMakerEcosystemGuiSkinPath);
+				EcosystemSkin =  MyUtils.GetGuiSkin("PlayMakerEcosystemGuiSkin",out _PlayMakerEcosystemGuiSkinPath);
 				/*
 				Texture _sniptLogoTexture = EcosystemSkin.FindStyle("Snipt Logo").normal.background as Texture;
 				_sniptLogoGuiContent = new GUIContent(_sniptLogoTexture);
@@ -410,20 +666,20 @@ In doubt, do not use this and get in touch with us to learn more before you work
 					GUILayout.EndHorizontal();
 				}
 
-				if (MyUtils.Utils.isPlayMakerInstalled())
+				if (MyUtils.isPlayMakerInstalled() && ! ShowProjectScanner)
 				{
 					OnGUI_ToolBar();
 				}
 			}
-			
-			
+
+
 			if (!_disclaimer_pass || ShowDisclaimer)
 			{
 				OnGUI_Disclaimer();
 				return;
 			}
 
-			if (! MyUtils.Utils.isPlayMakerInstalled() ) {
+			if (! MyUtils.isPlayMakerInstalled() ) {
 				GUILayout.Space(10);
 				GUILayout.BeginHorizontal();
 				GUILayout.FlexibleSpace();
@@ -449,9 +705,16 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				GUILayout.Label("Application is playing. Saves performances to not process anything during playback.");
 				return ;
 			}
-			
-			OnGUI_FilterPanel();
-			
+
+			if (ShowProjectScanner)
+			{
+				OnGUI_ProjectScanner();
+			}
+
+			if (!ShowProjectScanner)
+			{
+				OnGUI_FilterPanel();
+			}
 			
 			if (!string.IsNullOrEmpty(_lastError))
 			{
@@ -466,9 +729,11 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				GUILayout.EndHorizontal();
 				
 			}
-			
-			OnGUI_ItemList();
 
+			if (!ShowProjectScanner)
+			{
+				OnGUI_ItemList();
+			}
 
 		
 
@@ -711,13 +976,13 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				if (!isCompiling)
 				{
 					//Debug.Log("Compiling Ecosystem "+EditorApplication.isCompiling);
-					CurrentVersion = MyUtils.Utils.UpdateVersion(pathToVersionInfoSource);
+					CurrentVersion = MyUtils.UpdateVersion(pathToVersionInfoSource);
 					CurrentVersionAsString = CurrentVersion.ToShortString();
 				}
 				
 			}else if (string.IsNullOrEmpty(CurrentVersionAsString))
 			{
-				CurrentVersion = MyUtils.Utils.UpdateVersion(pathToVersionInfoSource);
+				CurrentVersion = MyUtils.UpdateVersion(pathToVersionInfoSource);
 				CurrentVersionAsString = CurrentVersion.ToShortString();
 			}
 
@@ -781,6 +1046,14 @@ In doubt, do not use this and get in touch with us to learn more before you work
 					EditorGUIUtility.ExitGUI();
 				}
 
+			}
+
+			bool _newProjectScanner = GUILayout.Toggle(ShowProjectScanner,"Project Scanner",EditorStyles.toolbarButton);
+			if (_newProjectScanner!=ShowProjectScanner)
+			{
+				ShowProjectScanner = !ShowProjectScanner;
+				Repaint();
+				
 			}
 
 			bool _newShowDisclaimer = GUILayout.Toggle(ShowDisclaimer,"Disclaimer",EditorStyles.toolbarButton);
@@ -1385,7 +1658,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			if (!item.RawData.ContainsKey("projectPath")) // Cache the project path to avoid process the same thing over and over again.
 			{
 				forceloading = true;
-				item.RawData["projectPath"] = MyUtils.Utils.GetAssetAbsolutePath(itemPath);
+				item.RawData["projectPath"] = MyUtils.GetAssetAbsolutePath(itemPath);
 			//	Debug.Log(item.RawData["projectPath"]);
 			}
 
@@ -1442,8 +1715,6 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			GUILayout.FlexibleSpace();
 
 
-
-
 			if (mouseOverAction == _name)
 			{
 				var eventType = Event.current.type;
@@ -1491,6 +1762,15 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 				if (fileExists)
 				{
+
+					if (GUILayout.Button("Update","Button Small Red",GUILayout.Width(50)))
+					{
+						DeleteItem(item);
+						ImportItem(item);
+						Repaint ();
+						GUIUtility.ExitGUI();
+						return;
+					}
 
 					if (GUILayout.Button("Delete","Button Small Red",GUILayout.Width(50)))
 					{
@@ -1639,7 +1919,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			}
 			
 			if (
-				MyUtils.Utils.GetPlayMakerVersion().Contains("b")
+				MyUtils.GetPlayMakerVersion().Contains("b")
 			    )
 			{
 				mask += "PB";
@@ -1652,7 +1932,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			// put the all the versions as well
 			url += "&EcosystemVersion="+CurrentVersion;
 			url += "&UnityVersion="+Application.unityVersion;
-			url += "&PlayMakerVersion="+MyUtils.Utils.GetPlayMakerVersion();
+			url += "&PlayMakerVersion="+MyUtils.GetPlayMakerVersion();
 
 			if (Debug_on) Debug.Log(url);
 
@@ -1929,7 +2209,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 					if (_meta.ContainsKey("pingAssetPath") && !_meta.ContainsKey("pingAssetProjectPath"))
 					{
-						_meta["pingAssetProjectPath"] =  MyUtils.Utils.GetAssetAbsolutePath((string)_meta["pingAssetPath"]);
+						_meta["pingAssetProjectPath"] =  MyUtils.GetAssetAbsolutePath((string)_meta["pingAssetPath"]);
 					}
 
 				}
@@ -1967,7 +2247,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 		
 
 			string url = item.GetUrl(Item.urltypes.RestDownload);
-			string assetPath =  MyUtils.Utils.GetAssetAbsolutePath(item.Path);
+			string assetPath =  MyUtils.GetAssetAbsolutePath(item.Path);
 
 			if (Debug_on) Debug.Log("ImportItem "+url+" to "+assetPath);
 
@@ -2018,13 +2298,14 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			Hashtable rep = (Hashtable)item.RawData["repository"];
 			string repositoryPath = (string)rep["full_name"];
 
+			Hashtable _meta = new Hashtable();
 
 			// is it a template?
 			if (rawContent.Contains("__TEMPLATE__")  || rawContent.Contains("__SAMPLE__") || rawContent.Contains("__PACKAGE__"))
 			{
 				if (Debug_on) Debug.Log("This is actually packaged content");
 
-				Hashtable _meta = (Hashtable)JSON.JsonDecode(rawContent);
+				_meta = (Hashtable)JSON.JsonDecode(rawContent);
 
 				if (_meta==null)
 				{
@@ -2045,17 +2326,10 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			}
 
 
-		
-			// check for Meta data
-			// .*?
-			Match match = Regex.Match(rawContent,@"(?<=EcoMetaStart)[^>]*(?=EcoMetaEnd)",RegexOptions.IgnoreCase);
-			
-			// Here we check the Match instance.
-			if (match.Success)
-			{
-			//	Debug.Log("we have meta data :" + match.Value);
+			_meta = EcosystemUtils.ExtractEcoMetaDataFromText(rawContent);
 
-				Hashtable _meta = (Hashtable)JSON.JsonDecode(match.Value);
+			if  (_meta.ContainsKey("script dependancies"))
+			{
 				ArrayList _dependancies = (ArrayList)_meta["script dependancies"];
 				if (_dependancies!=null)
 				{

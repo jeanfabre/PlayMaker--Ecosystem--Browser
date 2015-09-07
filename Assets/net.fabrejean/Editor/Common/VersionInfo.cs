@@ -1,7 +1,12 @@
-﻿using System;
-// Totally inspired by the great work of Patrick Hogan with InControl
+﻿// Totally inspired by the great work of Patrick Hogan with InControl
 // https://github.com/pbhogan/InControl
 // Only that I don't rely on the number of time you play the project, but on the number of compilation, which I think reflects more true internal changes of the code
+
+
+using System;
+using System.Collections;
+using System.Collections.Generic;
+
 
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -19,6 +24,7 @@ namespace Net.FabreJean.UnityEditor
 		public int Patch;
 		public VersionType Type;
 		public int Build;
+		public string Appendix;
 		
 
 		public VersionInfo( int major, int minor = 0, int patch = 0 )
@@ -28,6 +34,7 @@ namespace Net.FabreJean.UnityEditor
 			Patch = patch;
 			Type  = VersionType.Final;
 			Build = 0;
+			Appendix = "";
 		}
 
 		public VersionInfo( int major, int minor = 0, int patch = 0, int build = 0 )
@@ -37,6 +44,7 @@ namespace Net.FabreJean.UnityEditor
 			Patch = patch;
 			Type  = VersionType.Final;
 			Build = build;
+			Appendix = "";
 		}
 
 		public VersionInfo( int major, int minor = 0, int patch = 0, VersionType type = VersionType.Final , int build = 0 )
@@ -46,10 +54,12 @@ namespace Net.FabreJean.UnityEditor
 			Patch = patch;
 			Type  = type;
 			Build = build;
+			Appendix = "";
 		}
 
 		public VersionInfo( string version )
 		{
+			Appendix = "";
 			if (string.IsNullOrEmpty(version))
 			{
 				Major = 0;
@@ -59,14 +69,43 @@ namespace Net.FabreJean.UnityEditor
 				Build=0;
 
 			}else{
-				var match = Regex.Match(version, @"^(\d+)\.(\d+)\.(\d+)" );	
+				var match = Regex.Match(version, @"^(\d+)\.(\d+)\.(\d+)\s*\.*(\w+)?" );	
 
 				Major = Convert.ToInt32( match.Groups[1].Value );
 				Minor = Convert.ToInt32( match.Groups[2].Value );
 				Patch = Convert.ToInt32( match.Groups[3].Value );
+				if (match.Groups.Count>3)
+				{
+					Appendix = (string)match.Groups[4].Value;
+					Appendix = Appendix.Trim();
+				}
 				Type = VersionType.Final;
 				Build = 0;
 			}
+		}
+
+		public static VersionInfo VersionInfoFromJson(String jsonString)
+		{
+			// {"Major":0, "Patch":4, "Build":73, "Type":"f", "Minor":4}
+			if (string.IsNullOrEmpty(jsonString))
+			{
+				return new VersionInfo();
+			}
+
+			Hashtable _details = (Hashtable)JSON.JsonDecode(jsonString);
+			if (_details ==null)
+			{
+				return new VersionInfo();
+			}
+
+			return new VersionInfo(
+				(int)_details["Major"],
+				(int)_details["Minor"],
+				(int)_details["Patch"],
+				GetVersionTypeFromString((string)_details["Type"]),
+				(int)_details["Build"]
+				);
+
 		}
 
 		public static VersionInfo UnityVersion()
@@ -138,6 +177,7 @@ namespace Net.FabreJean.UnityEditor
 			return a.CompareTo( b ) > 0;
 		}
 
+
 		public static VersionType GetVersionTypeFromString(string type)
 		{
 			if (string.IsNullOrEmpty(type))
@@ -196,40 +236,49 @@ namespace Net.FabreJean.UnityEditor
 			return "Final";
 		}
 
-		
+		/// <summary>
+		/// VersionInfo string : x.x.x t x x
+		/// </summary>
+		/// <returns>The VersionInfo as string</returns>
 		public override string ToString()
 		{
 			if (Build == 0)
 			{
-				return string.Format( "{0}.{1}.{2}", Major, Minor, Patch );
+				return string.Format( "{0}.{1}.{2} {3}", Major, Minor, Patch, Appendix ).Trim();
 			}
-			return string.Format( "{0}.{1}.{2} {3} {4}", Major, Minor, Patch, GetVersionTypeAsLongString(Type), Build );
+			return string.Format( "{0}.{1}.{2} {3} {4} {5}", Major, Minor, Patch, GetVersionTypeAsLongString(Type), Build,Appendix ).Trim();
 		}
 		
-		
+		/// <summary>
+		///  Short string: x.x.xtx x
+		/// </summary>
+		/// <returns>The short string.</returns>
 		public string ToShortString()
 		{
 			if (Build == 0)
 			{
-				return string.Format( "{0}.{1}.{2}", Major, Minor, Patch );
+				return string.Format( "{0}.{1}.{2} {3}", Major, Minor, Patch, Appendix ).Trim();
 			}
-			return string.Format( "{0}.{1}.{2}{3}{4}", Major, Minor, Patch, GetVersionTypeAsString(Type), Build );
+			return string.Format( "{0}.{1}.{2}{3}{4}{5}", Major, Minor, Patch, GetVersionTypeAsString(Type), Build, Appendix ).Trim();
 		}
 
 		/// <summary>
-		/// Custom format if wanted. {0} is Major, {1} is Minor, {2} is Patch, {3} is short Type, {4} is long type, 5 is Build
+		/// Custom format if wanted. {0} is Major, {1} is Minor, {2} is Patch, {3} is short Type, {4} is long type, 5 is Build, 6 is appendix
 		/// </summary>
 		/// <returns>The string.</returns>
 		/// <param name="format">Format. default to "{0}.{1}.{2}{3}{5}"</param>
-		public string ToString(string format = "{0}.{1}.{2}{3}{5}")
+		public string ToString(string format = "{0}.{1}.{2}{3}{5} {6}")
 		{
-			return string.Format("{0}.{1}.{2}{3}{5}", 
+			string _result = string.Format("{0}.{1}.{2}{3}{5} {6}", 
 			                     /* 0 */ Major, 
 			                     /* 1 */ Minor, 
 			                     /* 2 */ Patch,
 			                     /* 3 */ GetVersionTypeAsString(Type),
 			                     /* 4 */ GetVersionTypeAsLongString(Type),
-			                     /* 5 */  Build);
+			                     /* 5 */  Build,
+			                     /* 6 */ Appendix);
+
+			return _result.Trim();
 		}
 		
 		
