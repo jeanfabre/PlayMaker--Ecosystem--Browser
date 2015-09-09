@@ -104,7 +104,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 						Debug.LogError("Project Scanner: Error downloading assets definition :"+www.error);
 						_isScanning = false;
 					}else{
-						EditorCoroutine _scanCoroutine = EditorCoroutine.start(DoScanProject(www.text));
+						EditorCoroutine.start(DoScanProject(www.text));
 					}
 				}
 			);
@@ -185,7 +185,8 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 		IEnumerator FindAsset(Hashtable _definition)
 		{
 
-			for(int i=0;i<60;i++)
+			// just for nice asynch effect
+			for(int i=0;i<10;i++)
 			{
 				yield return null;
 			}
@@ -262,6 +263,8 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 				Hashtable _versionScanDetails = (Hashtable)_definition["VersionScanMethod"];
 				if (_versionScanDetails.ContainsKey("FindInTextFile"))
 				{
+					try
+					{
 					Regex pattern = new Regex((string)_versionScanDetails["VersionRegexPattern"]);
 
 					using (StreamReader inputReader = new StreamReader(Application.dataPath+_versionScanDetails["FindInTextFile"]))
@@ -280,6 +283,11 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 							catch (OverflowException) {}
 						}
 					}
+					}catch(Exception e)
+					{
+						Debug.LogError("Project Scanning error for version scanning of "+name+" :"+e.Message);
+					}
+
 				}else if (_versionScanDetails.ContainsKey("FindInVersionInfo"))
 				{
 					string _jsonText = File.ReadAllText(Application.dataPath+_versionScanDetails["FindInVersionInfo"]);
@@ -303,6 +311,9 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 			}
 
 			string _result = "Project scanning result:";
+			_result += "\n"+SystemInfo.operatingSystem;
+			_result += "\nUnity "+Application.unityVersion+" "+(Application.HasProLicense()?"Pro":"") +" targeting:"+Application.platform.ToString();
+
 			foreach( KeyValuePair<string,AssetItem> _entry in AssetsList)
 			{
 				AssetItem _item = _entry.Value;

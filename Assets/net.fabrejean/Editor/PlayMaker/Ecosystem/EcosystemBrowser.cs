@@ -150,7 +150,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 			Instance.title = "Ecosystem";
 		#else
 			string _ecosystemSkinPath ="";
-			GUISkin _ecosystemSkin =  MyUtils.Utils.GetGuiSkin("PlayMakerEcosystemGuiSkin",out _ecosystemSkinPath);
+			GUISkin _ecosystemSkin =  MyUtils.GetGuiSkin("PlayMakerEcosystemGuiSkin",out _ecosystemSkinPath);
 
 			Texture _iconTexture = _ecosystemSkin.FindStyle("Ecosystem Logo Embossed @12px").normal.background as Texture;
 			
@@ -326,7 +326,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 					MyUtils.OnGUILayout_BeginHorizontalCentered();
 						if ( GUILayout.Button("Scan Project","Button Medium",GUILayout.Width(150)) )
 						{
-							ProjectScanner.ScanProject();
+							ProjectScanner.instance.LaunchScanningProcess(IsDebugOn);
 						}
 					MyUtils.OnGUILayout_EndHorizontalCentered();
 					
@@ -438,6 +438,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			if(mouseOverRowIndex==rowIndex )
 			{
 
+				/*
 				if (!ShowActionDetails)
 				{
 					if (GUILayout.Button("?","Button Small",GUILayout.Width(20)))
@@ -448,6 +449,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 					}
 					GUILayout.Space(5);
 				}
+				*/
 
 				if (item.AssetStoreId>0)
 				{
@@ -613,8 +615,6 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 		void OnGUI_Main()
 		{
-
-
 
 			if(!Application.isPlaying && _disclaimer_pass && !ShowDisclaimer)
 			{
@@ -1048,6 +1048,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 			}
 
+#if PLAYMAKER_ECOSYSTEM_BETA
 			bool _newProjectScanner = GUILayout.Toggle(ShowProjectScanner,"Project Scanner",EditorStyles.toolbarButton);
 			if (_newProjectScanner!=ShowProjectScanner)
 			{
@@ -1055,6 +1056,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				Repaint();
 				
 			}
+#endif
 
 			bool _newShowDisclaimer = GUILayout.Toggle(ShowDisclaimer,"Disclaimer",EditorStyles.toolbarButton);
 			if (_newShowDisclaimer!=ShowDisclaimer)
