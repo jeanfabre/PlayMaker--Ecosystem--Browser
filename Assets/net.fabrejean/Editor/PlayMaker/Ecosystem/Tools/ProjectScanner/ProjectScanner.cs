@@ -28,13 +28,13 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 			}
 		}
 
-		[MenuItem ("PlayMaker/Addons/Ecosystem/Scan Project",true)]
+		//[MenuItem ("PlayMaker/Addons/Ecosystem/Scan Project",true)]
 		static bool ScanProjectMenuValidation()
 		{
 			return ! instance.IsScanning;
 		}
 
-		[MenuItem ("PlayMaker/Addons/Ecosystem/Scan Project")]
+		//[MenuItem ("PlayMaker/Addons/Ecosystem/Scan Project")]
 		public static void ScanProject()	
 		{
 			instance.LaunchScanningProcess(true);
