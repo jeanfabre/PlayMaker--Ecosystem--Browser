@@ -14,19 +14,20 @@ using UnityEngine;
 
 namespace Net.FabreJean.UnityEditor
 {
-
+	
 	public struct VersionInfo : IComparable<VersionInfo>
 	{
 		public enum VersionType {Alpha,Beta,ReleaseCandidate,Final};
-
+		
 		public int Major;
 		public int Minor;
 		public int Patch;
+		public int Maintenance;
 		public VersionType Type;
 		public int Build;
 		public string Appendix;
 		
-
+		
 		public VersionInfo( int major, int minor = 0, int patch = 0 )
 		{
 			Major = major;
@@ -35,8 +36,9 @@ namespace Net.FabreJean.UnityEditor
 			Type  = VersionType.Final;
 			Build = 0;
 			Appendix = "";
+			Maintenance = 0;
 		}
-
+		
 		public VersionInfo( int major, int minor = 0, int patch = 0, int build = 0 )
 		{
 			Major = major;
@@ -45,8 +47,9 @@ namespace Net.FabreJean.UnityEditor
 			Type  = VersionType.Final;
 			Build = build;
 			Appendix = "";
+			Maintenance = 0;
 		}
-
+		
 		public VersionInfo( int major, int minor = 0, int patch = 0, VersionType type = VersionType.Final , int build = 0 )
 		{
 			Major = major;
@@ -55,35 +58,62 @@ namespace Net.FabreJean.UnityEditor
 			Type  = type;
 			Build = build;
 			Appendix = "";
+			Maintenance = 0;
 		}
-
+		public VersionInfo( int major, int minor = 0, int patch = 0,int maintenance = 0, VersionType type = VersionType.Final , int build = 0 )
+		{
+			Major = major;
+			Minor = minor;
+			Patch = patch;
+			Maintenance = maintenance;
+			Type  = type;
+			Build = build;
+			Appendix = "";
+		}
+		
 		public VersionInfo( string version )
 		{
+			
+			Major = 0;
+			Minor = 0;
+			Patch=0;
+			Maintenance = 0;
+			Type = VersionType.Final;
+			Build=0;
 			Appendix = "";
 			if (string.IsNullOrEmpty(version))
 			{
-				Major = 0;
-				Minor = 0;
-				Patch=0;
-				Type = VersionType.Final;
-				Build=0;
-
+				
 			}else{
-				var match = Regex.Match(version, @"^(\d+)\.(\d+)\.(\d+)\s*\.*(\w+)?" );	
-
-				Major = Convert.ToInt32( match.Groups[1].Value );
-				Minor = Convert.ToInt32( match.Groups[2].Value );
-				Patch = Convert.ToInt32( match.Groups[3].Value );
+				// (\d+)(?:\.)?(\d+)?(?:\.)?(\d+)?(?:\.)?(\d+)?(?:\.)?(\d+)?(\h*?(a|b|rc|f)(\d+)?)?(\h+?\w+)?
+				var match = Regex.Match(version, @"^(\d+)\.(\d+)(\.(\d+))?\s*\.*(\w+)?",RegexOptions.IgnoreCase);	
+				
+				if (match.Groups.Count>1)
+				{
+					Major = Convert.ToInt32( match.Groups[1].Value );
+				}
+				if (match.Groups.Count>2)
+				{
+					Minor = Convert.ToInt32( match.Groups[2].Value );
+				}
 				if (match.Groups.Count>3)
 				{
-					Appendix = (string)match.Groups[4].Value;
+					string _v = match.Groups[3].Value;
+					if (_v.StartsWith("."))
+					{
+						Patch = Convert.ToInt32( match.Groups[4].Value );
+					}
+				}
+				if (match.Groups.Count>5)
+				{
+					Appendix = (string)match.Groups[5].Value;
 					Appendix = Appendix.Trim();
 				}
 				Type = VersionType.Final;
 				Build = 0;
 			}
 		}
-
+		
 		public static VersionInfo VersionInfoFromJson(String jsonString)
 		{
 			// {"Major":0, "Patch":4, "Build":73, "Type":"f", "Minor":4}
@@ -91,13 +121,13 @@ namespace Net.FabreJean.UnityEditor
 			{
 				return new VersionInfo();
 			}
-
+			
 			Hashtable _details = (Hashtable)JSON.JsonDecode(jsonString);
 			if (_details ==null)
 			{
 				return new VersionInfo();
 			}
-
+			
 			return new VersionInfo(
 				(int)_details["Major"],
 				(int)_details["Minor"],
@@ -105,9 +135,9 @@ namespace Net.FabreJean.UnityEditor
 				GetVersionTypeFromString((string)_details["Type"]),
 				(int)_details["Build"]
 				);
-
+			
 		}
-
+		
 		public static VersionInfo UnityVersion()
 		{
 			var match = Regex.Match( Application.unityVersion, @"^(\d+)\.(\d+)\.(\d+)" );
@@ -127,7 +157,7 @@ namespace Net.FabreJean.UnityEditor
 		public VersionInfo Clone() { 
 			return new VersionInfo(Major, Minor, Patch,Type,Build); 
 		}
-
+		
 		public int CompareTo( VersionInfo other )
 		{
 			if (Major < other.Major) return -1;
@@ -176,15 +206,15 @@ namespace Net.FabreJean.UnityEditor
 		{
 			return a.CompareTo( b ) > 0;
 		}
-
-
+		
+		
 		public static VersionType GetVersionTypeFromString(string type)
 		{
 			if (string.IsNullOrEmpty(type))
 			{
 				return VersionType.Final;
 			}
-
+			
 			switch (type.ToLower())
 			{
 			case "a": case "alpha":
@@ -196,10 +226,10 @@ namespace Net.FabreJean.UnityEditor
 			case "f": case"final":
 				return VersionType.Final;
 			}
-
+			
 			return VersionType.Final;
 		}
-
+		
 		public static string GetVersionTypeAsString(VersionType type)
 		{
 			if (type== VersionType.Alpha)
@@ -214,10 +244,10 @@ namespace Net.FabreJean.UnityEditor
 			{
 				return "rc";
 			}
-
+			
 			return "f";
 		}
-
+		
 		public static string GetVersionTypeAsLongString(VersionType type)
 		{
 			if (type== VersionType.Alpha)
@@ -232,10 +262,10 @@ namespace Net.FabreJean.UnityEditor
 			{
 				return "Release Candidate";
 			}
-
+			
 			return "Final";
 		}
-
+		
 		/// <summary>
 		/// VersionInfo string : x.x.x t x x
 		/// </summary>
@@ -261,7 +291,7 @@ namespace Net.FabreJean.UnityEditor
 			}
 			return string.Format( "{0}.{1}.{2}{3}{4}{5}", Major, Minor, Patch, GetVersionTypeAsString(Type), Build, Appendix ).Trim();
 		}
-
+		
 		/// <summary>
 		/// Custom format if wanted. {0} is Major, {1} is Minor, {2} is Patch, {3} is short Type, {4} is long type, 5 is Build, 6 is appendix
 		/// </summary>
@@ -270,14 +300,14 @@ namespace Net.FabreJean.UnityEditor
 		public string ToString(string format = "{0}.{1}.{2}{3}{5} {6}")
 		{
 			string _result = string.Format("{0}.{1}.{2}{3}{5} {6}", 
-			                     /* 0 */ Major, 
-			                     /* 1 */ Minor, 
-			                     /* 2 */ Patch,
-			                     /* 3 */ GetVersionTypeAsString(Type),
-			                     /* 4 */ GetVersionTypeAsLongString(Type),
-			                     /* 5 */  Build,
-			                     /* 6 */ Appendix);
-
+			                               /* 0 */ Major, 
+			                               /* 1 */ Minor, 
+			                               /* 2 */ Patch,
+			                               /* 3 */ GetVersionTypeAsString(Type),
+			                               /* 4 */ GetVersionTypeAsLongString(Type),
+			                               /* 5 */  Build,
+			                               /* 6 */ Appendix);
+			
 			return _result.Trim();
 		}
 		
@@ -296,8 +326,8 @@ namespace Net.FabreJean.UnityEditor
 		{
 			return Major.GetHashCode() ^ Minor.GetHashCode() ^ Patch.GetHashCode() ^ Build.GetHashCode();
 		}
-
-
-
+		
+		
+		
 	}
 }
