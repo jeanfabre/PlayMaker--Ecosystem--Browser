@@ -8,11 +8,11 @@
 **change:** Menu to access the ecosystem browser is now *PlayMaker/Addons/Ecosystem/Ecosystem Browser*  
 
 **New:** VersionInfo now takes into account potential appendix to a version like uTomate *1.5.0 LE* edition  
-**New:** Project Scanner tool, early version, used for bug reporting mainly. define **PLAYMAKER\_ECOSYSTEM\_BETA** in Build settings 'scripts defined symbols' to enable the feature   
+**New:** Project Scanner tool, early version, used for bug reporting mainly. define **PLAYMAKER\_ECOSYSTEM\_BETA** in PLayer settings 'scripting define symbols' to enable the feature   
 **New:** Ecosystem Icon on EditorWindow tab for Unity 5.x version  
 **New:** Update button on installed assets, for easier process ( rather than "delete", then "get").
 
-**Improvment:** Updated api to avoid Unity 5 updater process for `Resources.LoadAssetAtPath` to`AssetDatabase.LoadAssetAtPath`  
+**Improvement:** Updated api to avoid Unity 5 updater process for `Resources.LoadAssetAtPath` to`AssetDatabase.LoadAssetAtPath`  
 
 **Note:** Authoring and publishing features in development but ignored for now, so many utils and tools not in used yet for this release  
 
