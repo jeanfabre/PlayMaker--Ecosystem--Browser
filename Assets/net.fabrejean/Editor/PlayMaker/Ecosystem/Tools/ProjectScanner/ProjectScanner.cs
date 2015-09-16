@@ -91,11 +91,18 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 			_isScanning = true;
 			AssetsList = new Dictionary<string, AssetItem>();
 
-			_wwwWrapper =  new Net.FabreJean.UnityEditor.HttpWrapper();
-			
+			_wwwWrapper = new HttpWrapper();
+
+			WWWForm _form = new WWWForm();
+
+			_form.AddField("UnityVersion",Application.unityVersion);
+			_form.AddField("PlayMakerVersion",MyUtils.GetPlayMakerVersion());
+
 			_wwwWrapper.GET
 			(
 				"http://www.fabrejean.net/projects/playmaker_ecosystem/assetsDescription"
+				,
+				_form
 				,
 				(WWW www) => 
 				{
@@ -108,7 +115,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 					}
 				}
 			);
-
+	
 		}
 
 		public void CancelScanningProcess()

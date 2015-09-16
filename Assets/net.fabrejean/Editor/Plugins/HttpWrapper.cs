@@ -7,6 +7,14 @@ namespace Net.FabreJean.UnityEditor
 	public class HttpWrapper {
 
 
+		public WWW GET(string url,WWWForm _form,Action<WWW> action)
+		{
+			CancelFlag = false;
+			WWW www = new WWW(url,_form);
+			EditorCoroutine.start(ProcessRequest(www,action));
+			return www;
+		}
+
 		public WWW GET(string url,Action<WWW> action)
 		{
 			CancelFlag = false;
