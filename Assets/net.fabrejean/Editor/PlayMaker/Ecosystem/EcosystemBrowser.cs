@@ -798,19 +798,28 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				// USER click on a row
 				try
 				{
-
 					assetToPing = (string)item["path"];
 					
 					Hashtable _metaData = LoadItemMetaData(item,true);
-					string metaAssetToPing = (string)_metaData["pingAssetPath"];
-					if (!string.IsNullOrEmpty(metaAssetToPing))
+
+					string metaMenuToPing = (string)_metaData["pingMenu"];
+					
+					if (!string.IsNullOrEmpty(metaMenuToPing))
 					{
-						assetToPing= metaAssetToPing;
+						if (Debug_on) Debug.Log("Ping Menu -> "+metaMenuToPing);
+						EditorApplication.ExecuteMenuItem(metaMenuToPing);
+					}else{
+
+						string metaAssetToPing = (string)_metaData["pingAssetPath"];
+						if (!string.IsNullOrEmpty(metaAssetToPing))
+						{
+							assetToPing= metaAssetToPing;
+						}
+						
+						
+						if (Debug_on) Debug.Log("Ping -> "+assetToPing);
+						EditorGUIUtility.PingObject(AssetDatabase.LoadMainAssetAtPath(assetToPing));
 					}
-					
-					
-					if (Debug_on) Debug.Log("Ping -> "+assetToPing);
-					EditorGUIUtility.PingObject(AssetDatabase.LoadMainAssetAtPath(assetToPing));
 					SelectedIndex = mouseOverRowIndex;
 
 				}catch(Exception e){
@@ -1864,20 +1873,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				Repaint ();
 			}
 
-		//	bool _classFound = JF_EditorUtils.isClassDefined(searchString);
-		//	Debug.Log(searchString+" found? = "+_classFound);
-			/*
-			if (rssFeed!=null)
-			{
-				foreach (RssItem item in rssFeed.Items)
-				{
-					Debug.Log(item.Title);
-				}
-			}
-			*/
-
 			string url = __REST_URL_BASE__+"search/"+WWW.EscapeURL(searchString);
-
 
 
 			// CONTENT MASKING
@@ -1908,8 +1904,10 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			
 			url += "?content_type_mask="+ContentTypeMask;
 
+
 			// REPOSITORY MASKING
 			string mask = "U3";
+
 			if (Application.unityVersion.StartsWith("4."))
 			{
 				mask += "U4";
@@ -1931,6 +1929,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			url += "&repository_mask="+mask;
 
 
+
 			// put the all the versions as well
 			url += "&EcosystemVersion="+CurrentVersion;
 			url += "&UnityVersion="+Application.unityVersion;
@@ -1938,7 +1937,25 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 			if (Debug_on) Debug.Log(url);
 
-			wwwSearch = new WWW(url);//,_form);
+			#if PLAYMAKER_ECOSYSTEM_BETA
+			WWWForm _form = new WWWForm();
+			_form.AddField("EcosystemVersion",CurrentVersion.ToString());
+			_form.AddField("UnityVersion",Application.unityVersion);
+
+			// unityMask
+			_form.AddField("UnityVersionMask",mask);
+
+			// searchable assets
+			string _searchableAssets = "PlayMaker,uTomate";
+			_form.AddField("searchableAssets",_searchableAssets);
+
+			// category mask
+			_form.AddField("CategoryMask","Action");
+
+			wwwSearch = new WWW(url,_form.data);
+			#else
+			wwwSearch = new WWW(url);
+			#endif
 			lastSearchString = searchString;
 
 			filterTouched = false;
@@ -1972,7 +1989,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			{
 				if (wwwSearch.isDone)
 				{
-
+					//Debug.Log(wwwSearch.text);
 					if (!String.IsNullOrEmpty(wwwSearch.error))
 					{
 						_lastError = "Search Error : "+wwwSearch.error;
@@ -1981,7 +1998,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 					}else{
 						try{
 							rawSearchResult = wwwSearch.text;
-							
+
 						}catch(Exception e)
 						{
 							_lastError = "Search result Error : "+e.Message;
@@ -2065,6 +2082,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				_lastError = "Json parsing error "+e.Message;
 
 				Debug.LogWarning(_lastError);
+				Debug.Log(jsonString);
 				return;
 			}finally
 			{
@@ -2180,7 +2198,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				{
 					string _asset = (string)item["path"];
 
-					if (_asset.EndsWith(".template.txt") || _asset.EndsWith(".sample.txt"))
+					if (_asset.EndsWith(".template.txt") || _asset.EndsWith(".sample.txt") || _asset.EndsWith(".package.txt"))
 					{
 						try{
 							string content = File.ReadAllText( (string)item["projectPath"]);

@@ -202,7 +202,9 @@ namespace Net.FabreJean.UnityEditor
 			{
 				assetPath += path.Substring(6);
 			}else{
-				assetPath = assetPath.TrimEnd("Assets/".ToCharArray()) +"/";
+				// did not work on some project path for some unknown reasons...
+				//assetPath = assetPath.TrimEnd("Assets/".ToCharArray()) +"/";
+				assetPath = assetPath.Substring(0,assetPath.Length-6);
 				assetPath = assetPath + path;
 			}
 			return assetPath;

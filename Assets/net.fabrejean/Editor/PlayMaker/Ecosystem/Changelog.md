@@ -1,5 +1,13 @@
 #Ecosystem Change log
 
+###0.4.5
+**ReleaseDate:** 16/09/2015  
+
+**Fix:** utils for getting relative asset path from absolute path, would not work on some projects paths  
+**Fix:** loading of meta data in *LoadItemMetaData()* to take in account package text file definition  
+
+**New:** pingMenu meta data for assets so that clicking on an item in the ecosystem list, will launch a menu  
+
 ###0.4.4
 **ReleaseDate:** 09/09/2015 
  

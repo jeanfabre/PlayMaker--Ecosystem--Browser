@@ -131,6 +131,7 @@ metadata
 
 
 			_RepositoryFullNamePath = (string)rep["full_name"];
+		//	Debug.Log("_RepositoryFullNamePath:"+_RepositoryFullNamePath);
 			//...
 		}
 
@@ -447,6 +448,8 @@ metadata
 				//Debug.Log(DocumentationImageUrl);
 			}
 			 
+			Debug.Log(_RepositoryFullNamePath);
+
 			if (EcosystemBrowser.IsDebugOn) Debug.Log("LoadDocumentation for <"+Name+"> url:"+DocumentationImageUrl);
 
 			DocumentationImageStatus = AsynchContentStatus.Downloading;
