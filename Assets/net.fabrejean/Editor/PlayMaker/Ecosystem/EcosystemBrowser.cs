@@ -1097,6 +1097,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			GUILayout.EndHorizontal();
 		}
 	
+		bool resetSearchFieldFlag;
 
 		void OnGUI_ToolBar()
 		{
@@ -1116,10 +1117,15 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 			OnGUI_FilterButton();
 
+				if (resetSearchFieldFlag)
+				{
+					GUI.FocusControl("SearchField");
+					resetSearchFieldFlag = false;
+				}
 				GUILayout.BeginHorizontal("Search Field Background");
 					
 					GUI.SetNextControlName ("SearchField");
-					searchString = GUILayout.TextField(searchString,"Search TextField");
+					searchString = EditorGUILayout.TextField(searchString,GUI.skin.GetStyle("Search TextField"));
 
 					if (string.IsNullOrEmpty(searchString))
 					{
@@ -1128,7 +1134,10 @@ In doubt, do not use this and get in touch with us to learn more before you work
 						_last.y += 9;
 						GUI.Label(_last,GUIContent.none,"Search Empty Tip");
 					}
+
+
 				
+			/* it's buggy with the EditorGUILayout.textField not clearing if you force the string to be empty...
 					if (!string.IsNullOrEmpty(searchString))
 					{
 						
@@ -1139,12 +1148,15 @@ In doubt, do not use this and get in touch with us to learn more before you work
 							if ( GUILayout.Button(new GUIContent(GUI.skin.FindStyle("Cross Icon").normal.background),"Button Round Small")  )
 							{
 								searchString = "";
+							//	GUIUtility.keyboardControl = 0;
+								//resetSearchFieldFlag = true;
+								//GUIUtility.ExitGUI();
 							}
 							GUILayout.FlexibleSpace();
 						GUILayout.EndVertical();
 						
 					}	
-
+				*/
 				GUILayout.EndHorizontal();
 
 

@@ -7,6 +7,7 @@
 **Fix:** loading of meta data in *LoadItemMetaData()* to take in account package text file definition  
 
 **New:** pingMenu meta data for assets so that clicking on an item in the ecosystem list, will launch a menu  
+**New:** copy paste search field  
 
 ###0.4.4
 **ReleaseDate:** 09/09/2015 
