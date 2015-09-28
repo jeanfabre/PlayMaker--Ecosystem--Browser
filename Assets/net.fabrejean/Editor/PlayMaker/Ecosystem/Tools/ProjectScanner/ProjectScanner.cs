@@ -459,7 +459,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 			{
 				_item.AssetStoreId = (int)details["AssetStoreId"];
 			}
-			if (details.ContainsKey("Version")) _item.LatestVersion = VersionInfo.VersionInfoFromJson((string)details["Version"]);
+			if (details.ContainsKey("Version")) _item.LatestVersion = new VersionInfo((string)details["Version"]);
 
 			if (details.ContainsKey("HasEcosystemContent")) _item.HasEcosystemContent = ((int)details["HasEcosystemContent"] == 1);
 

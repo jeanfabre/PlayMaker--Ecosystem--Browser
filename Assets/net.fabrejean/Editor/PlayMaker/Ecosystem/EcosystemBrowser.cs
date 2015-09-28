@@ -424,12 +424,18 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				rowStyle = "Last";
 			}
 
+
 			// define the row style based on the item properties.
 			string rowStyleType = "Plain";
 
 			if (item.FoundInProject)
 			{
-				rowStyleType = "Green";
+				if (item.LatestVersion.CompareTo(item.ProjectVersion) > 0 )
+				{
+					rowStyleType = "orange";
+				}else{
+					rowStyleType = "Green";
+				}
 			}
 
 			GUILayout.BeginVertical(GUIContent.none,"Table Row "+rowStyleType+" "+rowStyle);
@@ -452,8 +458,12 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			GUILayout.Label(item.Type,itemLabelSkin,GUILayout.Width(70));
 			GUI.backgroundColor = Color.white;
 
-
-			GUILayout.Label(item.Name,"Label Row "+rowStyleType,GUILayout.MinWidth(0));
+			string _mainlabel = item.Name;
+			if (item.FoundInProject && item.ProjectVersion.isDefined())
+			{
+				_mainlabel +=" "+item.ProjectVersion;
+			}
+			GUILayout.Label(_mainlabel,"Label Row "+rowStyleType,GUILayout.MinWidth(0));
 			
 			GUILayout.FlexibleSpace();
 
@@ -553,15 +563,13 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			GUILayout.BeginHorizontal();
 			
 			
-			if (item.FoundInProject)
-			{
-				GUILayout.Label(item.ProjectVersion.ToShortString(),"Tag Small "+rowStyleType);
-			}else{
-				GUILayout.Label(item.LatestVersion.ToShortString(),"Tag Small "+rowStyleType);
-			}
 
 			GUILayout.Label(item.PublisherName,"Tag Small "+rowStyleType);
 
+			if (item.LatestVersion.isDefined())
+			{
+				GUILayout.Label(item.LatestVersion.ToShortString(),"Tag Small "+rowStyleType);
+			}
 			//GUILayout.Label(category,"Tag Small "+rowStyleType);
 			
 			//GUILayout.Label(url,"Tag Small "+rowStyleType);

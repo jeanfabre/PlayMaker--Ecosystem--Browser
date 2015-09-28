@@ -170,7 +170,17 @@ namespace Net.FabreJean.UnityEditor
 			if (Build > other.Build) return +1;
 			return 0;
 		}
-		
+
+		public bool isDefined()
+		{
+			if (Major == 0 && Minor == 0 && Patch == 0 && Maintenance == 0)
+			{
+				return false;
+			}
+
+			return true;
+		}
+
 		
 		public static bool operator ==( VersionInfo a, VersionInfo b )
 		{
