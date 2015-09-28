@@ -302,50 +302,63 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 		#region ProjectScanner
 
+		static string _projectScanData_key = "Project scan data";
 
 		void OnGUI_ProjectScanner()
 		{
-			GUILayout.Space(5);
-				GUILayout.Label("The Ecosystem can scan your project and detect known modules, tools, assets and plugins","Label Medium");
-				GUILayout.Label("Use this as a report when you have an issue in your project, this helps us know what your project is made up with","Label Medium");
-			GUILayout.Space(5);
+		
+			GUILayout.Space(10);
 
-				if (ProjectScanner.instance.IsScanning)
+			if (ProjectScanner.instance.IsScanning)
+			{
+				MyUtils.OnGUILayout_BeginHorizontalCentered();
+					if ( GUILayout.Button("Cancel","Button Medium",GUILayout.Width(150)) )
+					{
+						ProjectScanner.instance.CancelScanningProcess();
+					}
+				MyUtils.OnGUILayout_EndHorizontalCentered();
+				MyUtils.OnGUILayout_BeginHorizontalCentered();
+					GUILayout.Label("Scanning in progress");
+				MyUtils.OnGUILayout_EndHorizontalCentered();
+
+			}else{
+				MyUtils.OnGUILayout_BeginHorizontalCentered();
+					string _scanButtonLabel = "Scan Project";
+
+					if (ProjectScanner.instance.isProjectScanned)
+					{
+						_scanButtonLabel = "RE scan Project";
+					}
+					if ( GUILayout.Button(_scanButtonLabel,"Button Medium",GUILayout.Width(150)) )
+					{
+						ProjectScanner.instance.LaunchScanningProcess(IsDebugOn);
+					}
+
+					if (ProjectScanner.instance.isProjectScanned)
+					{
+						if ( GUILayout.Button("Start Browsing","Button Medium Green",GUILayout.Width(150)) )
+						{
+							ShowProjectScanner = false;
+						}
+						
+					}
+
+				MyUtils.OnGUILayout_EndHorizontalCentered();
+				
+				if (ProjectScanner.instance.isProjectScanned)
 				{
 					MyUtils.OnGUILayout_BeginHorizontalCentered();
-						if ( GUILayout.Button("Cancel","Button Medium",GUILayout.Width(150)) )
-						{
-							ProjectScanner.instance.CancelScanningProcess();
-						}
+						GUILayout.Label(ProjectScanner.instance.foundAssetsCountInProject+" Assets found from "+ProjectScanner.instance.AssetsCount+" Known Assets.");
 					MyUtils.OnGUILayout_EndHorizontalCentered();
 					MyUtils.OnGUILayout_BeginHorizontalCentered();
-						GUILayout.Label("Scanning in progress");
-					MyUtils.OnGUILayout_EndHorizontalCentered();
-
-				}else{
-					MyUtils.OnGUILayout_BeginHorizontalCentered();
-						if ( GUILayout.Button("Scan Project","Button Medium",GUILayout.Width(150)) )
+						if ( GUILayout.Button("Copy To ClipBoard","Button Medium",GUILayout.Width(150)) )
 						{
-							ProjectScanner.instance.LaunchScanningProcess(IsDebugOn);
+							EditorGUIUtility.systemCopyBuffer = ProjectScanner.instance.GetScanSummary();
 						}
 					MyUtils.OnGUILayout_EndHorizontalCentered();
-					
-				if (ProjectScanner.instance.isProjectScanned)
-					{
-						MyUtils.OnGUILayout_BeginHorizontalCentered();
-							GUILayout.Label(ProjectScanner.instance.foundAssetsCountInProject+" Assets found from "+ProjectScanner.instance.AssetsCount+" Known Assets.");
-						MyUtils.OnGUILayout_EndHorizontalCentered();
-						MyUtils.OnGUILayout_BeginHorizontalCentered();
-							if ( GUILayout.Button("Copy To ClipBoard","Button Medium",GUILayout.Width(150)) )
-							{
-								EditorGUIUtility.systemCopyBuffer = ProjectScanner.instance.GetScanSummary();
-							}
-						MyUtils.OnGUILayout_EndHorizontalCentered();
-					}
-					
 				}
-
-
+				
+			}
 
 			OnGUI_scannerItemList();
 
@@ -375,12 +388,22 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			}
 			
 			int i=0;
-			
-			foreach(KeyValuePair<string,AssetItem> _entry in ProjectScanner.instance.AssetsList)
+
+			foreach(string _assetName in ProjectScanner.instance.AssetsFoundList)
 			{
-				OnGUI_ScannerItem(_entry.Value,i);
+
+				OnGUI_ScannerItem(ProjectScanner.instance.AssetsList[_assetName],i);
 				i++;
 			}
+
+			foreach(string _assetName in ProjectScanner.instance.AssetsNotFoundList)
+			{
+				
+				OnGUI_ScannerItem(ProjectScanner.instance.AssetsList[_assetName],i);
+				i++;
+			}
+
+
 			GUILayout.EndScrollView();
 			ActionListRect = GUILayoutUtility.GetLastRect();
 			GUILayout.Space(5);
@@ -469,6 +492,9 @@ In doubt, do not use this and get in touch with us to learn more before you work
 					}
 				}
 
+				
+
+
 				/*
 				if (false)
 				{
@@ -506,6 +532,20 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				
 
 			}
+			if (item.HasEcosystemContent)
+			{
+				bool _Selected = ProjectScanner.instance.AssetsSelectedList.Contains(item.Name);
+				
+				bool _newSelection =	GUILayout.Toggle(_Selected,"","Toggle",GUILayout.Width(15f));
+				if (_newSelection!=_Selected)
+				{
+					ProjectScanner.instance.AssetsSelectedList.Remove(item.Name);
+					if (_newSelection)
+					{
+						ProjectScanner.instance.AssetsSelectedList.Add(item.Name);
+					}
+				}
+			}
 			GUILayout.EndHorizontal();
 			
 			// tags
@@ -516,7 +556,12 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			if (item.FoundInProject)
 			{
 				GUILayout.Label(item.ProjectVersion.ToShortString(),"Tag Small "+rowStyleType);
+			}else{
+				GUILayout.Label(item.LatestVersion.ToShortString(),"Tag Small "+rowStyleType);
 			}
+
+			GUILayout.Label(item.PublisherName,"Tag Small "+rowStyleType);
+
 			//GUILayout.Label(category,"Tag Small "+rowStyleType);
 			
 			//GUILayout.Label(url,"Tag Small "+rowStyleType);
@@ -666,7 +711,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 					GUILayout.EndHorizontal();
 				}
 
-				if (MyUtils.isPlayMakerInstalled() && ! ShowProjectScanner)
+				if (! ShowProjectScanner)
 				{
 					OnGUI_ToolBar();
 				}
@@ -679,32 +724,35 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				return;
 			}
 
-			if (! MyUtils.isPlayMakerInstalled() ) {
-				GUILayout.Space(10);
-				GUILayout.BeginHorizontal();
-				GUILayout.FlexibleSpace();
-				GUILayout.BeginHorizontal("Table Row Red Last",GUILayout.Width(position.width+3));
-				
-				GUILayout.Label("PlayMaker must be installed for the ecosystem to be useful","Label Row Red");
-				GUILayout.EndHorizontal();
-				GUILayout.FlexibleSpace();
-				GUILayout.EndHorizontal();
-
-
-				GUILayout.Space(15);
-				if (GUILayout.Button("Open PlayMaker on the AssetStore","Button Medium"))
-				{
-					Application.OpenURL("com.unity3d.kharma:content/368");
-				}
-				return;
-			}
-
-
 			if (Application.isPlaying)
 			{
-				GUILayout.Label("Application is playing. Saves performances to not process anything during playback.");
+				GUILayout.Label("Application is playing. It saves performances to not process anything during playback.");
 				return ;
 			}
+
+
+			// project scanner display and trigger logic
+			if (
+				!ProjectScanner.instance.IsScanning &&
+				!ProjectScanner.instance.isProjectScanned &&
+				!ProjectScanner.instance.hasError
+				)
+			{
+				// test if we have not yet scanned project
+				string _key = _projectScanData_key+"-"+Application.dataPath;
+				
+				if (!EditorPrefs.HasKey(_key))
+				{
+					
+					Debug.Log("Launch scanner automatically");
+					ShowProjectScanner = true;
+					ProjectScanner.instance.LaunchScanningProcess(IsDebugOn);
+					Repaint();
+				}
+			}
+
+
+
 
 			if (ShowProjectScanner)
 			{
@@ -1638,7 +1686,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 			foreach(Item item in resultItems)
 			{
-				OnGUI_ActionItem(item,i);
+				OnGUI_SearchItem(item,i);
 				i++;
 			}
 			GUILayout.EndScrollView();
@@ -1653,7 +1701,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 		string mouseOverAction ="";
 	
-		void OnGUI_ActionItem(Item item,int rowIndex)
+		void OnGUI_SearchItem(Item item,int rowIndex)
 		{
 			// get the row style
 			string rowStyle ="Middle";
@@ -1673,6 +1721,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			bool downloading = !string.IsNullOrEmpty(url) && downloadsLUT!=null && downloadsLUT.ContainsKey(url) ;
 
 			string itemPath = (string)item.RawData["path"];
+			string asset = (string)item.RawData["asset"];
 			string category = (string)item.RawData["category"];
 			string unity_version = (string)item.RawData["unity_version"];
 
@@ -1817,7 +1866,6 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				}
 
 
-
 			}
 			GUILayout.EndHorizontal();
 
@@ -1828,9 +1876,10 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 
 			GUILayout.Label("Unity "+unity_version,"Tag Small "+rowStyleType);
-			GUILayout.Label(category,"Tag Small "+rowStyleType);
 
-			//GUILayout.Label(url,"Tag Small "+rowStyleType);
+			GUILayout.Label(asset,"Tag Small "+rowStyleType);
+
+			GUILayout.Label(category,"Tag Small "+rowStyleType);
 
 			if ((string)item.RawData["beta"]=="true")
 			{
@@ -1885,6 +1934,9 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				Repaint ();
 			}
 
+			#if PLAYMAKER_ECOSYSTEM_BETA
+			string url = __REST_URL_BASE__+"searchAssets/"+WWW.EscapeURL(searchString);
+			#else
 			string url = __REST_URL_BASE__+"search/"+WWW.EscapeURL(searchString);
 
 
@@ -1919,7 +1971,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 			// REPOSITORY MASKING
 			string mask = "U3";
-
+			
 			if (Application.unityVersion.StartsWith("4."))
 			{
 				mask += "U4";
@@ -1932,20 +1984,22 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			
 			if (
 				MyUtils.GetPlayMakerVersion().Contains("b")
-			    )
+				)
 			{
 				mask += "PB";
-
+				
 			}
-
+			
 			url += "&repository_mask="+mask;
-
-
 
 			// put the all the versions as well
 			url += "&EcosystemVersion="+CurrentVersion;
 			url += "&UnityVersion="+Application.unityVersion;
 			url += "&PlayMakerVersion="+MyUtils.GetPlayMakerVersion();
+
+
+			#endif 
+
 
 			if (Debug_on) Debug.Log(url);
 
@@ -1955,10 +2009,10 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			_form.AddField("UnityVersion",Application.unityVersion);
 
 			// unityMask
-			_form.AddField("UnityVersionMask",mask);
+			//_form.AddField("UnityVersionMask",mask);
 
 			// searchable assets
-			string _searchableAssets = "PlayMaker,uTomate";
+			string _searchableAssets =  ProjectScanner.instance.GetJoinedSelectedAssets();
 			_form.AddField("searchableAssets",_searchableAssets);
 
 			// category mask

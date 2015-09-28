@@ -48,6 +48,12 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 			get{ return _isScanning;}
 		}
 
+		bool _hasError;
+		public bool hasError
+		{
+			get{ return _hasError;}
+		}
+
 		bool _isProjectScanned;
 		public bool isProjectScanned
 		{
@@ -68,9 +74,17 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 			}
 		}
 
+		public string GetJoinedSelectedAssets()
+		{
+			return string.Join(",",AssetsSelectedList.ToArray());
+		}
+
+
 		public Dictionary<string,AssetItem> AssetsList = new Dictionary<string, AssetItem>();
 
+		public List<string> AssetsSelectedList = new List<string>();
 		public string[] AssetsFoundList;
+		public string[] AssetsNotFoundList;
 
 		public bool OutputInConsole = true;
 
@@ -79,15 +93,21 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 
 		HttpWrapper _wwwWrapper;
 
+		string _editorPlayerPrefKey;
+
 		/// <summary>
 		/// Launch the scanning process.
 		/// </summary>
-		public void LaunchScanningProcess(bool ConsoleOutput)
+		public void LaunchScanningProcess(bool ConsoleOutput,string EditorPlayerPrefKey = "")
 		{
+
 			OutputInConsole = ConsoleOutput;
+
+			_editorPlayerPrefKey = EditorPlayerPrefKey;
 
 			if (OutputInConsole) Debug.Log("Project Scanner: Downloading Assets Description");
 
+			_hasError = false;
 			_isScanning = true;
 			AssetsList = new Dictionary<string, AssetItem>();
 
@@ -109,7 +129,9 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 					if (!string.IsNullOrEmpty(www.error))
 					{
 						Debug.LogError("Project Scanner: Error downloading assets definition :"+www.error);
+
 						_isScanning = false;
+						_hasError = true;
 					}else{
 						EditorCoroutine.start(DoScanProject(www.text));
 					}
@@ -120,6 +142,14 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 
 		public void CancelScanningProcess()
 		{
+			if (_editorPlayerPrefKey!=null)
+			{
+				if (!EditorPrefs.HasKey(_editorPlayerPrefKey))
+				{
+					EditorPrefs.SetString(_editorPlayerPrefKey,"");
+				}
+			}
+
 			// cancel async processes;
 			_cancelFlag = true;
 			if (_wwwWrapper!=null)
@@ -132,6 +162,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 			_isScanning = false;
 			_foundAssetsCountInProject = 0;
 			AssetsFoundList = new string[0];
+			AssetsNotFoundList = new string[0];
 			AssetsList = new Dictionary<string, AssetItem>();
 
 			Debug.Log("Project Scanning operation cancelled");
@@ -149,7 +180,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 			Hashtable _assets = (Hashtable)JSON.JsonDecode(assetsDescription);
 
 			AssetsFoundList = new string[0];
-
+			AssetsNotFoundList = new string[0];
 			if (_assets == null)
 			{
 				Debug.LogError("Ecosystem Asset Description is invalid");
@@ -164,18 +195,23 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 			{
 				yield return null;
 
-				EditorCoroutine _findAssetCoroutine = EditorCoroutine.startManual(FindAsset((Hashtable)entry.Value));
-				while (_findAssetCoroutine.routine.MoveNext()) {
-				
-					yield return _findAssetCoroutine.routine.Current;
-				}
+				Hashtable _assetDescription = (Hashtable)entry.Value;
 
+				if (!_assetDescription.ContainsKey("Enabled") || ((int)_assetDescription["Enabled"]==1))
+				{
+					EditorCoroutine _findAssetCoroutine = EditorCoroutine.startManual(FindAsset(_assetDescription));
+					while (_findAssetCoroutine.routine.MoveNext()) {
+					
+						yield return _findAssetCoroutine.routine.Current;
+					}
+				}
 				yield return null;
 			}
 
 			_foundAssetsCountInProject = AssetsFoundList.Length;
 
 			_isScanning = false;
+
 
 			if (!_cancelFlag)
 			{
@@ -184,6 +220,12 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 				if (OutputInConsole) Debug.Log("Project Scanner scanned "+AssetsList.Count+" Assets descriptions");
 
 				if (OutputInConsole) Debug.Log(GetScanSummary());
+			}
+
+			if (!string.IsNullOrEmpty(_editorPlayerPrefKey))
+			{
+				EditorPrefs.SetString(_editorPlayerPrefKey,GetScanJsonSummary());
+				yield return null;
 			}
 
 			yield break;
@@ -210,7 +252,16 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 
 			AssetItem _item = AssetItem.AssetItemFromHashTable(_definition);
 
+
 			AssetsList[_name] = _item;
+
+			// append automatically to selected list
+			// TODO: give the user some higher level settings like ignore all unfound toggle or something.
+			// TODO: also remember user preference.
+			if (_item.HasEcosystemContent)
+			{
+				AssetsSelectedList.Add(_name);
+			}
 
 			yield return null;
 
@@ -234,6 +285,9 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 				}else if(entry.ContainsKey("FindByClass"))
 				{
 					_found = MyUtils.isClassDefined((string)entry["FindByClass"]);
+				}else if(entry.ContainsKey("FindByNamespace"))
+				{
+					_found = MyUtils.isNamespaceDefined((string)entry["FindByNamespace"]);
 				}
 
 				if (_found)
@@ -247,7 +301,10 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 					ArrayUtility.Add<string>(ref AssetsFoundList,_name);
 
 					yield break;
+				}else{
+					ArrayUtility.Add<string>(ref AssetsNotFoundList,_name);
 				}
+
 				yield return null;
 			}
 
@@ -333,6 +390,40 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 
 			return _result;
 		}
+
+		public string GetScanJsonSummary()
+		{
+			if (AssetsList ==null || !isProjectScanned)
+			{
+				return "{Error:\"Please scan Projector first\"}";
+			}
+			
+			if (AssetsCount ==0)
+			{
+				return "{FoundAssets:0}";
+			}
+			
+			Hashtable _result = new Hashtable();
+			_result["OperatingSystem"] = SystemInfo.operatingSystem;
+
+			_result["UnityVersion"] = Application.unityVersion;
+			_result["HasProLicense"] = Application.HasProLicense()?"true":"false";
+			_result["platform"] = Application.platform.ToString();
+
+			
+			foreach( KeyValuePair<string,AssetItem> _entry in AssetsList)
+			{
+				AssetItem _item = _entry.Value;
+				
+				if (_item.FoundInProject)
+				{
+					_result[_entry.Key] = _item.ProjectVersion.ToString();
+				}
+			}
+			
+			return JSON.JsonEncode(_result);
+		}
+
 	}
 
 	/// <summary>
@@ -347,7 +438,8 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 		public string Type = "Asset";
 		public string Url="";
 		public int AssetStoreId = 0;
-		
+
+		public bool HasEcosystemContent = false;
 		public bool FoundInProject = false;
 
 
@@ -368,7 +460,9 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 				_item.AssetStoreId = (int)details["AssetStoreId"];
 			}
 			if (details.ContainsKey("Version")) _item.LatestVersion = VersionInfo.VersionInfoFromJson((string)details["Version"]);
-			
+
+			if (details.ContainsKey("HasEcosystemContent")) _item.HasEcosystemContent = ((int)details["HasEcosystemContent"] == 1);
+
 			return _item;
 		}
 

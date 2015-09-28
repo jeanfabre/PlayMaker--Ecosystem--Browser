@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Reflection;
 using System.IO;
+using System.Linq;
 
 namespace Net.FabreJean.UnityEditor
 {
@@ -81,6 +82,36 @@ namespace Net.FabreJean.UnityEditor
 	
 		}
 		
+		public static bool isClassFullNameDefined(string classFullName)
+		{
+			System.Reflection.Assembly[] AS = System.AppDomain.CurrentDomain.GetAssemblies();
+			foreach (var A in AS)
+			{
+				System.Type[] types = A.GetTypes();
+				foreach (var T in types)
+				{
+					if (T.FullName == classFullName)
+					{
+						return true;
+					}
+					
+				}
+			}
+
+			return false;
+		}
+
+		public static bool isNamespaceDefined(string _namespace)
+		{
+			bool namespaceFound = (from assembly in AppDomain.CurrentDomain.GetAssemblies()
+			                      from type in assembly.GetTypes()
+			                       where type.Namespace == _namespace
+			                      select type).Any();
+			
+			return namespaceFound;
+		}
+
+
 
 
 		public static bool isClassDefined(string classType)
@@ -93,6 +124,11 @@ namespace Net.FabreJean.UnityEditor
 				_classFound = System.Type.GetType(classType+", Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null") !=null;
 			}
 		
+			if (!_classFound)
+			{
+				_classFound = isClassFullNameDefined(classType);
+			}
+
 			return _classFound;
 		}
 

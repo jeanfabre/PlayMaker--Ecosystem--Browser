@@ -40,8 +40,10 @@ namespace Net.FabreJean.UnityEditor
 				}
 				yield return null;
 			}
-				
+
 			action(www);
+
+			yield break;
 		}
 	}
 }
