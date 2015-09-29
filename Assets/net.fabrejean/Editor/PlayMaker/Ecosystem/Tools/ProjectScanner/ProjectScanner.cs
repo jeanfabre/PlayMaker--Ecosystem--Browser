@@ -255,14 +255,6 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 
 			AssetsList[_name] = _item;
 
-			// append automatically to selected list
-			// TODO: give the user some higher level settings like ignore all unfound toggle or something.
-			// TODO: also remember user preference.
-			if (_item.HasEcosystemContent)
-			{
-				AssetsSelectedList.Add(_name);
-			}
-
 			yield return null;
 
 			// get the scan methods
@@ -300,7 +292,8 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 
 					ArrayUtility.Add<string>(ref AssetsFoundList,_name);
 
-					yield break;
+					yield return null;
+					continue;
 				}else{
 					ArrayUtility.Add<string>(ref AssetsNotFoundList,_name);
 				}
@@ -308,6 +301,15 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 				yield return null;
 			}
 
+			// append automatically to selected list
+			// TODO: give the user some higher level settings like ignore all unfound toggle or something.
+			// TODO: also remember user preference.
+			if (_found)
+			{
+			AssetsSelectedList.Remove(_name);
+			AssetsSelectedList.Add(_name);
+			}
+		
 			if (OutputInConsole) Debug.Log(_definition["Name"]+" <color=red>not found</color> in Project");
 
 			yield break;

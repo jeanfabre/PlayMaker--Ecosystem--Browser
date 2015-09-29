@@ -302,8 +302,9 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 		#region ProjectScanner
 
+#if PLAYMAKER_ECOSYSTEM_BETA
 		static string _projectScanData_key = "Project scan data";
-
+#endif
 		void OnGUI_ProjectScanner()
 		{
 		
@@ -348,14 +349,16 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				if (ProjectScanner.instance.isProjectScanned)
 				{
 					MyUtils.OnGUILayout_BeginHorizontalCentered();
-						GUILayout.Label(ProjectScanner.instance.foundAssetsCountInProject+" Assets found from "+ProjectScanner.instance.AssetsCount+" Known Assets.");
+						GUILayout.Label(ProjectScanner.instance.foundAssetsCountInProject+" Assets found from "+ProjectScanner.instance.AssetsCount+" known Assets.");
 					MyUtils.OnGUILayout_EndHorizontalCentered();
+					/*
 					MyUtils.OnGUILayout_BeginHorizontalCentered();
 						if ( GUILayout.Button("Copy To ClipBoard","Button Medium",GUILayout.Width(150)) )
 						{
 							EditorGUIUtility.systemCopyBuffer = ProjectScanner.instance.GetScanSummary();
 						}
 					MyUtils.OnGUILayout_EndHorizontalCentered();
+					*/
 				}
 				
 			}
@@ -428,9 +431,13 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			// define the row style based on the item properties.
 			string rowStyleType = "Plain";
 
+			bool _needsUpdate = false;
+
 			if (item.FoundInProject)
 			{
-				if (item.LatestVersion.CompareTo(item.ProjectVersion) > 0 )
+				_needsUpdate = item.LatestVersion > item.ProjectVersion;
+
+				if (_needsUpdate)
 				{
 					rowStyleType = "orange";
 				}else{
@@ -462,6 +469,11 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			if (item.FoundInProject && item.ProjectVersion.isDefined())
 			{
 				_mainlabel +=" "+item.ProjectVersion;
+			}
+
+			if (_needsUpdate)
+			{
+				_mainlabel +=" <Color=#B20000>Update Pending</Color>";
 			}
 			GUILayout.Label(_mainlabel,"Label Row "+rowStyleType,GUILayout.MinWidth(0));
 			
@@ -570,6 +582,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			{
 				GUILayout.Label(item.LatestVersion.ToShortString(),"Tag Small "+rowStyleType);
 			}
+
 			//GUILayout.Label(category,"Tag Small "+rowStyleType);
 			
 			//GUILayout.Label(url,"Tag Small "+rowStyleType);
@@ -740,6 +753,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 
 			// project scanner display and trigger logic
+#if PLAYMAKER_ECOSYSTEM_BETA
 			if (
 				!ProjectScanner.instance.IsScanning &&
 				!ProjectScanner.instance.isProjectScanned &&
@@ -758,7 +772,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 					Repaint();
 				}
 			}
-
+#endif
 
 
 
@@ -1142,7 +1156,14 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				toolsMenu.AddSeparator("");
 
 				toolsMenu.AddItem(new GUIContent("Help..."), false, OnTools_Help);
-				
+
+				toolsMenu.AddSeparator("");
+				#if PLAYMAKER_ECOSYSTEM_BETA
+				toolsMenu.AddItem(new GUIContent("Disable Beta Features"), false, OnTools_DisableBeta);
+				#else
+				toolsMenu.AddItem(new GUIContent("Enable Beta Features"), false, OnTools_EnableBeta);
+				#endif
+
 				// Offset menu from right of editor window
 				toolsMenu.DropDown(new Rect(Screen.width-150, 0, 0, 16));
 				EditorGUIUtility.ExitGUI();
@@ -2642,6 +2663,16 @@ In doubt, do not use this and get in touch with us to learn more before you work
 		{
 			Help.BrowseURL(__REST_URL_BASE__+"link/wiki");
 			
+		}
+
+		void OnTools_EnableBeta()
+		{
+			MyUtils.MountScriptingDefineSymbolToAllTargets("PLAYMAKER_ECOSYSTEM_BETA");
+		}
+
+		void OnTools_DisableBeta()
+		{
+			MyUtils.UnMountScriptingDefineSymbolToAllTargets("PLAYMAKER_ECOSYSTEM_BETA");
 		}
 
 

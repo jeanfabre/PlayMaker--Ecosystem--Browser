@@ -1,6 +1,7 @@
 #Ecosystem Change log
 
 ###0.4.6 alpha  
+**New:** ScriptingSymbol setup to enable/disable beta features from the settings menu.  
 **New:** ProjectScanner now automatically fired when starting Ecosystem  
 **New:** Integration of Project scanner results and selection in the search  
 **New:** Simple UI changes to validate internal process   
