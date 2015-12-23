@@ -332,6 +332,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 					}
 					if ( GUILayout.Button(_scanButtonLabel,"Button Medium",GUILayout.Width(150)) )
 					{
+						_lastError = null;
 						ProjectScanner.instance.LaunchScanningProcess(IsDebugOn);
 					}
 
@@ -448,6 +449,8 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			GUILayout.BeginVertical(GUIContent.none,"Table Row "+rowStyleType+" "+rowStyle);
 			GUILayout.BeginHorizontal();
 
+
+
 			string itemLabelSkin = "";
 			switch(item.Type)
 			{
@@ -461,7 +464,9 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				itemLabelSkin = "Label Round Blue Small";	break;
 			}
 
-			
+
+
+		//	GUILayout.Label(WebImageManager.GetWebImage(item.ThumbnailUrl,new Vector2(32,32)),"Icon");
 			GUILayout.Label(item.Type,itemLabelSkin,GUILayout.Width(70));
 			GUI.backgroundColor = Color.white;
 
@@ -561,10 +566,14 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				bool _newSelection =	GUILayout.Toggle(_Selected,"","Toggle",GUILayout.Width(15f));
 				if (_newSelection!=_Selected)
 				{
-					ProjectScanner.instance.AssetsSelectedList.Remove(item.Name);
-					if (_newSelection)
+					if (!_newSelection)
+					{
+						ProjectScanner.instance.AssetsSelectedList.Remove(item.Name);
+						item.UnSelectAllCategories();
+					}else
 					{
 						ProjectScanner.instance.AssetsSelectedList.Add(item.Name);
+						item.SelectAllCategories();
 					}
 				}
 			}
@@ -603,7 +612,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			
 			
 			
-			if(rowsArea!=null && rowIndex<rowsArea.Length)
+			if(rowsArea!=null && rowIndex<rowsArea.Length && Event.current.type == EventType.repaint)
 			{
 				rowsArea[rowIndex] = GUILayoutUtility.GetLastRect();
 			}
@@ -765,9 +774,12 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				
 				if (!EditorPrefs.HasKey(_key))
 				{
-					
+
+					EditorPrefs.SetString(_key,"");
+
 					Debug.Log("Launch scanner automatically");
 					ShowProjectScanner = true;
+					_lastError = null;
 					ProjectScanner.instance.LaunchScanningProcess(IsDebugOn);
 					Repaint();
 				}
@@ -781,11 +793,23 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				OnGUI_ProjectScanner();
 			}
 
+			GUILayout.Space(5);
+			GUILayout.BeginHorizontal();
+
 			if (!ShowProjectScanner)
 			{
 				OnGUI_FilterPanel();
 			}
-			
+
+			if (!ShowProjectScanner)
+			{
+				OnGUI_ItemList();
+			}
+
+			GUILayout.EndHorizontal();
+
+
+
 			if (!string.IsNullOrEmpty(_lastError))
 			{
 				GUILayout.Space(10);
@@ -798,12 +822,13 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				GUILayout.FlexibleSpace();
 				GUILayout.EndHorizontal();
 				
+			}else{
+				if ( ProjectScanner.instance.hasError)
+				{
+					_lastError = "Project Scanner failed, Please contact us.";
+				}
 			}
 
-			if (!ShowProjectScanner)
-			{
-				OnGUI_ItemList();
-			}
 
 		
 
@@ -812,8 +837,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			{
 				if (lastMousePosition!= Event.current.mousePosition)
 				{
-					int topDelta = (int)ActionListRect.y ;
-					
+
 					// check if we are few pixels above the first row
 					if(new Rect(0,-15,position.width,ShowToolBar?40:30).Contains(Event.current.mousePosition))
 					{
@@ -829,8 +853,18 @@ In doubt, do not use this and get in touch with us to learn more before you work
 						foreach(Rect _row in rowsArea)
 						{
 							Rect _temp = _row;
+
+							// force the layout offset
+							
+							_temp.x += ActionListRect.x;
+							_temp.y += ActionListRect.y;
+
+							// add the scrolling
 							_temp.x = _temp.x  -_scroll.x;
-							_temp.y = _temp.y + topDelta -_scroll.y;
+							_temp.y = _temp.y  -_scroll.y;
+
+						
+
 							if (_temp.Contains(Event.current.mousePosition))
 							{
 								mouseOverRowIndex = j;
@@ -1346,6 +1380,10 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				ShowFilterUI = !ShowFilterUI;
 			}
 		}
+
+		Vector2 _filterPanelScroll;
+
+		List<string> filterPanelExpandedAssets = new List<string>();
 	
 		void OnGUI_FilterPanel()
 		{
@@ -1363,8 +1401,15 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				repositoryMask = new List<string>();
 			}
 
-			GUILayout.Space(5);
-			GUILayout.BeginVertical("Table Row Plain Last");
+
+
+
+			GUILayout.BeginVertical("Box With Inner ScrollView",GUILayout.ExpandWidth(false));
+
+			GUILayout.Space(2);
+			_filterPanelScroll = GUILayout.BeginScrollView(_filterPanelScroll,GUILayout.ExpandWidth(false));
+				
+
 
 			// build the feedback
 			string FilterFeedback = "Content : ";
@@ -1389,31 +1434,90 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				}
 			}
 
-			GUILayout.Label(FilterFeedback,"Label Row Plain");
-				GUILayout.BeginHorizontal();
-					OnGUI_FilterButton(PlayMakerEcosystemFilters.Actions,"Actions");
-					OnGUI_FilterButton(PlayMakerEcosystemFilters.Packages,"Packages");
-					OnGUI_FilterButton(PlayMakerEcosystemFilters.Templates,"Templates");
-					OnGUI_FilterButton(PlayMakerEcosystemFilters.Samples,"Samples");
-				GUILayout.EndHorizontal();
+			//GUILayout.Label(FilterFeedback,"Label Row Plain");
+			foreach(KeyValuePair<string,AssetItem> _item in ProjectScanner.instance.AssetsList)
+			{
 
-			/*
-			GUILayout.Label("Repositories","Label Row Plain");
-			GUILayout.BeginHorizontal();
-			
-			OnGUI_MaskButton(PlayMakerEcosystemRepositoryMasks.Unity3x,"U3","Unity 3.x");
-			OnGUI_MaskButton(PlayMakerEcosystemRepositoryMasks.Unity4x,"U4","Unity 4.x");
-			OnGUI_MaskButton(PlayMakerEcosystemRepositoryMasks.PlayMakerBeta,"PB","PlayMaker Beta");
-			GUILayout.EndHorizontal();
-	*/
+				bool _selected = ProjectScanner.instance.AssetsSelectedList.Contains(_item.Value.Name);
+
+				GUILayout.BeginHorizontal();
+
+				string toggleGuiSkin = "Toggle";
+				int _assetFilterSelected = _item.Value.GetFilterSelectionState();
+				
+				if (_assetFilterSelected == 1)
+				{
+					toggleGuiSkin = "Toggle Semi Activated";
+				}
+				
+				bool _newSelected = GUILayout.Toggle(_selected,GUIContent.none,toggleGuiSkin);
+				
+				if (_newSelected != _selected)
+				{
+					if (_newSelected)
+					{
+						_item.Value.SelectAllCategories();
+						ProjectScanner.instance.AssetsSelectedList.Add(_item.Value.Name);
+					}else{
+						_item.Value.UnSelectAllCategories();
+						ProjectScanner.instance.AssetsSelectedList.Remove(_item.Value.Name);
+					}
+				}
+				
+
+
+				bool _expanded = filterPanelExpandedAssets.Contains(_item.Key);
+
+				if (_item.Value.EcosystemCategories.Length>0)
+				{
+					bool _newExpanded = GUILayout.Toggle(_expanded,GUIContent.none,"Toggle Expand");
+
+					if ( _newExpanded != _expanded)
+					{
+						if (_newExpanded)
+						{
+							filterPanelExpandedAssets.Add (_item.Key);
+						}else{
+							filterPanelExpandedAssets.Remove(_item.Key);
+						}
+					}
+				}else{
+					GUILayout.Space(15);
+				}
+
+				GUILayout.Label(_item.Value.Name,"Label Small");
+
+
+				if (ArrayUtility.Contains(ProjectScanner.instance.AssetsFoundList,_item.Value.Name))
+				{
+					//GUILayout.Box(GUIContent.none,"Green Flag",GUILayout.Width(12f));
+					GUILayout.Space(16f);
+				}else
+				{
+					GUILayout.Space(16f);
+				}
+
+				GUILayout.EndHorizontal();
+				if (_expanded)
+				{
+					foreach(string _category in _item.Value.EcosystemCategories)
+					{
+						OnGUI_FilterButton(_item.Value,_category);
+					}
+				}
+
+			}
+
+			GUILayout.EndScrollView();
+			GUILayout.Space(2);
 			GUILayout.EndVertical();
 
 
 		}
 
-		void OnGUI_FilterButton(PlayMakerEcosystemFilters filter,string label)
+		void OnGUI_FilterButton(AssetItem item,string Category)
 		{
-			bool isOn = searchFilters.Contains(filter);
+			bool isOn = ArrayUtility.Contains(item.EcosystemSelectedCategories,Category);
 
 			string ButtonFilterSkin = "Button Toggle ";
 
@@ -1423,19 +1527,23 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			}else{
 				ButtonFilterSkin += "Off";
 			}
-			
-			if (GUILayout.Button(label,ButtonFilterSkin,null))
-			{
-				isOn =! isOn;
-				if (isOn)
-				{
-					searchFilters.Add(filter);
-				}else{
-					searchFilters.Remove(filter);
-				}
 
+			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+			GUILayout.Space(20f);
+			bool _newIsOn = GUILayout.Toggle(isOn,"");
+			if (_newIsOn!=isOn)
+			{
+				item.ToggleCategory(Category);
 				filterTouched = true;
+				
 			}
+
+			GUILayout.Label(Category,"Label Small");
+			GUILayout.FlexibleSpace();
+
+
+
+			GUILayout.EndHorizontal();
 		}
 
 		void OnGUI_MaskButton(PlayMakerEcosystemRepositoryMasks mask,string repository,string label)
@@ -1718,6 +1826,24 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				OnGUI_SearchItem(item,i);
 				i++;
 			}
+
+			// test for adding buttons without affecting the layout
+			
+			if (mouseOverRowIndex!=-1)
+			{
+
+					GUILayout.BeginArea(new Rect(rowsArea[mouseOverRowIndex].x +4,rowsArea[mouseOverRowIndex].y+4,rowsArea[mouseOverRowIndex].width -8,rowsArea[mouseOverRowIndex].height-8));
+					GUILayout.FlexibleSpace();
+				if (GUILayout.Button("Preview","Button Small",GUILayout.Width(60)))
+					{
+						//Preview(item);
+						return;
+					}
+					
+					GUILayout.EndArea();
+
+			}
+
 			GUILayout.EndScrollView();
 			ActionListRect = GUILayoutUtility.GetLastRect();
 			GUILayout.Space(5);
@@ -1754,7 +1880,6 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			string category = (string)item.RawData["category"];
 			string unity_version = (string)item.RawData["unity_version"];
 
-
 			bool forceloading = false;
 			if (!item.RawData.ContainsKey("projectPath")) // Cache the project path to avoid process the same thing over and over again.
 			{
@@ -1765,14 +1890,12 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 			bool fileExists = File.Exists((string)item.RawData["projectPath"]);
 
-
 			Hashtable _metaData = LoadItemMetaData(item.RawData,forceloading);
 			
 			if (_metaData.ContainsKey("pingAssetProjectPath"))
 			{
 				fileExists = File.Exists((string)_metaData["pingAssetProjectPath"]);
 			}
-		
 
 			// define the row style based on the item properties.
 			string rowStyleType = "Plain";
@@ -1787,12 +1910,11 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				rowStyleType = "Orange";
 			}
 
-
 			string _name = (string)item.RawData["pretty name"];
 			string _type = ((string)item.RawData["type"]);
 
 			GUILayout.BeginVertical(GUIContent.none,"Table Row "+rowStyleType+" "+rowStyle);
-			GUILayout.BeginHorizontal();
+			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
 
 			string itemLabelSkin = "Label Round Small";
 
@@ -1802,18 +1924,18 @@ In doubt, do not use this and get in touch with us to learn more before you work
 					itemLabelSkin = "Label Round Green Small";	break;
 				case "Sample":
 					itemLabelSkin = "Label Round Violet Small";	break;
+				case "Tutorial":
+					itemLabelSkin = "Label Round Violet Small";	break;
 				case "Template":
 					itemLabelSkin = "Label Round Cyan Small";	break;
 				case "Package":
 					itemLabelSkin = "Label Round Blue Small";	break;
 			}
-		
+
 			GUILayout.Label(_type,itemLabelSkin,GUILayout.Width(61));
 			GUI.backgroundColor = Color.white;
 
 			GUILayout.Label(_name,"Label Row "+rowStyleType,GUILayout.MinWidth(0));
-
-			GUILayout.FlexibleSpace();
 
 
 			if (mouseOverAction == _name)
@@ -1833,17 +1955,23 @@ In doubt, do not use this and get in touch with us to learn more before you work
 					{
 						AddSelectedActionToState();
 					}
-					
+
 					GUIUtility.ExitGUI();
 					return;
 				}
 			}
 
+
+			//GUILayout.Button(" ","Button Invisible",GUILayout.Width(200));
+			GUILayout.FlexibleSpace();
+
+			bool _isOver = mouseOverRowIndex==rowIndex;
 			if (downloading)
 			{
-				GUILayout.Label("downloading...","Label Row "+rowStyleType,GUILayout.Width(80));
+				GUILayout.Label("Downloading Information...","Label Row "+rowStyleType,GUILayout.Width(160));
 			}else if(mouseOverRowIndex==rowIndex )
 			{
+				/*
 				if (!ShowActionDetails)
 				{
 					if (GUILayout.Button("?","Button Small",GUILayout.Width(20)))
@@ -1894,7 +2022,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 					}
 				}
 
-
+				*/
 			}
 			GUILayout.EndHorizontal();
 
@@ -1906,7 +2034,10 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 			GUILayout.Label("Unity "+unity_version,"Tag Small "+rowStyleType);
 
-			GUILayout.Label(asset,"Tag Small "+rowStyleType);
+			if (!string.IsNullOrEmpty(asset))
+			{
+				GUILayout.Label(asset,"Tag Small "+rowStyleType);
+			}
 
 			GUILayout.Label(category,"Tag Small "+rowStyleType);
 
@@ -1916,6 +2047,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				GUILayout.Label("Beta","Tag Small "+rowStyleType);
 				GUI.contentColor = Color.white;
 			}
+
 			GUILayout.FlexibleSpace();
 
 	
@@ -1924,10 +2056,11 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 
 
-			if(rowsArea!=null && rowIndex<rowsArea.Length)
+			if(rowsArea!=null && rowIndex<rowsArea.Length && Event.current.type == EventType.repaint)
 			{
 				rowsArea[rowIndex] = GUILayoutUtility.GetLastRect();
 			}
+
 
 
 		}
@@ -2432,12 +2565,19 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 				item.RawData["metaData"] = _meta;
 
-				string _packagePath =  Uri.EscapeDataString((string)_meta["unitypackage"]);
-				string _repositoryPath = Uri.EscapeDataString(repositoryPath);
+				if (_meta.ContainsKey("unitypackage"))
+				{
+					string _packagePath =  Uri.EscapeDataString((string)_meta["unitypackage"]);
+					string _repositoryPath = Uri.EscapeDataString(repositoryPath);
 
-				string _packageUrl = __REST_URL_BASE__ +"download?repository="+_repositoryPath+"&file="+_packagePath;
+					string _packageUrl = __REST_URL_BASE__ +"download?repository="+_repositoryPath+"&file="+_packagePath;
+					DownloadRawContent(_packagePath,_packageUrl,item);
+				}else if (_meta.ContainsKey("WebLink"))
+				{
+					Application.OpenURL((string)_meta["WebLink"]);
+					yield break;
+				}
 
-				DownloadRawContent(_packagePath,_packageUrl,item);
 			}
 
 

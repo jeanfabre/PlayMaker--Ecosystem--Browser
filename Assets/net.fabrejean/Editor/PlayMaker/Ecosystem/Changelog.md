@@ -1,5 +1,10 @@
 #Ecosystem Change log
 
+###0.4.7 alpha 
+**Fix:** Fixed MarkDown Custom Inspector on Unity 5  
+
+**New:** `WebImageManager` to help caching online images (for asset thumbnails, etc ) Implemented in Ecosystem browser project scanner listing
+
 ###0.4.6 alpha  
 **New:** ScriptingSymbol setup to enable/disable beta features from the settings menu.  
 **New:** ProjectScanner now automatically fired when starting Ecosystem  
