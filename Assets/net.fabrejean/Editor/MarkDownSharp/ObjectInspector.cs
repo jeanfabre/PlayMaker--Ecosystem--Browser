@@ -7,7 +7,11 @@ using Net.FabreJean.UnityEditor.MarkdownSharp;
 
 namespace Net.FabreJean.UnityEditor
 {
+	#if UNITY_5
+	[CustomEditor(typeof(DefaultAsset))]
+	#else
 	[CustomEditor(typeof(UnityEngine.Object))]
+	#endif
 	public class ObjectInspector : Editor
 	{
 
