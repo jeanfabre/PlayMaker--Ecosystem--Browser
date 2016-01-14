@@ -1,9 +1,18 @@
 #Ecosystem Change log
 
+
+###0.4.8 alpha 
+**Improvement**: new overlay UI technic for mouse overing while letting list width adjust properly   
+
+**Fix**: UI switch for project scanner integration is improved  
+
 ###0.4.7 alpha 
 **Fix:** Fixed MarkDown Custom Inspector on Unity 5  
+**Fix:** Fixed Unity 4.7 Compatibility  
 
 **New:** `WebImageManager` to help caching online images (for asset thumbnails, etc ) Implemented in Ecosystem browser project scanner listing
+
+ 
 
 ###0.4.6 alpha  
 **New:** ScriptingSymbol setup to enable/disable beta features from the settings menu.  

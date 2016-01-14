@@ -146,7 +146,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 
 			Instance.position = new Rect(100,100, 430,600);
 			Instance.minSize = new Vector2(430,600);
-		#if UNITY_4_3 || UNITY_4_4 || UNITY_4_5 || UNITY_4_5 || UNITY_4_6 || UNITY_5_0
+			#if UNITY_4_3 || UNITY_4_4 || UNITY_4_5 || UNITY_4_5 || UNITY_4_6 || UNITY_4_7 || UNITY_5_0
 			Instance.title = "Ecosystem";
 		#else
 			string _ecosystemSkinPath ="";
@@ -794,19 +794,22 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			}
 
 			GUILayout.Space(5);
+
+
+
+
+			#if PLAYMAKER_ECOSYSTEM_BETA
 			GUILayout.BeginHorizontal();
-
-			if (!ShowProjectScanner)
-			{
-				OnGUI_FilterPanel();
-			}
-
-			if (!ShowProjectScanner)
-			{
-				OnGUI_ItemList();
-			}
-
+				if (!ShowProjectScanner)
+				{
+					OnGUI_AssetListFilterPanel();
+					OnGUI_ItemList();
+				}
 			GUILayout.EndHorizontal();
+			#else
+				OnGUI_FilterPanel();
+				OnGUI_ItemList();
+			#endif
 
 
 
@@ -1226,7 +1229,11 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 			GUILayout.Space(6);
 
-			OnGUI_FilterButton();
+			#if PLAYMAKER_ECOSYSTEM_BETA
+				OnGUI_FilterButton();
+			#else
+				OnGUI_FilterButtonOld();
+			#endif
 
 				if (resetSearchFieldFlag)
 				{
@@ -1362,6 +1369,25 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 		}
 
+		void OnGUI_FilterButtonOld()
+		{
+			
+			GUIContent _label = new GUIContent("Filter");
+			
+			string ButtonSkin = "Button Medium";
+			
+			if (searchFilters!=null && searchFilters.Count>0 && searchFilters.Count!= PlayMakerEcosystemFiltersLength )
+			{
+				_label.text = "Filter on";
+				ButtonSkin += " Green";
+			}
+			
+			if (GUILayout.Button(_label,ButtonSkin,GUILayout.Width(71)))                      
+			{
+				ShowFilterUI = !ShowFilterUI;
+			}
+		}
+
 		void OnGUI_FilterButton()
 		{
 
@@ -1384,8 +1410,8 @@ In doubt, do not use this and get in touch with us to learn more before you work
 		Vector2 _filterPanelScroll;
 
 		List<string> filterPanelExpandedAssets = new List<string>();
-	
-		void OnGUI_FilterPanel()
+
+		void OnGUI_AssetListFilterPanel()
 		{
 			if (!ShowFilterUI)
 			{
@@ -1408,7 +1434,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 			GUILayout.Space(2);
 			_filterPanelScroll = GUILayout.BeginScrollView(_filterPanelScroll,GUILayout.ExpandWidth(false));
-				
+
 
 
 			// build the feedback
@@ -1498,6 +1524,8 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				}
 
 				GUILayout.EndHorizontal();
+
+
 				if (_expanded)
 				{
 					foreach(string _category in _item.Value.EcosystemCategories)
@@ -1513,6 +1541,97 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			GUILayout.EndVertical();
 
 
+		}
+
+		void OnGUI_FilterPanel()
+		{
+			if (!ShowFilterUI)
+			{
+				return;
+			}
+			
+			if (searchFilters==null)
+			{
+				searchFilters = new List<PlayMakerEcosystemFilters>();
+			}
+			if (repositoryMask==null)
+			{
+				repositoryMask = new List<string>();
+			}
+			
+			GUILayout.Space(5);
+			GUILayout.BeginVertical("Table Row Plain Last");
+			
+			// build the feedback
+			string FilterFeedback = "Content : ";
+			if (searchFilters==null || searchFilters.Count==0 || searchFilters.Count==PlayMakerEcosystemFiltersLength)
+			{
+				FilterFeedback +=  "Everything is searched";
+			}else{
+				//FilterFeedback += "Only ";
+				int _filterCount = searchFilters.Count;
+				int i = 1;
+				foreach(PlayMakerEcosystemFilters _filter in searchFilters)
+				{
+					FilterFeedback += _filter;
+					
+					if(i<_filterCount)
+					{
+						FilterFeedback += " or ";
+					}
+					
+					i++;
+					
+				}
+			}
+			
+			GUILayout.Label(FilterFeedback,"Label Row Plain");
+			GUILayout.BeginHorizontal();
+			OnGUI_FilterButtonOld(PlayMakerEcosystemFilters.Actions,"Actions");
+			OnGUI_FilterButtonOld(PlayMakerEcosystemFilters.Packages,"Packages");
+			OnGUI_FilterButtonOld(PlayMakerEcosystemFilters.Templates,"Templates");
+			OnGUI_FilterButtonOld(PlayMakerEcosystemFilters.Samples,"Samples");
+			GUILayout.EndHorizontal();
+			
+			/*
+			GUILayout.Label("Repositories","Label Row Plain");
+			GUILayout.BeginHorizontal();
+			
+			OnGUI_MaskButton(PlayMakerEcosystemRepositoryMasks.Unity3x,"U3","Unity 3.x");
+			OnGUI_MaskButton(PlayMakerEcosystemRepositoryMasks.Unity4x,"U4","Unity 4.x");
+			OnGUI_MaskButton(PlayMakerEcosystemRepositoryMasks.PlayMakerBeta,"PB","PlayMaker Beta");
+			GUILayout.EndHorizontal();
+	*/
+			GUILayout.EndVertical();
+			
+			
+		}
+
+		void OnGUI_FilterButtonOld(PlayMakerEcosystemFilters filter,string label)
+		{
+			bool isOn = searchFilters.Contains(filter);
+			
+			string ButtonFilterSkin = "Button Toggle ";
+			
+			if (isOn)
+			{
+				ButtonFilterSkin += "On";
+			}else{
+				ButtonFilterSkin += "Off";
+			}
+			
+			if (GUILayout.Button(label,ButtonFilterSkin,null))
+			{
+				isOn =! isOn;
+				if (isOn)
+				{
+					searchFilters.Add(filter);
+				}else{
+					searchFilters.Remove(filter);
+				}
+				
+				filterTouched = true;
+			}
 		}
 
 		void OnGUI_FilterButton(AssetItem item,string Category)
@@ -1827,20 +1946,102 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				i++;
 			}
 
+
 			// test for adding buttons without affecting the layout
 			
-			if (mouseOverRowIndex!=-1)
+			if (mouseOverRowIndex!=-1 && rowsArea.Length>mouseOverRowIndex && resultItems.Length>mouseOverRowIndex)
 			{
 
-					GUILayout.BeginArea(new Rect(rowsArea[mouseOverRowIndex].x +4,rowsArea[mouseOverRowIndex].y+4,rowsArea[mouseOverRowIndex].width -8,rowsArea[mouseOverRowIndex].height-8));
-					GUILayout.FlexibleSpace();
-				if (GUILayout.Button("Preview","Button Small",GUILayout.Width(60)))
+				GUILayout.BeginArea(new Rect(rowsArea[mouseOverRowIndex].x +4,rowsArea[mouseOverRowIndex].y+4,rowsArea[mouseOverRowIndex].width -8,rowsArea[mouseOverRowIndex].height-8));
+
+					Item item =	resultItems[mouseOverRowIndex];
+					// find details about the item itself
+					string url = (string)item.RawData["RepositoryRawUrl"];
+					bool downloading = !string.IsNullOrEmpty(url) && downloadsLUT!=null && downloadsLUT.ContainsKey(url) ;
+
+					Hashtable _metaData = LoadItemMetaData(item.RawData,false);
+					bool fileExists = File.Exists((string)item.RawData["projectPath"]);
+					if (_metaData.ContainsKey("pingAssetProjectPath"))
 					{
-						//Preview(item);
-						return;
+						fileExists = File.Exists((string)_metaData["pingAssetProjectPath"]);
+					}
+
+					// define the row style based on the item properties.
+					string rowStyleType = "Plain";
+					
+					if (fileExists)
+					{
+						rowStyleType = "Green";
 					}
 					
-					GUILayout.EndArea();
+					if (downloading)
+					{
+						rowStyleType = "Orange";
+					}
+
+
+
+					GUILayout.BeginHorizontal();
+						GUILayout.FlexibleSpace();
+
+						if (!downloading)
+						{
+							if (!ShowActionDetails)
+							{
+								if (GUILayout.Button("?","Button Small",GUILayout.Width(20)))
+								{
+									SelectedIndex = mouseOverRowIndex;
+									ShowActionDetails = true;
+									Repaint();
+								}
+								GUILayout.Space(5);
+							}
+
+							if (GUILayout.Button("Preview","Button Small",GUILayout.Width(60)))
+							{
+								Preview(item);
+								return;
+							}	
+
+							if (fileExists)
+							{
+								
+								if (GUILayout.Button("Update","Button Small Red",GUILayout.Width(50)))
+								{
+									DeleteItem(item);
+									ImportItem(item);
+									Repaint ();
+									GUIUtility.ExitGUI();
+									return;
+								}
+								
+								if (GUILayout.Button("Delete","Button Small Red",GUILayout.Width(50)))
+								{
+									DeleteItem(item);
+									Repaint ();
+									GUIUtility.ExitGUI();
+									return;
+								}
+								
+								
+								GUILayout.Label("imported","Label Row "+rowStyleType,GUILayout.Width(50));
+
+								GUILayout.Space(5); // should be moved into a dedicated skin item.
+								
+							}else{
+								if (GUILayout.Button("Get","Button Small",GUILayout.Width(50)))
+								{
+									ImportItem(item);
+									Repaint ();
+									GUIUtility.ExitGUI();
+									return;
+								}
+							}
+
+						}
+					GUILayout.EndHorizontal();
+
+				GUILayout.EndArea();
 
 			}
 
@@ -1965,65 +2166,11 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			//GUILayout.Button(" ","Button Invisible",GUILayout.Width(200));
 			GUILayout.FlexibleSpace();
 
-			bool _isOver = mouseOverRowIndex==rowIndex;
 			if (downloading)
 			{
 				GUILayout.Label("Downloading Information...","Label Row "+rowStyleType,GUILayout.Width(160));
-			}else if(mouseOverRowIndex==rowIndex )
-			{
-				/*
-				if (!ShowActionDetails)
-				{
-					if (GUILayout.Button("?","Button Small",GUILayout.Width(20)))
-					{
-						SelectedIndex = rowIndex;
-						ShowActionDetails = true;
-						Repaint();
-					}
-					GUILayout.Space(5);
-				}
-
-				if (GUILayout.Button("Preview","Button Small",GUILayout.Width(60)))
-				{
-					Preview(item);
-					return;
-				}
-
-				if (fileExists)
-				{
-
-					if (GUILayout.Button("Update","Button Small Red",GUILayout.Width(50)))
-					{
-						DeleteItem(item);
-						ImportItem(item);
-						Repaint ();
-						GUIUtility.ExitGUI();
-						return;
-					}
-
-					if (GUILayout.Button("Delete","Button Small Red",GUILayout.Width(50)))
-					{
-						DeleteItem(item);
-						Repaint ();
-						GUIUtility.ExitGUI();
-						return;
-					}
-
-
-					GUILayout.Label("imported","Label Row "+rowStyleType,GUILayout.Width(50));
-
-				}else{
-					if (GUILayout.Button("Get","Button Small",GUILayout.Width(50)))
-					{
-						ImportItem(item);
-						Repaint ();
-						GUIUtility.ExitGUI();
-						return;
-					}
-				}
-
-				*/
 			}
+
 			GUILayout.EndHorizontal();
 
 			// tags
@@ -2376,7 +2523,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 		void DeleteItem(Item item)
 		{
-		//	Debug.Log((string)item["path"]);
+			if (Debug_on) Debug.Log("DeleteItem: "+item.Path);
 
 			// first delete the ping asset
 
@@ -2399,7 +2546,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 		{
 			if (Debug_on) Debug.Log("Deleting -> "+assetPath);
 
-			string guid = AssetDatabase.AssetPathToGUID(assetPath);
+			string guid = null; //AssetDatabase.AssetPathToGUID(assetPath); // doesn't work properly, need to pass the right path
 			
 			if (string.IsNullOrEmpty(guid))
 			{
@@ -2408,8 +2555,8 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				AssetDatabase.Refresh();
 				
 			}else{
-				if (Debug_on) Debug.Log("we found a guid -> "+guid);
-				AssetDatabase.DeleteAsset(assetPath);
+				if (Debug_on) Debug.Log("we found a guid -> "+guid+" assetPath: "+AssetDatabase.GUIDToAssetPath(guid));
+				AssetDatabase.DeleteAsset(AssetDatabase.GUIDToAssetPath(guid));
 				AssetDatabase.Refresh();
 			}
 		}
@@ -2448,7 +2595,13 @@ In doubt, do not use this and get in touch with us to learn more before you work
 							}
 						}catch(Exception e)
 						{
-							if (Debug_on) Debug.Log(e.Message);
+							if (Debug_on)
+							{
+								if (!e.Message.StartsWith("Could not find a part of the path"))
+								{
+									Debug.Log(e.Message);
+								}
+							}
 						}
 
 						
