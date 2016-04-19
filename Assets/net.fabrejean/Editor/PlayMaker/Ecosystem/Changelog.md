@@ -5,6 +5,8 @@
 **Improvement**: new overlay UI technic for mouse overing while letting list width adjust properly   
 
 **Fix**: UI switch for project scanner integration is improved  
+**Fix**: Unity 4.7 compatibility  
+**Fix**: First search error in table listing
 
 ###0.4.7 alpha 
 **Fix:** Fixed MarkDown Custom Inspector on Unity 5  

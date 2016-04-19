@@ -1949,7 +1949,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 			// test for adding buttons without affecting the layout
 			
-			if (mouseOverRowIndex!=-1 && rowsArea.Length>mouseOverRowIndex && resultItems.Length>mouseOverRowIndex)
+			if (mouseOverRowIndex!=-1 && rowsArea!=null && rowsArea.Length>mouseOverRowIndex && resultItems!=null && resultItems.Length>mouseOverRowIndex)
 			{
 
 				GUILayout.BeginArea(new Rect(rowsArea[mouseOverRowIndex].x +4,rowsArea[mouseOverRowIndex].y+4,rowsArea[mouseOverRowIndex].width -8,rowsArea[mouseOverRowIndex].height-8));
