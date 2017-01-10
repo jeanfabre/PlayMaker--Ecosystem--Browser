@@ -1,6 +1,9 @@
 #Ecosystem Change log
 
 
+###0.4.9 alpha
+**Removed:** https://snipt.net/ support removed, snipt got deprecated, service is unavailable 
+
 ###0.4.8 alpha 
 **Improvement**: new overlay UI technic for mouse overing while letting list width adjust properly   
 

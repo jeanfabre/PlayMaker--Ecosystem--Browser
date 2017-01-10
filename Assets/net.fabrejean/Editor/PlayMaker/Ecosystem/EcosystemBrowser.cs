@@ -256,24 +256,23 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 					GUILayout.BeginHorizontal();
 						GUILayout.FlexibleSpace();
-						GUILayout.Label("Repositories services used by the Ecosystem");
+						GUILayout.Label("The Ecosystem is powered by");
 
 						GUILayout.FlexibleSpace();
 					GUILayout.EndHorizontal();
 					GUILayout.BeginHorizontal();
-						
+						GUILayout.FlexibleSpace();
 						GUISkin _currentSkin = GUI.skin;
 						GUI.skin = EcosystemSkin;
+					
 						GUILayout.FlexibleSpace();
-						if( GUILayout.Button("","Snipt Logo") )
-						{
-							Application.OpenURL("https://snipt.net/");
-						}
-						GUILayout.FlexibleSpace();
+
+
 						if (GUILayout.Button("","Github Logo") )
 						{
 							Application.OpenURL("https://github.com/");
 						}
+						GUILayout.FlexibleSpace();
 						GUI.skin = _currentSkin;
 						GUILayout.FlexibleSpace();
 					GUILayout.EndHorizontal();
