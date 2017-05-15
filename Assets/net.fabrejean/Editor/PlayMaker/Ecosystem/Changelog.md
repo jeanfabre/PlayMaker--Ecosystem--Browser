@@ -1,6 +1,10 @@
 #Ecosystem Change log
 
 
+###0.5 
+**Release:** 15/05/2017  
+**Update:** Compatibility with Unity 2017  
+
 ###0.4.9 alpha
 **Removed:** https://snipt.net/ support removed, snipt got deprecated, service is unavailable 
 

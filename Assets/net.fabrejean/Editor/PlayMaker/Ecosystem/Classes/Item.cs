@@ -459,11 +459,9 @@ metadata
 			if (string.IsNullOrEmpty(_www.error))
 			{
 				DocumentationImageStatus = AsynchContentStatus.Available;
-				Texture2D _t2d= new Texture2D(2,2);
-				_www.LoadImageIntoTexture(_t2d);
-				DocumentationImage_Cache[DocumentationImageUrl] = _t2d as Texture;
+				DocumentationImage_Cache[DocumentationImageUrl] = _www.textureNonReadable;
 			}else{
-				if (EcosystemBrowser.IsDebugOn) Debug.LogError("LoadDocumentation error for "+Name+" : "+_www.error);
+				if (EcosystemBrowser.IsDebugOn) Debug.LogWarning("LoadDocumentation error for "+Name+" : "+_www.error);
 				DocumentationImageStatus = AsynchContentStatus.Unavailable;
 			}
 
