@@ -2,8 +2,14 @@
 
 
 ###0.5 
-**Release:** 15/05/2017  
-**Update:** Compatibility with Unity 2017  
+**Release:** 24/07/2017  
+
+**Known Issue:** Unity 2017.0 and 2017.1 have the www class redirect url [broken](https://issuetracker.unity3d.com/issues/www-dot-url-truncates-redirected-url-if-it-should-have-contained-spaces), so the Ecosystem browser doesn't work on these two versions. Implemented defines check to warn and prevent using the Browser in these versions
+
+**Update:** Compatibility with Unity 2017, Unity 2017 WWW Class broke the .url parameter by changing it to reflect redirections, so the url set when creating the WWW Class is not necessary the one when done.  
+So now a new unique local Id for each browser requests is maintained on the client side, passed to the server which will pass it on to the redirection url, when a www instance is done, it's the uid parameter that is used to reference the content and not the url.
+
+**New:** `EcosystemUtils` url query parameters methods to add and get parameters  
 
 ###0.4.9 alpha
 **Removed:** https://snipt.net/ support removed, snipt got deprecated, service is unavailable 

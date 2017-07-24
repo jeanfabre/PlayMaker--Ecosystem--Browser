@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -16,18 +17,72 @@ namespace Net.FabreJean.UnityEditor
 		/// </summary>
 		/// <returns>The query string.</returns>
 		/// <param name="query">Query.</param>
-		public static Dictionary<string, string> ParseQueryString(String query)
+		public static Dictionary<string, string> ParseUrlQueryParameters(String query)
 		{
-			Dictionary<String, String> queryDict = new Dictionary<string, string>();
-			foreach (String token in query.TrimStart(new char[] { '?' }).Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries))
+
+			Dictionary<string,string> _params = new Dictionary<string,string>();
+			
+			if (String.IsNullOrEmpty(query))
 			{
-				string[] parts = token.Split(new char[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
-				if (parts.Length == 2)
-					queryDict[parts[0].Trim()] = WWW.UnEscapeURL(parts[1]).Trim();
-				else
-					queryDict[parts[0].Trim()] = "";
+				return _params;
 			}
-			return queryDict;
+			
+			return new Uri(query).Query.TrimStart('?')
+				.Split(new[] { '&', ';' }, StringSplitOptions.RemoveEmptyEntries)
+					.Select(parameter => parameter.Split(new[] { '=' }, StringSplitOptions.RemoveEmptyEntries))
+					.GroupBy(parts => parts[0],
+					         parts => parts.Length > 2 ? string.Join("=", parts, 1, parts.Length - 1) : (parts.Length > 1 ? parts[1] : ""))
+					.ToDictionary(grouping => grouping.Key,
+					              grouping => WWW.UnEscapeURL(
+																string.Join(",", grouping.ToArray())
+															).Trim()
+					              );
+
+
+//			Dictionary<String, String> queryDict = new Dictionary<string, string>();
+//			foreach (String token in query.TrimStart(new char[] { '?' }).Split(new char[] { '&', ';' }, StringSplitOptions.RemoveEmptyEntries))
+//			{
+//				string[] parts = token.Split(new char[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
+//				if (parts.Length == 2)
+//					queryDict[parts[0].Trim()] = WWW.UnEscapeURL(parts[1]).Trim();
+//				else
+//					queryDict[parts[0].Trim()] = "";
+//			}
+//			return queryDict;
+		}
+
+		
+		public static string GetUrlQueryParameter(string url,string key)
+		{
+			Dictionary<string,string> _params = ParseUrlQueryParameters(url);
+			
+			if (_params.ContainsKey(key))
+			{
+				return _params[key];
+			}
+			
+			return null;
+		}
+
+		public static string AddParameterToUrlQuery(string url,string key,string value)
+		{
+			
+			if (String.IsNullOrEmpty(url))
+			{
+				return url;
+			}
+			
+			string _result = url;
+			if (! _result.Contains("?"))
+			{
+				_result += "?";
+			}else{
+				_result += "&";
+			}
+			
+			_result += Uri.EscapeDataString(key)+"="+Uri.EscapeDataString(value);
+			
+			return _result;
 		}
 
 		/// <summary>

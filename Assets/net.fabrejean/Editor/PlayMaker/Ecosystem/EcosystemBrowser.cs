@@ -53,7 +53,8 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 		enum PlayMakerEcosystemFilters {Actions,Templates,Samples,Packages};
 		static int PlayMakerEcosystemFiltersLength = 0;// deduced from the enum when editor inits
 
-		private enum PlayMakerEcosystemRepositoryMasks {Unity3x,Unity4x,PlayMakerBeta};
+		//TODO: implement fully
+		private enum PlayMakerEcosystemRepositoryMasks {Unity3x,Unity4x,Unity5x,Unity2017x,PlayMakerBeta};
 
 		static private bool _disclaimer_pass = false;
 
@@ -146,7 +147,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 
 			Instance.position = new Rect(100,100, 430,600);
 			Instance.minSize = new Vector2(430,600);
-			#if UNITY_4_3 || UNITY_4_4 || UNITY_4_5 || UNITY_4_5 || UNITY_4_6 || UNITY_4_7 || UNITY_5_0
+		#if UNITY_4_3 || UNITY_4_4 || UNITY_4_5 || UNITY_4_5 || UNITY_4_6 || UNITY_4_7 || UNITY_5_0 || UNITY_2017
 			Instance.title = "Ecosystem";
 		#else
 			string _ecosystemSkinPath ="";
@@ -156,8 +157,6 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 			
 			Instance.titleContent = new GUIContent("Ecosystem",_iconTexture,"The Ecosystem Browser");
 		#endif
-
-
 
 			// init static vars
 			PlayMakerEcosystemFiltersLength = Enum.GetNames(typeof(PlayMakerEcosystemFilters)).Length;
@@ -689,6 +688,23 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 		void OnGUI_Main()
 		{
+
+
+			#if UNITY_2017 && ! UNITY_2017_2_OR_NEWER
+			
+			GUILayout.Space(10);
+			GUILayout.BeginHorizontal();
+			GUILayout.FlexibleSpace();
+			GUILayout.BeginHorizontal("Table Row Red Last",GUILayout.Width(position.width+3));
+			
+			GUILayout.Label("WARNING; doesn't work on Unity 2017.0 and 2017.1","Label Row Red");
+			GUILayout.EndHorizontal();
+			GUILayout.FlexibleSpace();
+			GUILayout.EndHorizontal();
+			
+			if (!ShowDisclaimer) return ;
+			
+			#endif
 
 			if(!Application.isPlaying && _disclaimer_pass && !ShowDisclaimer)
 			{
@@ -1920,11 +1936,6 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				rowsArea = new Rect[resultItems.Length];
 
 
-			if(downloads!=null)
-			{
-			//	GUILayout.Label("Downloads: "+downloads.Count);
-			}
-
 			GUILayout.Space(5);
 			Vector2 _scrollNew = GUILayout.BeginScrollView(_scroll);
 
@@ -1955,8 +1966,9 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 					Item item =	resultItems[mouseOverRowIndex];
 					// find details about the item itself
-					string url = (string)item.RawData["RepositoryRawUrl"];
-					bool downloading = !string.IsNullOrEmpty(url) && downloadsLUT!=null && downloadsLUT.ContainsKey(url) ;
+					//string url = (string)item.RawData["RepositoryRawUrl"];
+					//bool downloading = !string.IsNullOrEmpty(url) && downloadsLUT!=null && downloadsLUT.ContainsKey(url) ;
+					bool downloading = item.UrlUid != null;
 
 					Hashtable _metaData = LoadItemMetaData(item.RawData,false);
 					bool fileExists = File.Exists((string)item.RawData["projectPath"]);
@@ -2072,8 +2084,9 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			}
 
 			// find details about the item itself
-			string url = (string)item.RawData["RepositoryRawUrl"];
-			bool downloading = !string.IsNullOrEmpty(url) && downloadsLUT!=null && downloadsLUT.ContainsKey(url) ;
+			// string url = (string)item.RawData["RepositoryRawUrl"];
+			// bool downloading = !string.IsNullOrEmpty(url) && downloadsLUT!=null && downloadsLUT.ContainsKey(url) ;
+			bool downloading = item.UrlUid!=null;
 
 			string itemPath = (string)item.RawData["path"];
 			string asset = (string)item.RawData["asset"];
@@ -2248,6 +2261,8 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			string url = __REST_URL_BASE__+"search/"+WWW.EscapeURL(searchString);
 
 
+
+
 			// CONTENT MASKING
 			string ContentTypeMask = ""; // all by default
 			
@@ -2289,7 +2304,14 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				mask += "U4";
 				mask += "U5";
 			}
-			
+
+			if (Application.unityVersion.StartsWith("2017."))
+			{
+				mask += "U4";
+				mask += "U5";
+				mask += "U2017";
+			}
+
 			if (
 				MyUtils.GetPlayMakerVersion().Contains("b")
 				)
@@ -2656,14 +2678,19 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 		#endregion
 
+		int www_uid = 0;
+
 		void DownloadRawContent(string assetPath,string url,Item item)
 		{
 			if  (Debug_on) Debug.Log("DownloadRawContent assetPath:"+assetPath+" url:"+url);
+
+
 			if (downloadsLUT==null)
 			{
 				downloadsLUT = new Dictionary<string, string>();
 
 			}
+
 
 			if (downloads==null)
 			{
@@ -2678,10 +2705,14 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 			if (!downloadsLUT.ContainsKey(url))
 			{
+				string _url_uid = (www_uid++).ToString();
+				url = EcosystemUtils.AddParameterToUrlQuery(url,"uid",_url_uid);
 				downloads.Add(new WWW(url));
-				downloadsLUT.Add(url,assetPath);
-				itemsLUT.Remove(url);
-				itemsLUT.Add(url,item);
+				downloadsLUT.Add(_url_uid,assetPath);
+
+				item.UrlUid = _url_uid;
+				itemsLUT.Remove(_url_uid);
+				itemsLUT.Add(_url_uid,item);
 			}
 
 		}
@@ -2690,10 +2721,20 @@ In doubt, do not use this and get in touch with us to learn more before you work
 		{
 			if (Debug_on) Debug.Log("ProceedWithImport for "+url+" "+rawContent);
 
-			string assetPath = downloadsLUT[url];
-			downloadsLUT.Remove(url);
+			// get uid from the url
+			string _uid = EcosystemUtils.GetUrlQueryParameter(url,"uid");
 
-			Item item =  itemsLUT[url];
+			if (string.IsNullOrEmpty(_uid))
+			{
+				if (Debug_on) Debug.Log("missing uid for "+url);
+				yield break;
+			}
+
+			string assetPath = downloadsLUT[_uid];
+			downloadsLUT.Remove(_uid);
+
+			Item item =  itemsLUT[_uid];
+			item.UrlUid = null;
 
 			Hashtable rep = (Hashtable)item.RawData["repository"];
 			string repositoryPath = (string)rep["full_name"];
@@ -2757,7 +2798,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 							dscripturl = _uri.GetLeftPart(UriPartial.Path);
 
 							//Debug.Log("Will download dependancy "+dscripturl);
-						 	Dictionary<string,string> _queries = EcosystemUtils.ParseQueryString(_uri.Query);
+						 	Dictionary<string,string> _queries = EcosystemUtils.ParseUrlQueryParameters(_uri.Query);
 
 							if (_queries.ContainsKey("assetFilePath"))
 							{

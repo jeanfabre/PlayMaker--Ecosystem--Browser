@@ -210,6 +210,8 @@ metadata
 			}
 		}
 
+		public string UrlUid;
+
 
 		string _RepositoryFullNamePath;
 		/*

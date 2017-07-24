@@ -40,8 +40,7 @@ public class UTSaveVersionInProperty : UTAction
 		var pathToInstance = assetPath.EvaluateIn (context);
 		pathToInstance = UTFileUtils.FullPathToProjectPath (pathToInstance);
 		
-		var theAsset = AssetDatabase.LoadMainAssetAtPath (pathToInstance);
-
+		AssetDatabase.LoadMainAssetAtPath (pathToInstance);
 	
 		yield return "";
 	}
