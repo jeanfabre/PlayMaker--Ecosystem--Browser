@@ -66,7 +66,11 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 
 		string rawSearchResult="";
 
-		WWW wwwSearch;
+		#if UNITY_2017 && UNITY_2017_1
+			HutongGames.PlayMaker.Ecosystem.Utils.WWW wwwSearch;
+		#else
+			WWW wwwSearch;
+		#endif
 
 		string selectedAction;
 
@@ -79,7 +83,11 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 
 		Dictionary<string,Item> itemsLUT;
 
-		List<WWW> downloads;
+		#if UNITY_2017 && UNITY_2017_1
+			List<HutongGames.PlayMaker.Ecosystem.Utils.WWW> downloads;
+		#else
+			List<WWW> downloads;
+		#endif
 
 		private bool filterTouched;
 
@@ -147,7 +155,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 
 			Instance.position = new Rect(100,100, 430,600);
 			Instance.minSize = new Vector2(430,600);
-		#if UNITY_4_3 || UNITY_4_4 || UNITY_4_5 || UNITY_4_5 || UNITY_4_6 || UNITY_4_7 || UNITY_5_0 || UNITY_2017
+		#if UNITY_4_3 || UNITY_4_4 || UNITY_4_5 || UNITY_4_5 || UNITY_4_6 || UNITY_4_7 || UNITY_5_0
 			Instance.title = "Ecosystem";
 		#else
 			string _ecosystemSkinPath ="";
@@ -160,6 +168,8 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 
 			// init static vars
 			PlayMakerEcosystemFiltersLength = Enum.GetNames(typeof(PlayMakerEcosystemFilters)).Length;
+
+
 		}
 
 		#region Disclaimer
@@ -690,7 +700,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 		{
 
 
-			#if UNITY_2017 && ! UNITY_2017_2_OR_NEWER
+			#if FALSE && UNITY_2017 && ! UNITY_2017_2_OR_NEWER
 			
 			GUILayout.Space(10);
 			GUILayout.BeginHorizontal();
@@ -2350,7 +2360,12 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 			wwwSearch = new WWW(url,_form.data);
 			#else
-			wwwSearch = new WWW(url);
+
+				#if UNITY_2017 && UNITY_2017_1
+					wwwSearch = new HutongGames.PlayMaker.Ecosystem.Utils.WWW(url);
+				#else
+					wwwSearch = new WWW(url);
+				#endif
 			#endif
 			lastSearchString = searchString;
 
@@ -2418,8 +2433,14 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			//	{
 					//Debug.Log("Checking download "+i);
 					int i =0;
+
+				#if UNITY_2017 && UNITY_2017_1
+					HutongGames.PlayMaker.Ecosystem.Utils.WWW _www = downloads[i];
+				#else
 					WWW _www = downloads[i];
-					if(_www.isDone){
+				#endif
+
+				if(_www.isDone){
 						string _www_url = _www.url;
 						string _www_text = _www.text;
 						byte[] _www_bytes = _www.bytes;
@@ -2694,7 +2715,12 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 			if (downloads==null)
 			{
-				downloads = new List<WWW>();
+				#if UNITY_2017 && UNITY_2017_1
+					downloads = new List<HutongGames.PlayMaker.Ecosystem.Utils.WWW>();
+				#else
+					downloads = new List<WWW>();
+				#endif
+
 			}
 
 			if (itemsLUT==null)
@@ -2707,7 +2733,15 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			{
 				string _url_uid = (www_uid++).ToString();
 				url = EcosystemUtils.AddParameterToUrlQuery(url,"uid",_url_uid);
-				downloads.Add(new WWW(url));
+
+				#if UNITY_2017 && UNITY_2017_1
+					downloads.Add(new HutongGames.PlayMaker.Ecosystem.Utils.WWW(url));
+				#else
+					downloads.Add(new WWW(url));
+				#endif
+
+
+
 				downloadsLUT.Add(_url_uid,assetPath);
 
 				item.UrlUid = _url_uid;

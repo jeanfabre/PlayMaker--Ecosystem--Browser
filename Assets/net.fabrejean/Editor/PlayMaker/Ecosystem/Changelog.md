@@ -1,5 +1,11 @@
 #Ecosystem Change log
 
+###0.5.1
+**Release:** 24/07/2017  
+
+**Update:** Fixed Support for Unity 2017.0 and 2017.1
+
+**Fix**: Fixed bad compile flag for obsolete .title property of EditorWindow
 
 ###0.5 
 **Release:** 24/07/2017  
