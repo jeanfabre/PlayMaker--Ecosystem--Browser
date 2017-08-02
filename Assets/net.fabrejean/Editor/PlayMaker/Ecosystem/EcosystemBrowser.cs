@@ -310,7 +310,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 		#region ProjectScanner
 
-#if PLAYMAKER_ECOSYSTEM_BETA
+#if PLAYMAKER_ECOSYSTEM_BETA && !(UNITY_2017 && UNITY_2017_1)
 		static string _projectScanData_key = "Project scan data";
 #endif
 		void OnGUI_ProjectScanner()
@@ -787,7 +787,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 
 			// project scanner display and trigger logic
-#if PLAYMAKER_ECOSYSTEM_BETA
+#if PLAYMAKER_ECOSYSTEM_BETA && !(UNITY_2017 && UNITY_2017_1)
 			if (
 				!ProjectScanner.instance.IsScanning &&
 				!ProjectScanner.instance.isProjectScanned &&
@@ -823,7 +823,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 
 
-			#if PLAYMAKER_ECOSYSTEM_BETA
+			#if PLAYMAKER_ECOSYSTEM_BETA && !(UNITY_2017 && UNITY_2017_1)
 			GUILayout.BeginHorizontal();
 				if (!ShowProjectScanner)
 				{
@@ -1189,7 +1189,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 			}
 
-#if PLAYMAKER_ECOSYSTEM_BETA
+#if PLAYMAKER_ECOSYSTEM_BETA && !(UNITY_2017 && UNITY_2017_1)
 			bool _newProjectScanner = GUILayout.Toggle(ShowProjectScanner,"Project Scanner",EditorStyles.toolbarButton);
 			if (_newProjectScanner!=ShowProjectScanner)
 			{
@@ -1220,12 +1220,14 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				toolsMenu.AddItem(new GUIContent("Help..."), false, OnTools_Help);
 
 				toolsMenu.AddSeparator("");
-				#if PLAYMAKER_ECOSYSTEM_BETA
-				toolsMenu.AddItem(new GUIContent("Disable Beta Features"), false, OnTools_DisableBeta);
-				#else
-				toolsMenu.AddItem(new GUIContent("Enable Beta Features"), false, OnTools_EnableBeta);
-				#endif
 
+				#if !(UNITY_2017 && UNITY_2017_1)
+					#if PLAYMAKER_ECOSYSTEM_BETA
+					toolsMenu.AddItem(new GUIContent("Disable Beta Features"), false, OnTools_DisableBeta);
+					#else
+					toolsMenu.AddItem(new GUIContent("Enable Beta Features"), false, OnTools_EnableBeta);
+					#endif
+				#endif
 				// Offset menu from right of editor window
 				toolsMenu.DropDown(new Rect(Screen.width-150, 0, 0, 16));
 				EditorGUIUtility.ExitGUI();
@@ -1254,7 +1256,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 			GUILayout.Space(6);
 
-			#if PLAYMAKER_ECOSYSTEM_BETA
+			#if PLAYMAKER_ECOSYSTEM_BETA && !(UNITY_2017 && UNITY_2017_1)
 				OnGUI_FilterButton();
 			#else
 				OnGUI_FilterButtonOld();
@@ -2265,7 +2267,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				Repaint ();
 			}
 
-			#if PLAYMAKER_ECOSYSTEM_BETA
+			#if PLAYMAKER_ECOSYSTEM_BETA && !(UNITY_2017 && UNITY_2017_1)
 			string url = __REST_URL_BASE__+"searchAssets/"+WWW.EscapeURL(searchString);
 			#else
 			string url = __REST_URL_BASE__+"search/"+WWW.EscapeURL(searchString);
@@ -2343,7 +2345,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 			if (Debug_on) Debug.Log(url);
 
-			#if PLAYMAKER_ECOSYSTEM_BETA
+			#if PLAYMAKER_ECOSYSTEM_BETA && !(UNITY_2017 && UNITY_2017_1)
 			WWWForm _form = new WWWForm();
 			_form.AddField("EcosystemVersion",CurrentVersion.ToString());
 			_form.AddField("UnityVersion",Application.unityVersion);

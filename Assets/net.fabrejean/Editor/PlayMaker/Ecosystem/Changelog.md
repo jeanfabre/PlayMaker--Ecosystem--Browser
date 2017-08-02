@@ -1,5 +1,10 @@
 #Ecosystem Change log
 
+###0.5.2
+**Release:** 01/08/2017  
+
+**New:** Added verification protocol to accept server's certificates, trying to resolve empty return from queries
+
 ###0.5.1
 **Release:** 24/07/2017  
 
