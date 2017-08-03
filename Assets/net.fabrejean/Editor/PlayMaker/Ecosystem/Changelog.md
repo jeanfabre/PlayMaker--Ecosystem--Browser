@@ -1,5 +1,10 @@
 #Ecosystem Change log
 
+###0.5.3
+**Release:** 03/08/2017  
+
+**Fix:** Addon menu item properly indexed to not end up first.
+
 ###0.5.2
 **Release:** 01/08/2017  
 
