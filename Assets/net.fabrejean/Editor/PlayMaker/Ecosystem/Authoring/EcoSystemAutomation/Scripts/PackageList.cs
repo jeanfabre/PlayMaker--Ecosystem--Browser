@@ -3,10 +3,8 @@ using UnityEngine;
 
 namespace Net.FabreJean.PlayMaker.Ecosystem
 {
-    [CreateAssetMenu(fileName = "EcoSytemBundle", menuName = "Automation", order = 1)]
+    [CreateAssetMenu(fileName = "EcoAutoPacker", menuName = "NewEcoAutoPacker", order = 1)]
     [System.Serializable]
-    // Single Files List
-
     // Package List
     public class PackageList : ScriptableObject
     {
@@ -21,6 +19,8 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
         [SerializeField]
         public List<YouTubeLink> youTubeLists = new List<YouTubeLink>();
         [SerializeField]
+        public List<WebLink> webLinkList = new List<WebLink>();
+        [SerializeField]
         public string type;
         [SerializeField]
         public string modules;
@@ -31,9 +31,9 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
         [SerializeField]
         public string pmMinVersion;
         [SerializeField]
-        public string youTubeVidLink;
+        public string youTubeVidLink; //need to change to list
         [SerializeField]
-        public string webLink;
+        public string webLink; //need to change to list
         [SerializeField]
         public string keyWords;
         [SerializeField]
@@ -48,56 +48,5 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
         public string ecoFilter;
         [SerializeField]
         public string targetPackageTextFile;
-    }
-    public class IncludeFolder
-    {
-        [SerializeField]
-        public string includeFolderString = "";
-
-        public IncludeFolder(string folderToAdd)
-        {
-            includeFolderString = folderToAdd;
-        }
-    }
-    // Exclude Folder
-    public class ExcludeFolder
-    {
-        [SerializeField]
-        public string excludeFolderString = "";
-
-        public ExcludeFolder(string folderToAdd)
-        {
-            excludeFolderString = folderToAdd;
-        }
-    }
-
-    // Include File
-
-    public class IncludeFile
-    {
-        [SerializeField]
-        public string includeFileString;
-
-        public IncludeFile(string folderToAdd)
-        {
-            includeFileString = folderToAdd;
-        }
-    }
-    // Exclude File
-    public class ExcludeFile
-    {
-        [SerializeField]
-        public string excludeFileString;
-
-        public ExcludeFile(string folderToAdd)
-        {
-            excludeFileString = folderToAdd;
-        }
-    }
-
-    public class YouTubeLink
-    {
-        [SerializeField]
-        public string youTubeLinkString = string.Empty;
     }
 }
