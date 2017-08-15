@@ -6,53 +6,49 @@ using System.Collections.Generic;
 
 namespace Net.FabreJean.PlayMaker.Ecosystem
 {
+    
     [CustomEditor(typeof(PackageList))]
     public class EcosystemPackager : Editor
     {
         PackageList pl;
         private string folderToAdd;
         private string fileToAdd;
-        public OPTIONS op;
+        public string op;
         private List<string> includeFileList = new List<string>();
         List<string> PackageTextArray = new List<string>();
         private string packageType;
         private string get_targetDirectory;
         private string unityPackage;
         private Texture folderImage;
-
-
-
-        public enum OPTIONS
-        {
-            ActionPackage = 0,
-            SamplePackage = 1,
-            TemplatePackage = 2
-        }
+        private bool overwriteWaring;
+        private Object additem;
+        private string addItemPath;
+        private bool Canceled;
 
         private void OnEnable()
         {
             pl = (PackageList)target;
-            folderImage = (Texture)AssetDatabase.LoadAssetAtPath("Assets/EcoSystemAutomation/Images/folderIcon.png", typeof(Texture));
+            folderImage = (Texture)AssetDatabase.LoadAssetAtPath("Assets/EcoSystemAutomation/Editor/Images/folderIcon.png", typeof(Texture));
         }
         // Inspector
         public override void OnInspectorGUI()
         {
-            GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Save Changes"))
-            {
-                CreatePackage();
-                GUIUtility.ExitGUI();
-            }
-            if (GUILayout.Button("Create Package"))
+            EditorGUI.BeginChangeCheck();
+            #region Top Buttons
+            GUILayout.BeginHorizontal("box");
+            GUILayout.Label("Check if file exist", GUILayout.Width(130));
+            pl.fileExistsCheck = EditorGUILayout.Toggle(pl.fileExistsCheck, GUILayout.Width(15));
+            if (GUILayout.Button("Create Package", GUILayout.Height(20)))
             {
                 CreatePackage();
                 GUIUtility.ExitGUI();
             }
             GUILayout.EndHorizontal();
+            #endregion
 
+            #region Text Edit Target and Package Type
             // Set Package Name
             GUILayout.BeginVertical("box");
-            EditorGUI.BeginChangeCheck();
             GUILayout.BeginHorizontal();
             GUILayout.Label("Package Name", GUILayout.Width(150));
             pl.packageName = EditorGUILayout.TextField(pl.packageName, GUILayout.MinWidth(5));
@@ -85,7 +81,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             // Set Package type
             GUILayout.BeginHorizontal();
             GUILayout.Label("Package Type", GUILayout.Width(150));
-            op = (OPTIONS)EditorGUILayout.EnumPopup("", op, GUILayout.MinWidth(5)); // change layout
+           pl.packagetypeselected = EditorGUILayout.Popup(pl.packagetypeselected, pl.packagetypeselection);
             if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
             {
                 Application.OpenURL("http://www.jinxtergames.com/");
@@ -96,36 +92,27 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             GUILayout.EndVertical();
             GUILayout.Space(1);
             GUILayout.BeginVertical("box");
-            switch (op)
+            switch (pl.packagetypeselected)
             {
-                case OPTIONS.ActionPackage:
+                case 0:
                     EditorGUILayout.Space();
                     packageType = ("__PACKAGE__");
                     break;
 
-                case OPTIONS.SamplePackage:
+                case 1:
                     EditorGUILayout.Space();
                     packageType = ("__SAMPLE__");
                     break;
 
-                case OPTIONS.TemplatePackage:
+                case 2:
                     EditorGUILayout.Space();
                     packageType = ("__TEMPLATE__");
                     break;
 
             } //Switch end
+            #endregion
 
-            // EcoFilter
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("EcoFilter", GUILayout.Width(150));
-            pl.ecoFilter = EditorGUILayout.TextField(pl.ecoFilter, GUILayout.MinWidth(5));
-            if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
-            {
-                Application.OpenURL("http://www.jinxtergames.com/");
-
-            }
-            GUILayout.EndHorizontal();
-
+            #region Text Edit Input Box
             // Type
             GUILayout.BeginHorizontal();
             GUILayout.Label("Type", GUILayout.Width(150));
@@ -136,15 +123,6 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             }
             GUILayout.EndHorizontal();
 
-            // Modules
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Modules", GUILayout.Width(150));
-            pl.modules = EditorGUILayout.TextField(pl.modules, GUILayout.MinWidth(5));
-            if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
-            {
-                Application.OpenURL("http://www.jinxtergames.com/");
-            }
-            GUILayout.EndHorizontal();
 
             // Version
             GUILayout.BeginHorizontal();
@@ -156,36 +134,6 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             }
             GUILayout.EndHorizontal();
 
-            // Unity Minimum Version
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Unity Minimum Version", GUILayout.Width(150));
-            pl.uMinVersion = EditorGUILayout.TextField(pl.uMinVersion, GUILayout.MinWidth(5));
-            if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
-            {
-                Application.OpenURL("http://www.jinxtergames.com/");
-            }
-            GUILayout.EndHorizontal();
-
-            // PlayMaker Minimum Version
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("PlayMaker Min. Version", GUILayout.Width(150));
-            pl.pmMinVersion = EditorGUILayout.TextField(pl.pmMinVersion, GUILayout.MinWidth(5));
-            if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
-            {
-                Application.OpenURL("http://www.jinxtergames.com/");
-            }
-            GUILayout.EndHorizontal();
-
-            // Ping Asset Path
-            EditorGUILayout.BeginHorizontal();
-            GUILayout.Label("Ping Asset Path", GUILayout.Width(150));
-            pl.assetPath = (Object)EditorGUILayout.ObjectField(pl.assetPath, typeof(Object), true);
-            if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
-            {
-                Application.OpenURL("http://www.jinxtergames.com/");
-            }
-            EditorGUILayout.EndHorizontal();
-
             // Keywords
             GUILayout.BeginHorizontal();
             GUILayout.Label("Keywords", GUILayout.Width(150));
@@ -195,7 +143,154 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                 Application.OpenURL("http://www.jinxtergames.com/");
             }
             GUILayout.EndHorizontal();
+
+            // Unity Minimum Version
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Unity Minimum Version", GUILayout.Width(150));
+            GUILayout.BeginVertical();
+            pl.uMinVersionSelected = EditorGUILayout.Popup(pl.uMinVersionSelected, pl.uMinVersion);
+            GUILayout.EndVertical();
+            if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
+            {
+                Application.OpenURL("http://www.jinxtergames.com/");
+            }
+            GUILayout.EndHorizontal();
+
+            // PlayMaker Minimum Version
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("PlayMaker Min. Version", GUILayout.Width(150));
+
+            pl.pmMinVersionSelected = EditorGUILayout.Popup(pl.pmMinVersionSelected, pl.pmMinVersion);
+            if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
+            {
+                Application.OpenURL("http://www.jinxtergames.com/");
+            }
+            GUILayout.EndHorizontal();
+
+            // Ping
             
+            GUILayout.Space(8);
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Ping Type", GUILayout.Width(150));
+            pl.Pingtypeselected = EditorGUILayout.Popup(pl.Pingtypeselected, pl.Pingtype);
+            if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
+            {
+                Application.OpenURL("http://www.jinxtergames.com/");
+
+            }
+            GUILayout.EndHorizontal();
+            switch (pl.Pingtypeselected)
+            {
+
+
+                case 1:
+
+                    // Ping Asset Path
+                    GUILayout.BeginVertical("box");
+                    GUILayout.Space(3);
+                    EditorGUILayout.BeginHorizontal();
+                    GUILayout.Label("Select Asset Path", GUILayout.Width(150));
+                    pl.assetPath = (Object)EditorGUILayout.ObjectField(pl.assetPath, typeof(Object), false);
+                    if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
+                    {
+                        Application.OpenURL("http://www.jinxtergames.com/");
+                    }
+                    EditorGUILayout.EndHorizontal();
+                    GUILayout.Space(3);
+                    GUILayout.EndVertical();
+                    break;
+
+                case 2:
+                    // Ping Menu
+                    GUILayout.BeginVertical("box");
+                    GUILayout.Space(3);
+                    EditorGUILayout.BeginHorizontal();
+                    GUILayout.Label("Select Menu", GUILayout.Width(150));
+                    pl.pingMenu = (Object)EditorGUILayout.ObjectField(pl.pingMenu, typeof(Object), false);
+                    if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
+                    {
+                        Application.OpenURL("http://www.jinxtergames.com/");
+                    }
+                    EditorGUILayout.EndHorizontal();
+                    GUILayout.Space(3);
+                    GUILayout.EndVertical();
+                    break;
+            }
+
+
+
+            // EcoFilter Link's
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("EcoFilter", GUILayout.Width(150));
+            if (GUILayout.Button("Add", GUILayout.Height(16), GUILayout.MinWidth(5)))
+            {
+                AddEcoFilterString();
+            }
+            if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
+            {
+                Application.OpenURL("http://www.jinxtergames.com/");
+            }
+            GUILayout.EndHorizontal();
+            GUILayout.Space(2);
+            // Show Each EcoFilter Link
+            if (pl.ecoFilterList.Count > 0)
+            {
+                GUILayout.BeginVertical("box");
+                GUILayout.Space(5);
+                for (int CountA = 0; CountA < pl.ecoFilterList.Count; CountA++)
+                {
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Label("", GUILayout.Width(5));
+
+                    pl.ecoFilterList[CountA] = EditorGUILayout.TextField(pl.ecoFilterList[CountA]);
+                    if (GUILayout.Button("X", GUILayout.Width(16), GUILayout.Height(15)))
+                    {
+                        RemoveEcoFilterString(CountA);
+                    }
+                    GUILayout.Label("", GUILayout.Width(5));
+                    GUILayout.EndHorizontal();
+                }
+                GUILayout.Space(5);
+                GUILayout.EndVertical();
+            }
+
+            // Modules Link's
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Modules", GUILayout.Width(150));
+            if (GUILayout.Button("Add", GUILayout.Height(16), GUILayout.MinWidth(5)))
+            {
+                AddModuleString();
+            }
+            if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
+            {
+                Application.OpenURL("http://www.jinxtergames.com/");
+            }
+            GUILayout.EndHorizontal();
+            GUILayout.Space(2);
+            // Show Each Module Link
+            if (pl.modulesList.Count > 0)
+            {
+                GUILayout.BeginVertical("box");
+                GUILayout.Space(5);
+                for (int CountA = 0; CountA < pl.modulesList.Count; CountA++)
+                {
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Label("", GUILayout.Width(5));
+
+                    pl.modulesList[CountA] = EditorGUILayout.TextField(pl.modulesList[CountA]);
+                    if (GUILayout.Button("X", GUILayout.Width(16), GUILayout.Height(15)))
+                    {
+                        RemoveModuleString(CountA);
+                    }
+                    GUILayout.Label("", GUILayout.Width(5));
+                    GUILayout.EndHorizontal();
+                }
+                GUILayout.Space(5);
+                GUILayout.EndVertical();
+            }
+
+
+
             // YouTube Link's
             GUILayout.BeginHorizontal();
             GUILayout.Label("YouTube Video Links", GUILayout.Width(150));
@@ -219,7 +314,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                     GUILayout.BeginHorizontal();
                     GUILayout.Label("", GUILayout.Width(5));
 
-                    pl.youTubeLists[CountA].youTubeLinkString = EditorGUILayout.TextField(pl.youTubeLists[CountA].youTubeLinkString);
+                    pl.youTubeLists[CountA] = EditorGUILayout.TextField(pl.youTubeLists[CountA]);
                     if (GUILayout.Button("X", GUILayout.Width(16), GUILayout.Height(15)))
                     {
                         RemoveYouTubeString(CountA);
@@ -231,8 +326,6 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                 GUILayout.EndVertical();
             }
 
-
-            
             // Web Link's
             GUILayout.BeginHorizontal();
             GUILayout.Label("Web Links", GUILayout.Width(150));
@@ -255,7 +348,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                 {
                     GUILayout.BeginHorizontal();
                     GUILayout.Label("", GUILayout.Width(5));
-                    pl.webLinkList[CountA].webLinkString = EditorGUILayout.TextField(pl.webLinkList[CountA].webLinkString);
+                    pl.webLinkList[CountA] = EditorGUILayout.TextField(pl.webLinkList[CountA]);
                     if (GUILayout.Button("X", GUILayout.Width(16), GUILayout.Height(15)))
                     {
                         RemoveWebLinkString(CountA);
@@ -266,36 +359,63 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                 GUILayout.Space(5);
                 GUILayout.EndVertical();
             }
-            
-
-
             GUILayout.Space(5);
-
             GUILayout.EndVertical();
+            #endregion
+
+            #region Set Folders And Files
             GUILayout.Space(10);
             // Add Buttons
-            GUILayout.Label("Set Folders And Files");
 
+            GUILayout.BeginVertical("box");
+            GUILayout.Space(2);
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Include Folder"))
-            {
-                IncludeFolder();
-            }
-            if (GUILayout.Button("Exclude Folder"))
-            {
-                ExcludeFolder();
-            }
+            GUILayout.FlexibleSpace();
+            EditorGUILayout.LabelField("Set Folders And Files", EditorStyles.boldLabel);
+            GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
-            GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Include File"))
+            GUILayout.Space(5);
+
+            // include dropbox
+            GUILayout.BeginVertical("box");
+            GUI.color = Color.green;
+            EditorGUILayout.LabelField("Drop files or folder to include");
+            additem = (Object)EditorGUILayout.ObjectField(additem, typeof(Object), false);
+            GUI.color = new Color(1, 1, 1, 1);
+            addItemPath = AssetDatabase.GetAssetPath(additem);
+            if (additem != null)
             {
-                IncludeFile();
+                if (AssetDatabase.IsValidFolder(AssetDatabase.GetAssetPath(additem)))
+                {
+                    IncludeFolder();
+                }
+                else
+                {
+                    IncludeFile();
+                }
             }
-            if (GUILayout.Button("Exclude File"))
+            GUILayout.EndVertical();
+            GUILayout.Space(5);
+
+            // exclude dropbox
+            GUILayout.BeginVertical("box");
+            GUI.color = Color.red;
+            EditorGUILayout.LabelField("Drop files or folder to exclude");
+            additem = (Object)EditorGUILayout.ObjectField(additem, typeof(Object), false);
+            GUI.color = new Color(1, 1, 1, 1);
+            addItemPath = AssetDatabase.GetAssetPath(additem);
+            if (additem != null)
             {
-                ExcludeFile();
+                if (AssetDatabase.IsValidFolder(AssetDatabase.GetAssetPath(additem)))
+                {
+                    ExcludeFolder();
+                }
+                else
+                {
+                    ExcludeFile();
+                }
             }
-            GUILayout.EndHorizontal();
+            GUILayout.EndVertical();
             // End Add Buttons
 
             // Include folder List
@@ -306,7 +426,9 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             for (int CountA = 0; CountA < pl.includeFolders.Count; CountA++)
             {
                 GUILayout.BeginHorizontal();
-                pl.includeFolders[CountA].includeFolderString = EditorGUILayout.TextField(pl.includeFolders[CountA].includeFolderString, GUILayout.MinWidth(200));
+                //   pl.includeFolders[CountA].includeFolderString = EditorGUILayout.TextField(pl.includeFolders[CountA].includeFolderString, GUILayout.MinWidth(200));
+                // test
+                pl.includeFolders[CountA] = EditorGUILayout.TextField(pl.includeFolders[CountA], GUILayout.MinWidth(200));
                 if (GUILayout.Button("X", GUILayout.Width(16), GUILayout.Height(15)))
                 {
                     RemoveIncludeFolder(CountA);
@@ -323,7 +445,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             for (int CountB = 0; CountB < pl.excludeFolders.Count; CountB++)
             {
                 GUILayout.BeginHorizontal();
-                pl.excludeFolders[CountB].excludeFolderString = EditorGUILayout.TextField(pl.excludeFolders[CountB].excludeFolderString, GUILayout.MinWidth(200));
+                pl.excludeFolders[CountB] = EditorGUILayout.TextField(pl.excludeFolders[CountB], GUILayout.MinWidth(200));
                 if (GUILayout.Button("X", GUILayout.Width(16), GUILayout.Height(15)))
                 {
                     RemoveExcludeFolder(CountB);
@@ -340,7 +462,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             for (int CountC = 0; CountC < pl.includeFiles.Count; CountC++)
             {
                 GUILayout.BeginHorizontal();
-                pl.includeFiles[CountC].includeFileString = EditorGUILayout.TextField(pl.includeFiles[CountC].includeFileString, GUILayout.MinWidth(200));
+                pl.includeFiles[CountC] = EditorGUILayout.TextField(pl.includeFiles[CountC], GUILayout.MinWidth(200));
                 if (GUILayout.Button("X", GUILayout.Width(16), GUILayout.Height(15)))
                 {
                     RemoveIncludeFile(CountC);
@@ -357,7 +479,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             for (int CountD = 0; CountD < pl.excludeFiles.Count; CountD++)
             {
                 GUILayout.BeginHorizontal();
-                pl.excludeFiles[CountD].excludeFileString = EditorGUILayout.TextField(pl.excludeFiles[CountD].excludeFileString, GUILayout.MinWidth(200));
+                pl.excludeFiles[CountD] = EditorGUILayout.TextField(pl.excludeFiles[CountD], GUILayout.MinWidth(200));
                 if (GUILayout.Button("X", GUILayout.Width(16), GUILayout.Height(15)))
                 {
                     RemoveExcludeFile(CountD);
@@ -365,108 +487,172 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                 }
                 GUILayout.EndHorizontal();
             }
+            GUILayout.EndVertical();
+            #endregion
 
             if (EditorGUI.EndChangeCheck())
             {
-                // save on change but HOW????
-                // Tried repaint
-                // setdirty
-                // AssetDatabase.SaveAssets()
-                //Debug.Log("changed");
-                EditorUtility.SetDirty(this);
+                EditorUtility.SetDirty(pl);
                 Repaint();
             }
         }
         // End Inspector
-
-
+        #region Add Strings, Folders, Files
+        // Add EcoFilter String
+        private void AddEcoFilterString()
+        {
+            string EcostringToAdd = "";
+            pl.ecoFilterList.Add(EcostringToAdd);
+            EditorUtility.SetDirty(pl);
+            Repaint();
+        }
+        // Add Module String
+        private void AddModuleString()
+        {
+            string modstringToAdd = "";
+            pl.modulesList.Add(modstringToAdd);
+            EditorUtility.SetDirty(pl);
+            Repaint();
+        }
+        // Add youtube String
         private void AddYoutubeString()
         {
-            string stringToAdd = "place link";
-            pl.youTubeLists.Add(new YouTubeLink(stringToAdd));
+            string stringToAdd = "";
+            pl.youTubeLists.Add(stringToAdd);
+            EditorUtility.SetDirty(pl);
+            Repaint();
         }
-
+        // Add Weblink String
         private void AddWebLinkString()
         {
-            string stringToAdd = "place link";
-            pl.webLinkList.Add(new WebLink(stringToAdd));
+            string stringToAdd = "";
+            pl.webLinkList.Add(stringToAdd);
+            EditorUtility.SetDirty(pl);
+            Repaint();
 
         }
 
         // Add Include Folder
         private void IncludeFolder()
         {
-            string get_Folder = EditorUtility.OpenFolderPanel("Select Folder To Include", Application.dataPath, "*.*");
+            // string get_Folder = EditorUtility.OpenFolderPanel("Select Folder To Include", Application.dataPath, "*.*");
+            string get_Folder = addItemPath;
             int index = get_Folder.IndexOf("Assets");
             folderToAdd = get_Folder.Substring(index);
-            pl.includeFolders.Add(new IncludeFolder(folderToAdd));
+            additem = null;
+            pl.includeFolders.Add(folderToAdd);
+            EditorUtility.SetDirty(pl);
+            Repaint();
 
-        }
-        // Add Exclude Folder
-        private void ExcludeFolder()
-        {
-            string get_Folder = EditorUtility.OpenFolderPanel("Select Folder To Exclude", Application.dataPath, "*.*");
-            int index = get_Folder.IndexOf("Assets");
-            folderToAdd = get_Folder.Substring(index);
-            pl.excludeFolders.Add(new ExcludeFolder(folderToAdd));
         }
         // Add Include File
         private void IncludeFile()
         {
-            string get_Folder = EditorUtility.OpenFilePanel("Select File To Include", Application.dataPath, "*.*");
+            //   string get_Folder = EditorUtility.OpenFilePanel("Select File To Include", Application.dataPath, "*.*");
+            string get_Folder = addItemPath;
             int index = get_Folder.IndexOf("Assets");
             fileToAdd = get_Folder.Substring(index);
-            pl.includeFiles.Add(new IncludeFile(fileToAdd));
+            additem = null;
+            pl.includeFiles.Add(fileToAdd);
+            EditorUtility.SetDirty(pl);
+            Repaint();
+        }
+        // Add Exclude Folder
+        private void ExcludeFolder()
+        {
+            //string get_Folder = EditorUtility.OpenFolderPanel("Select Folder To Exclude", Application.dataPath, "*.*");
+            string get_Folder = addItemPath;
+            int index = get_Folder.IndexOf("Assets");
+            folderToAdd = get_Folder.Substring(index);
+            additem = null;
+            pl.excludeFolders.Add(folderToAdd);
+            EditorUtility.SetDirty(pl);
+            Repaint();
         }
         // Add Exclude File
         private void ExcludeFile()
         {
-            string get_Folder = EditorUtility.OpenFilePanel("Select File To Exclude", Application.dataPath, "*.*");
+            // string get_Folder = EditorUtility.OpenFilePanel("Select File To Exclude", Application.dataPath, "*.*");
+            string get_Folder = addItemPath;
             int index = get_Folder.IndexOf("Assets");
             fileToAdd = get_Folder.Substring(index);
-            pl.excludeFiles.Add(new ExcludeFile(fileToAdd));
+            additem = null;
+            pl.excludeFiles.Add(fileToAdd);
+            EditorUtility.SetDirty(pl);
+            Repaint();
+        }
+        #endregion
+
+        #region Remove Strings, Folders, Files
+        // Remove EcoFilter String
+        private void RemoveEcoFilterString(int index)
+        {
+            pl.ecoFilterList.RemoveAt(index);
+            EditorUtility.SetDirty(pl);
+            Repaint();
+        }
+        // Remove Module String
+        private void RemoveModuleString(int index)
+        {
+            pl.modulesList.RemoveAt(index);
+            EditorUtility.SetDirty(pl);
+            Repaint();
         }
         // Remove YouTube String
         private void RemoveYouTubeString(int index)
         {
             pl.youTubeLists.RemoveAt(index);
+            EditorUtility.SetDirty(pl);
+            Repaint();
         }
         // Remove WebLink String
         private void RemoveWebLinkString(int index)
         {
             pl.webLinkList.RemoveAt(index);
+            EditorUtility.SetDirty(pl);
+            Repaint();
         }
         // Remove Include Folder
         private void RemoveIncludeFolder(int index)
         {
             pl.includeFolders.RemoveAt(index);
+            EditorUtility.SetDirty(pl);
+            Repaint();
         }
         // Remove Exclude Folder
         private void RemoveExcludeFolder(int index)
         {
             pl.excludeFolders.RemoveAt(index);
+            EditorUtility.SetDirty(pl);
+            Repaint();
         }
         // Remove Include File
         private void RemoveIncludeFile(int index)
         {
             pl.includeFiles.RemoveAt(index);
+            EditorUtility.SetDirty(pl);
+            Repaint();
         }
         // Remove Exclude File
         private void RemoveExcludeFile(int index)
         {
             pl.excludeFiles.RemoveAt(index);
+            EditorUtility.SetDirty(pl);
+            Repaint();
         }
+        #endregion
 
         // Set Target Directory
         private void OnSetTargetDirectory()
         {
             get_targetDirectory = EditorUtility.OpenFolderPanel(Application.dataPath, "", "*.*");
-            pl.targetDirectory = get_targetDirectory + "/" + pl.packageName + ".unitypackage";
-            pl.targetPackageTextFile = get_targetDirectory + "/" + pl.packageName + ".package.txt";
+            pl.targetDirectory = get_targetDirectory;
             int index = pl.targetDirectory.IndexOf("PlayMaker/Ecosystem");
             if (index != -1)
             {
                 unityPackage = pl.targetDirectory.Substring(index);
+                EditorUtility.SetDirty(pl);
+                Repaint();
             }
 
         }
@@ -475,10 +661,10 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
         private void CreatePackage()
         {
             includeFileList.Clear();
-            //Include folders
+            //Include folders and check for playmaker.dll
             for (int count = 0; count < pl.includeFolders.Count; count++)
             {
-                string directoryPath = pl.includeFolders[count].includeFolderString;
+                string directoryPath = pl.includeFolders[count];
                 DirectoryInfo dir = new DirectoryInfo(directoryPath);
                 FileInfo[] info = dir.GetFiles("*.*", SearchOption.AllDirectories);
                 foreach (FileInfo f in info)
@@ -497,10 +683,11 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 
                 }
             }
+
             //Include files
             for (int count = 0; count < pl.includeFiles.Count; count++)
             {
-                string filePathString = pl.includeFiles[count].includeFileString;
+                string filePathString = pl.includeFiles[count];
                 if (!includeFileList.Contains(filePathString))
                 {
                     includeFileList.Add(filePathString);
@@ -509,7 +696,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             // Exclude folders
             for (int count = 0; count < pl.excludeFolders.Count; count++)
             {
-                string directoryPath = pl.excludeFolders[count].excludeFolderString;
+                string directoryPath = pl.excludeFolders[count];
                 DirectoryInfo dir = new DirectoryInfo(directoryPath);
                 FileInfo[] info = dir.GetFiles("*.*", SearchOption.AllDirectories);
                 foreach (FileInfo f in info)
@@ -535,7 +722,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             for (int count = 0; count < pl.excludeFiles.Count; count++)
             {
 
-                string filePathString = pl.excludeFiles[count].excludeFileString;
+                string filePathString = pl.excludeFiles[count];
                 if (includeFileList.Contains(filePathString))
                 {
                     int index = includeFileList.IndexOf(filePathString);
@@ -547,9 +734,11 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             }
             CreateTextFile();
         }
+
         // Create the Text file
         private void CreateTextFile()
         {
+            pl.targetPackageTextFile = pl.targetDirectory + "/" + pl.packageName + ".package.txt";
             PackageTextArray.Clear();
 
             PackageTextArray.Add("{");
@@ -558,32 +747,68 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             {
                 if (pl.type != "") PackageTextArray.Add("\"" + "Type" + "\"" + ":" + "\"" + pl.type + "\"" + ",");
             }
-            if (pl.ecoFilter != "") PackageTextArray.Add("\"" + "EcoFilter" + "\"" + ":" + "\"" + pl.ecoFilter + "\"" + ",");
-            if (pl.modules != "") PackageTextArray.Add("\"" + "UnityModules" + "\"" + ":[" + "\"" + pl.modules + "\"" + "],");
             if (pl.version != "") PackageTextArray.Add("\"" + "Version" + "\"" + ":" + "\"" + pl.version + "\"" + ",");
-            if (pl.uMinVersion != "") PackageTextArray.Add("\"" + "UnityMinimumVersion" + "\"" + ":" + "\"" + pl.uMinVersion + "\"" + ",");
-            if (pl.pmMinVersion != "") PackageTextArray.Add("\"" + "PlayMakerMinimumVersion" + "\"" + ":" + "\"" + pl.pmMinVersion + "\"" + ",");
+            if (pl.uMinVersion[pl.uMinVersionSelected] != "") PackageTextArray.Add("\"" + "UnityMinimumVersion" + "\"" + ":" + "\"" + pl.uMinVersion[pl.uMinVersionSelected] + "\"" + ",");
+            if (pl.pmMinVersion[pl.pmMinVersionSelected] != "") PackageTextArray.Add("\"" + "PlayMakerMinimumVersion" + "\"" + ":" + "\"" + pl.pmMinVersion[pl.pmMinVersionSelected] + "\"" + ",");
             if (unityPackage != "") PackageTextArray.Add("\"" + "unitypackage" + "\"" + ":" + "\"" + unityPackage + "\"" + ",");
-            if (pl.pingMenu != "") PackageTextArray.Add("\"" + "pingMenu" + "\"" + ":" + "\"" + pl.pingMenu + "\"" + ",");
-            if (pl.assetPath != null)
-            {
-                string assetPath = AssetDatabase.GetAssetPath(pl.assetPath);
-                PackageTextArray.Add("\"" + "pingAssetPath" + "\"" + ":" + "\"" + assetPath + "\"" + ",");
-            }
 
-            Debug.Log(pl.youTubeLists.Count);
+           switch(pl.Pingtypeselected)
+            {
+                case 1:
+                    if (pl.assetPath != null)
+                    {
+                        string assetPath = AssetDatabase.GetAssetPath(pl.assetPath);
+                        PackageTextArray.Add("\"" + "pingAssetPath" + "\"" + ":" + "\"" + assetPath + "\"" + ",");
+                    }
+                    break;
+
+
+                case 2:
+                    if (pl.pingMenu != null)
+                    {
+                        string pingMenu = AssetDatabase.GetAssetPath(pl.pingMenu);
+                        PackageTextArray.Add("\"" + "pingMenu" + "\"" + ":" + "\"" + pingMenu + "\"" + ",");
+                    }
+                    break;
+            }
+            
+
+            // For each EcoFilter
+            for (int count = 0; count < pl.ecoFilterList.Count; count++)
+            {
+                string ecoFilterString = pl.ecoFilterList[count];
+                if (ecoFilterString != "")
+                {
+                    PackageTextArray.Add("\"" + "EcoFilter" + "\"" + ":" + "\"" + ecoFilterString + "\"" + ",");
+                }
+            }
+            // for each Module
+            for (int count = 0; count < pl.modulesList.Count; count++)
+            {
+                string moduleString = pl.modulesList[count];
+                if (moduleString != "")
+                {
+                    PackageTextArray.Add("\"" + "UnityModules" + "\"" + ":[" + "\"" + moduleString + "\"" + "],");
+                }
+            }
+            // for each youtube string
             for (int count = 0; count < pl.youTubeLists.Count; count++)
             {
-                string ytLink = pl.youTubeLists[count].youTubeLinkString; 
-                PackageTextArray.Add("\"" + "YoutubeVideos" + "\"" + ":[" + "\"" + ytLink + "\"" + "],");
+                string ytLinkString = pl.youTubeLists[count];
+                if(ytLinkString != "")
+                {
+                    PackageTextArray.Add("\"" + "YoutubeVideos" + "\"" + ":[" + "\"" + ytLinkString + "\"" + "],");
+                }
             }
-
-
-
-
-
-            if (pl.webLink != "") PackageTextArray.Add("\"" + "WebLink" + "\"" + ":" + "\"" + pl.webLink + "\"" + ",");
-
+            // for each weblink string
+            for (int count = 0; count < pl.webLinkList.Count; count++)
+            {
+                string wbLinkString = pl.webLinkList[count];
+                if (wbLinkString != "")
+                {
+                    PackageTextArray.Add("\"" + "WebLink" + "\"" + ":" + "\"" + wbLinkString + "\"" + ",");
+                }
+            }
 
             PackageTextArray.Add("\"" + "keywords" + "\"" + ":" + "\"" + pl.keyWords + "\"" + "");
             PackageTextArray.Add("}");
@@ -591,30 +816,64 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             BuildPackage();
         }
         // Create Package
+
+        #region BuildPackage
         private void BuildPackage()
         {
-            AssetDatabase.ExportPackage(includeFileList.ToArray(), pl.targetDirectory, ExportPackageOptions.Default);
+            string exportdirectory = pl.targetDirectory + "/" + pl.packageName + ".unitypackage";
+            if (Directory.Exists(pl.targetDirectory))
+            {
+                if (File.Exists(exportdirectory) && pl.fileExistsCheck == true)
+                {
+                    Debug.Log("FileExists");
+                    int option = EditorUtility.DisplayDialogComplex("This Package Exists already.", "Overwrite package?", "yes", "yes, Don't ask again", "No");
+                    switch(option)
+                    {
+                        case 0:
+                            File.Delete(exportdirectory);
+                            break;
+                        case 1:
+                            pl.fileExistsCheck = false;
+                            File.Delete(exportdirectory);
+                            EditorUtility.SetDirty(pl);
+                            Repaint();
+                            break;
+                        case 2:
+                            EditorUtility.DisplayDialog("Build Canceled", "I saved your life!", "Thank You", "Doh! I Misclicked");
+                            Canceled = true;
+                            break;
+                    }
+                }
+                if(!Canceled) AssetDatabase.ExportPackage(includeFileList.ToArray(), exportdirectory, ExportPackageOptions.Default);
+            }
+            else if(!Canceled)
+            {
+                Debug.Log(pl.targetDirectory);
+                Directory.CreateDirectory(pl.targetDirectory);
+                AssetDatabase.ExportPackage(includeFileList.ToArray(), exportdirectory, ExportPackageOptions.Default);
+            }
 
             // TEST DELETE FILE BEFORE WRITING FILE
-            if (File.Exists(pl.targetPackageTextFile))
+            if (!Canceled)
             {
-                File.Delete(pl.targetPackageTextFile);
+                if (File.Exists(pl.targetPackageTextFile))
+                {
+
+                    File.Delete(pl.targetPackageTextFile);
+                }
+
+                StreamWriter packagetext = new StreamWriter(pl.targetPackageTextFile);
+
+                foreach (string p in PackageTextArray)
+                {
+                    packagetext.WriteLine(p);
+                }
+                packagetext.Close();
+
+                EditorUtility.RevealInFinder(exportdirectory);
             }
-
-            StreamWriter packagetext = new StreamWriter(pl.targetPackageTextFile);
-
-            foreach (string p in PackageTextArray)
-            {
-                packagetext.WriteLine(p);
-            }
-            packagetext.Close();
-
-            EditorUtility.RevealInFinder(pl.targetDirectory);
+            Canceled = false;
         }
-
-        private void SaveChanges()
-        {
-            //SETUP SAVE CHANGES
-        }
+        #endregion
     }
 }
