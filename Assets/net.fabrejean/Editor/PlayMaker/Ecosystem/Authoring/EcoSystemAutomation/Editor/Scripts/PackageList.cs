@@ -3,8 +3,19 @@ using UnityEngine;
 
 namespace Net.FabreJean.PlayMaker.Ecosystem
 {
+#if UNITY_4_7
+ public class PackagerUtils
+ {
+  [MenuItem("PlayMaker/Addons/Ecosystem/Publishing/Create Packager")]
+  [MenuItem("Assets/Create/PlayMaker/Ecosystem/Packager Wizard")]
+  public static void CreateAsset ()
+  {
+   EcosystemUtils.CreateAsset<PackageList>("Ecosystem Packager");
+  }
+ }
+#else
     [CreateAssetMenu(fileName = "EcoAutoPacker", menuName = "NewEcoAutoPacker", order = 1)]
-    [System.Serializable]
+#endif
     // Package List
     public class PackageList : ScriptableObject
     {
