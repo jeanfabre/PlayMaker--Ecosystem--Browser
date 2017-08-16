@@ -36,7 +36,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             EditorGUI.BeginChangeCheck();
             #region Top Buttons
             GUILayout.BeginHorizontal("box");
-            GUILayout.Label("Check if file exist", GUILayout.Width(130));
+            GUILayout.Label("Check if file exist", GUILayout.Width(100));
             pl.fileExistsCheck = EditorGUILayout.Toggle(pl.fileExistsCheck, GUILayout.Width(15));
             if (GUILayout.Button("Create Package", GUILayout.Height(20)))
             {

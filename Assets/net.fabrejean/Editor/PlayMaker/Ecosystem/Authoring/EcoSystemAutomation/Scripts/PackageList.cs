@@ -5,7 +5,7 @@ using Net.FabreJean.UnityEditor;
 
 namespace Net.FabreJean.PlayMaker.Ecosystem
 {
-	#if UNITY_4_7
+#if UNITY_4_7
 	public class PackagerUtils
 	{
 		[MenuItem("PlayMaker/Addons/Ecosystem/Publishing/Create Packager")]
@@ -15,52 +15,82 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 			EcosystemUtils.CreateAsset<PackageList>("Ecosystem Packager");
 		}
 	}
-	#else
-	    [CreateAssetMenu(fileName = "EcoAutoPacker", menuName = "NewEcoAutoPacker", order = 1)]
-	#endif
+#else
+    [CreateAssetMenu(fileName = "EcoAutoPacker", menuName = "NewEcoAutoPacker", order = 1)]
+#endif
     [System.Serializable]
     // Package List
     public class PackageList : ScriptableObject
     {
+        #region Lists
         [SerializeField]
-        public List<IncludeFolder> includeFolders = new List<IncludeFolder>();
+        public List<string> includeFolders = new List<string>();
         [SerializeField]
-        public List<ExcludeFolder> excludeFolders = new List<ExcludeFolder>();
+        public List<string> excludeFolders = new List<string>();
         [SerializeField]
-        public List<IncludeFile> includeFiles = new List<IncludeFile>();
+        public List<string> includeFiles = new List<string>();
         [SerializeField]
-        public List<ExcludeFile> excludeFiles = new List<ExcludeFile>();
+        public List<string> excludeFiles = new List<string>();
         [SerializeField]
-        public List<YouTubeLink> youTubeLists = new List<YouTubeLink>();
+        public List<string> youTubeLists = new List<string>();
         [SerializeField]
-        public List<WebLink> webLinkList = new List<WebLink>();
+        public List<string> webLinkList = new List<string>();
+        [SerializeField]
+        public List<string> modulesList = new List<string>();
+        [SerializeField]
+        public List<string> ecoFilterList = new List<string>();
+        #endregion
+
+        #region Strings
         [SerializeField]
         public string type;
         [SerializeField]
-        public string modules;
-        [SerializeField]
         public string version;
         [SerializeField]
-        public string uMinVersion;
-        [SerializeField]
-        public string pmMinVersion;
-        [SerializeField]
-        public string youTubeVidLink; //need to change to list
-        [SerializeField]
-        public string webLink; //need to change to list
-        [SerializeField]
         public string keyWords;
-        [SerializeField]
-        public Object assetPath;
-        [SerializeField]
-        public string pingMenu;
         [SerializeField]
         public string packageName;
         [SerializeField]
         public string targetDirectory;
-        [SerializeField]
-        public string ecoFilter;
+
         [SerializeField]
         public string targetPackageTextFile;
+        #endregion
+
+        #region Selection lists
+
+        [SerializeField]
+        public string[] packagetypeselection = new[] { "ActionPackage", "SamplePackage", "TemplatePackage" };
+        [SerializeField]
+        public int packagetypeselected = 0;
+        [SerializeField]
+        public string[] UminVselection = new[] { "ActionPackage", "SamplePackage", "TemplatePackage" };
+        [SerializeField]
+        public int UminVselected = 0;
+        [SerializeField]
+        public string[] PMminVselection = new[] { "ActionPackage", "SamplePackage", "TemplatePackage" };
+        [SerializeField]
+        public int PMminVselected = 0;
+        [SerializeField]
+        public string[] Pingtype = new[] { "None", "Asset Path", "Menu" };
+        [SerializeField]
+        public int Pingtypeselected = 0;
+        [SerializeField]
+        public string[] uMinVersion = new[] { "4.7", "5.0", "5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "2017.1" };
+        [SerializeField]
+        public int uMinVersionSelected = 0;
+        public string[] pmMinVersion = new[] { "1.8.0", "1.8.1", "1.8.2", "1.8.3", "1.8.4", "1.8.5"};
+        [SerializeField]
+        public int pmMinVersionSelected = 0;
+        #endregion
+
+        #region Others
+        [SerializeField]
+        public Object assetPath;
+        [SerializeField]
+        public Object pingMenu;
+        [SerializeField]
+        public bool fileExistsCheck = true;
+        #endregion
     }
 }
