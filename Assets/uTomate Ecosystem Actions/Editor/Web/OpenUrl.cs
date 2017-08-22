@@ -21,6 +21,8 @@ using System.IO;
 using UnityEngine;
 using UnityEditor;
 using System.Collections;
+using AncientLightStudios.uTomate.API;
+using AncientLightStudios.uTomate;
 
 
 namespace Ecosystem.Utomate

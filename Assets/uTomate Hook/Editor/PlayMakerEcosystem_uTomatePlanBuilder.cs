@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System.Collections;
+using AncientLightStudios.uTomate;
+using AncientLightStudios.uTomate.API;
 
 public class PlayMakerEcosystem_uTomatePlanBuilder : EditorWindow {
 

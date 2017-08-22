@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEditor;
 
 using Net.FabreJean.UnityEditor;
+using AncientLightStudios.uTomate;
 
 namespace Net.FabreJean.UnityEditor
 {

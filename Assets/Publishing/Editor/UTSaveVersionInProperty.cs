@@ -12,6 +12,8 @@ using System;
 using System.Text;
 using System.IO;
 using System.Collections;
+using AncientLightStudios.uTomate.API;
+using AncientLightStudios.uTomate;
 
 [UTDoc(title="Save a VersionInfo in Property", description="This action saves a versionInfo in the context which can be read later by other actions.")]
 [UTActionInfo(actionCategory="VersionInfo")]

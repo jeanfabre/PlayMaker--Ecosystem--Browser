@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using AncientLightStudios.uTomate;
+using AncientLightStudios.uTomate.API;
 
 public class PlayMakerEcosystem_uTomateModel : UTNodeEditorModel {
 	

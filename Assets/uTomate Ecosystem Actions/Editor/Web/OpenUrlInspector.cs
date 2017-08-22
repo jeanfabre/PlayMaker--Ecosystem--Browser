@@ -7,6 +7,7 @@
 
 using System;
 using UnityEditor;
+using AncientLightStudios.uTomate.API;
 
 namespace Ecosystem.Utomate
 {

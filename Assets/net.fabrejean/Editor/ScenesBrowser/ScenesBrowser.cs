@@ -82,7 +82,7 @@ public class ScenesBrowser : EditorWindow {
 		if (editorSkin==null)
 		{
 			editorSkin = MyUtils.Utils.GetGuiSkin("VolcanicGuiSkin",out editorSkinPath);
-			bg = (Texture2D)(Resources.LoadAssetAtPath(editorSkinPath+"images/bg.png",typeof(Texture2D))); // Get the texture manually as we have some trickes for bg tiling
+			bg = (Texture2D)(AssetDatabase.LoadAssetAtPath(editorSkinPath+"images/bg.png",typeof(Texture2D))); // Get the texture manually as we have some trickes for bg tiling
 			
 			GUIStyleArrowInBuildSettings = editorSkin.FindStyle("Help Arrow 90 degree");
 		

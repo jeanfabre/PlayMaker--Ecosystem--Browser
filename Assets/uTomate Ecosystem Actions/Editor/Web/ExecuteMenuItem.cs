@@ -12,6 +12,7 @@ using UnityEngine;
 using UnityEditor;
 using System.ComponentModel;
 using System.Collections;
+using AncientLightStudios.uTomate.API;
 
 namespace Ecosystem.Utomate
 {
