@@ -52,7 +52,8 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
         public string packageName;
         [SerializeField]
         public string targetDirectory;
-
+        [SerializeField]
+        public string categoryString;
         [SerializeField]
         public string targetPackageTextFile;
         #endregion
@@ -79,9 +80,23 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
         public string[] uMinVersion = new[] { "4.7", "5.0", "5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "2017.1" };
         [SerializeField]
         public int uMinVersionSelected = 0;
+        [SerializeField]
         public string[] pmMinVersion = new[] { "1.8.0", "1.8.1", "1.8.2", "1.8.3", "1.8.4", "1.8.5"};
         [SerializeField]
         public int pmMinVersionSelected = 0;
+        #region categoryList
+        [SerializeField]
+        public string[] categoryList = new[] { "API", "Analytics", "AnimateVariables", "Animation", "Android", "Animator", "Application", "Array"
+        , "AssetBundle", "Audio", "AudioMixer", "BlendShapes", "Camera", "Color", "Convert", "CrossPlatformInput", "Debug", "Device", "Editor"
+            , "Effects", "Encryption", "Files", "FOV", "GarbageCollection", "GameObject", "GUI", "GuiElement", "GUILayout", "Input", "JSON", "Level"
+            , "Lights", "Logic", "Material", "Math", "Mesh", "Microphone", "MobileGameController", "Movement", "NavMeshAgent", "NoiseModule"
+            , "Particles", "Physics", "Physics2D", "PlayerPrefs", "QualitySettings", "Quaternion", "Rect", "RectTransform", "RenderSettings", "Renderer"
+            , "Resources", "Screen", "ScriptControl", "ShapeModule", "Social", "Sprite", "StateMachine", "String", "Texture", "Time", "Transform"
+            , "Trigonometry", "UnityAds", "UnityObject", "Vector2", "Vector3", "VideoClip", "VideoPlayer", "VR", "Web", "WebCam", "uGui"};
+        [SerializeField]
+        public int categorySelected = 0;
+        #endregion
+
         #endregion
 
         #region Others
