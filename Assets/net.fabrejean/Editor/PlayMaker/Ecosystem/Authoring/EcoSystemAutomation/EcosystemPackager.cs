@@ -677,6 +677,30 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
         // Create the package
         private void OnSetTargetDirectory()
         {
+            switch (pl.packagetypeselected)
+            {
+                case 0:
+                    EditorGUILayout.Space();
+                    packageType = ("__PACKAGE__");
+                    packageTypeDirectory = "Custom Packages";
+                    packageTypeExtention = ".package.txt";
+                    break;
+
+                case 1:
+                    EditorGUILayout.Space();
+                    packageType = ("__SAMPLE__");
+                    packageTypeDirectory = "Custom Samples";
+                    packageTypeExtention = ".sample.txt";
+                    break;
+
+                case 2:
+                    EditorGUILayout.Space();
+                    packageType = ("__TEMPLATE__");
+                    packageTypeDirectory = "Custom Templates";
+                    packageTypeExtention = ".template.txt";
+                    break;
+
+            } //Switch end
             string exportdirectory = Directory.GetCurrentDirectory();
             pl.targetDirectory = exportdirectory + "/PlayMaker/Ecosystem/" + packageTypeDirectory + "/" + pl.categoryList[pl.categorySelected];
             unityPackage = "/PlayMaker/Ecosystem/" + packageTypeDirectory + "/" + pl.categoryList[pl.categorySelected];
@@ -766,30 +790,6 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
         // Create the Text file
         private void CreateTextFile()
         {
-            switch (pl.packagetypeselected)
-            {
-                case 0:
-                    EditorGUILayout.Space();
-                    packageType = ("__PACKAGE__");
-                    packageTypeDirectory = "Custom Packages";
-                    packageTypeExtention = ".package.txt";
-                    break;
-
-                case 1:
-                    EditorGUILayout.Space();
-                    packageType = ("__SAMPLE__");
-                    packageTypeDirectory = "Custom Samples";
-                    packageTypeExtention = ".sample.txt";
-                    break;
-
-                case 2:
-                    EditorGUILayout.Space();
-                    packageType = ("__TEMPLATE__");
-                    packageTypeDirectory = "Custom Templates";
-                    packageTypeExtention = ".template.txt";
-                    break;
-
-            } //Switch end
             pl.targetPackageTextFile = pl.targetDirectory + "/" + pl.packageName + packageTypeExtention;
             PackageTextArray.Clear();
 
@@ -923,7 +923,6 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                 packagetext.Close();
 
                 EditorUtility.RevealInFinder(exportdirectory);
-                Debug.Log(pl.targetDirectory);
             }
             Canceled = false;
         }
