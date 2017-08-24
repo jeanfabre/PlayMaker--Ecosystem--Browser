@@ -25,6 +25,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
         private string addItemPath;
         private bool Canceled;
         private string packageTypeDirectory;
+        private string packageTypeExtention;
 
         private void OnEnable()
         {
@@ -678,6 +679,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
         {
             string exportdirectory = Directory.GetCurrentDirectory();
             pl.targetDirectory = exportdirectory + "/PlayMaker/Ecosystem/" + packageTypeDirectory + "/" + pl.categoryList[pl.categorySelected];
+            unityPackage = "/PlayMaker/Ecosystem/" + packageTypeDirectory + "/" + pl.categoryList[pl.categorySelected];
             Debug.Log(exportdirectory);
             return;
         }
@@ -770,22 +772,25 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                     EditorGUILayout.Space();
                     packageType = ("__PACKAGE__");
                     packageTypeDirectory = "Custom Packages";
+                    packageTypeExtention = ".package.txt";
                     break;
 
                 case 1:
                     EditorGUILayout.Space();
                     packageType = ("__SAMPLE__");
                     packageTypeDirectory = "Custom Samples";
+                    packageTypeExtention = ".sample.txt";
                     break;
 
                 case 2:
                     EditorGUILayout.Space();
                     packageType = ("__TEMPLATE__");
                     packageTypeDirectory = "Custom Templates";
+                    packageTypeExtention = ".template.txt";
                     break;
 
             } //Switch end
-            pl.targetPackageTextFile = pl.targetDirectory + "/" + pl.packageName + ".package.txt";
+            pl.targetPackageTextFile = pl.targetDirectory + "/" + pl.packageName + packageTypeExtention;
             PackageTextArray.Clear();
 
             PackageTextArray.Add("{");
