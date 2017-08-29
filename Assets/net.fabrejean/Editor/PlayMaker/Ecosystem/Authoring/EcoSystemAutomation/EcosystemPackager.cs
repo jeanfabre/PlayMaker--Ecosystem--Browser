@@ -24,6 +24,8 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
         private Object additem;
         private string addItemPath;
         private bool Canceled;
+        private string packageTypeDirectory;
+        private string packageTypeExtention;
 
         private void OnEnable()
         {
@@ -40,6 +42,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             pl.fileExistsCheck = EditorGUILayout.Toggle(pl.fileExistsCheck, GUILayout.Width(15));
             if (GUILayout.Button("Create Package", GUILayout.Height(20)))
             {
+                OnSetTargetDirectory();
                 CreatePackage();
                 GUIUtility.ExitGUI();
             }
@@ -60,21 +63,21 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             GUILayout.EndVertical();
 
             // Target Directory
-            GUILayout.BeginHorizontal("box");
-            GUILayout.Space(1);
-            GUILayout.Label("Target Directory", GUILayout.Width(150));
-            pl.targetDirectory = EditorGUILayout.TextField(pl.targetDirectory, GUILayout.MinWidth(1));
-            if (GUILayout.Button(folderImage, GUILayout.Height(16), GUILayout.Width(24)))
-            {
-                OnSetTargetDirectory();
-            }
-            if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
-            {
-                Application.OpenURL("http://www.jinxtergames.com/");
-            }
-            GUILayout.Space(1);
-            GUILayout.EndHorizontal();
-
+            /*         GUILayout.BeginHorizontal("box");
+                       GUILayout.Space(1);
+                       GUILayout.Label("Target Directory", GUILayout.Width(150));
+                       pl.targetDirectory = EditorGUILayout.TextField(pl.targetDirectory, GUILayout.MinWidth(1));
+                       if (GUILayout.Button(folderImage, GUILayout.Height(16), GUILayout.Width(24)))
+                       {
+                           OnSetTargetDirectory();
+                       }
+                       if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
+                       {
+                           Application.OpenURL("http://www.jinxtergames.com/");
+                       }
+                       GUILayout.Space(1);
+                       GUILayout.EndHorizontal();
+           */
             GUILayout.BeginVertical("box");
             GUILayout.Space(1);
 
@@ -87,33 +90,45 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                 Application.OpenURL("http://www.jinxtergames.com/");
 
             }
+            
             GUILayout.EndHorizontal();
             GUILayout.Space(1);
             GUILayout.EndVertical();
-            GUILayout.Space(1);
-            GUILayout.BeginVertical("box");
-            switch (pl.packagetypeselected)
+
+            //Category
+            EditorGUI.BeginDisabledGroup(pl.categoryString != "");
+                GUILayout.BeginVertical("box");
+                GUILayout.Space(1);
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("Select Category", GUILayout.Width(150));
+                GUILayout.BeginVertical();
+                pl.categorySelected = EditorGUILayout.Popup(pl.categorySelected, pl.categoryList);
+                GUILayout.EndVertical();
+                if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
+                {
+                    Application.OpenURL("http://www.jinxtergames.com/");
+                }
+                GUILayout.EndHorizontal();
+                GUILayout.Space(1);
+
+                GUILayout.Space(1);
+            EditorGUI.EndDisabledGroup();
+            // Category
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Custom Category", GUILayout.Width(150));
+            pl.categoryString = EditorGUILayout.TextField(pl.categoryString, GUILayout.MinWidth(5));
+            if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
             {
-                case 0:
-                    EditorGUILayout.Space();
-                    packageType = ("__PACKAGE__");
-                    break;
+                Application.OpenURL("http://www.jinxtergames.com/");
+            }
+            GUILayout.EndHorizontal();
+            GUILayout.EndVertical();
 
-                case 1:
-                    EditorGUILayout.Space();
-                    packageType = ("__SAMPLE__");
-                    break;
-
-                case 2:
-                    EditorGUILayout.Space();
-                    packageType = ("__TEMPLATE__");
-                    break;
-
-            } //Switch end
             #endregion
 
             #region Text Edit Input Box
             // Type
+            GUILayout.BeginVertical("box");
             GUILayout.BeginHorizontal();
             GUILayout.Label("Type", GUILayout.Width(150));
             pl.type = EditorGUILayout.TextField(pl.type, GUILayout.MinWidth(5));
@@ -488,13 +503,14 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                 GUILayout.EndHorizontal();
             }
             GUILayout.EndVertical();
-            #endregion
+            
 
             if (EditorGUI.EndChangeCheck())
             {
                 EditorUtility.SetDirty(pl);
                 Repaint();
             }
+            #endregion
         }
         // End Inspector
         #region Add Strings, Folders, Files
@@ -643,21 +659,57 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
         #endregion
 
         // Set Target Directory
-        private void OnSetTargetDirectory()
-        {
-            get_targetDirectory = EditorUtility.OpenFolderPanel(Application.dataPath, "", "*.*");
-            pl.targetDirectory = get_targetDirectory;
-            int index = pl.targetDirectory.IndexOf("PlayMaker/Ecosystem");
-            if (index != -1)
-            {
-                unityPackage = pl.targetDirectory.Substring(index);
-                EditorUtility.SetDirty(pl);
-                Repaint();
-            }
+        /*        private void OnSetTargetDirectory()
+                {
+                    get_targetDirectory = EditorUtility.OpenFolderPanel(Application.dataPath, "", "*.*");
+                    pl.targetDirectory = get_targetDirectory;
+                    int index = pl.targetDirectory.IndexOf("PlayMaker/Ecosystem");
+                    if (index != -1)
+                    {
+                        unityPackage = pl.targetDirectory.Substring(index);
+                        EditorUtility.SetDirty(pl);
+                        Repaint();
+                    }
 
-        }
+                }
+        */
 
         // Create the package
+        private void OnSetTargetDirectory()
+        {
+            switch (pl.packagetypeselected)
+            {
+                case 0:
+                    EditorGUILayout.Space();
+                    packageType = ("__PACKAGE__");
+                    packageTypeDirectory = "Custom Packages";
+                    packageTypeExtention = ".package.txt";
+                    break;
+
+                case 1:
+                    EditorGUILayout.Space();
+                    packageType = ("__SAMPLE__");
+                    packageTypeDirectory = "Custom Samples";
+                    packageTypeExtention = ".sample.txt";
+                    break;
+
+                case 2:
+                    EditorGUILayout.Space();
+                    packageType = ("__TEMPLATE__");
+                    packageTypeDirectory = "Custom Templates";
+                    packageTypeExtention = ".template.txt";
+                    break;
+
+            } //Switch end
+            string exportdirectory = Directory.GetCurrentDirectory();
+            pl.targetDirectory = exportdirectory + "/PlayMaker/Ecosystem/" + packageTypeDirectory + "/" + pl.categoryList[pl.categorySelected];
+            unityPackage = "/PlayMaker/Ecosystem/" + packageTypeDirectory + "/" + pl.categoryList[pl.categorySelected];
+            Debug.Log(exportdirectory);
+            return;
+        }
+
+
+
         private void CreatePackage()
         {
             includeFileList.Clear();
@@ -738,7 +790,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
         // Create the Text file
         private void CreateTextFile()
         {
-            pl.targetPackageTextFile = pl.targetDirectory + "/" + pl.packageName + ".package.txt";
+            pl.targetPackageTextFile = pl.targetDirectory + "/" + pl.packageName + packageTypeExtention;
             PackageTextArray.Clear();
 
             PackageTextArray.Add("{");
@@ -827,7 +879,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                 {
                     Debug.Log("FileExists");
                     int option = EditorUtility.DisplayDialogComplex("This Package Exists already.", "Overwrite package?", "yes", "yes, Don't ask again", "No");
-                    switch(option)
+                    switch (option)
                     {
                         case 0:
                             File.Delete(exportdirectory);
@@ -844,9 +896,9 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                             break;
                     }
                 }
-                if(!Canceled) AssetDatabase.ExportPackage(includeFileList.ToArray(), exportdirectory, ExportPackageOptions.Default);
+                if (!Canceled) AssetDatabase.ExportPackage(includeFileList.ToArray(), exportdirectory, ExportPackageOptions.Default);
             }
-            else if(!Canceled)
+            else if (!Canceled)
             {
                 Debug.Log(pl.targetDirectory);
                 Directory.CreateDirectory(pl.targetDirectory);
@@ -874,6 +926,8 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             }
             Canceled = false;
         }
+
         #endregion
+
     }
 }
