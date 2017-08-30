@@ -26,6 +26,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
         private bool Canceled;
         private string packageTypeDirectory;
         private string packageTypeExtention;
+        private string packagetextString;
 
         private void OnEnable()
         {
@@ -795,10 +796,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 
             PackageTextArray.Add("{");
             if (packageType != "") PackageTextArray.Add("\"" + "__ECO__" + "\"" + ":" + "\"" + packageType + "\"" + ",");
-            if (packageType == "__PACKAGE__")
-            {
-                if (pl.type != "") PackageTextArray.Add("\"" + "Type" + "\"" + ":" + "\"" + pl.type + "\"" + ",");
-            }
+            if (pl.type != "") PackageTextArray.Add("\"" + "Type" + "\"" + ":" + "\"" + pl.type + "\"" + ",");
             if (pl.version != "") PackageTextArray.Add("\"" + "Version" + "\"" + ":" + "\"" + pl.version + "\"" + ",");
             if (pl.uMinVersion[pl.uMinVersionSelected] != "") PackageTextArray.Add("\"" + "UnityMinimumVersion" + "\"" + ":" + "\"" + pl.uMinVersion[pl.uMinVersionSelected] + "\"" + ",");
             if (pl.pmMinVersion[pl.pmMinVersionSelected] != "") PackageTextArray.Add("\"" + "PlayMakerMinimumVersion" + "\"" + ":" + "\"" + pl.pmMinVersion[pl.pmMinVersionSelected] + "\"" + ",");
@@ -867,67 +865,74 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 
             BuildPackage();
         }
-        // Create Package
 
         #region BuildPackage
         private void BuildPackage()
         {
+            Canceled = false;
             string exportdirectory = pl.targetDirectory + "/" + pl.packageName + ".unitypackage";
             if (Directory.Exists(pl.targetDirectory))
             {
+                
                 if (File.Exists(exportdirectory) && pl.fileExistsCheck == true)
                 {
-                    Debug.Log("FileExists");
+
                     int option = EditorUtility.DisplayDialogComplex("This Package Exists already.", "Overwrite package?", "yes", "yes, Don't ask again", "No");
                     switch (option)
                     {
                         case 0:
                             File.Delete(exportdirectory);
+                            AssetDatabase.ExportPackage(includeFileList.ToArray(), exportdirectory, ExportPackageOptions.Default);
                             break;
                         case 1:
                             pl.fileExistsCheck = false;
                             File.Delete(exportdirectory);
+                            AssetDatabase.ExportPackage(includeFileList.ToArray(), exportdirectory, ExportPackageOptions.Default);
                             EditorUtility.SetDirty(pl);
                             Repaint();
                             break;
                         case 2:
-                            EditorUtility.DisplayDialog("Build Canceled", "I saved your life!", "Thank You", "Doh! I Misclicked");
+                            EditorUtility.DisplayDialog("Build Canceled", "I saved your life!", "Thank You", "");
                             Canceled = true;
                             break;
                     }
                 }
-                if (!Canceled) AssetDatabase.ExportPackage(includeFileList.ToArray(), exportdirectory, ExportPackageOptions.Default);
             }
-            else if (!Canceled)
-            {
-                Debug.Log(pl.targetDirectory);
-                Directory.CreateDirectory(pl.targetDirectory);
-                AssetDatabase.ExportPackage(includeFileList.ToArray(), exportdirectory, ExportPackageOptions.Default);
-            }
-
-            // TEST DELETE FILE BEFORE WRITING FILE
             if (!Canceled)
             {
-                if (File.Exists(pl.targetPackageTextFile))
-                {
+                
 
-                    File.Delete(pl.targetPackageTextFile);
+                // Complete Json Txt in packagetextString below
+
+                bool jsonOk = false;
+                JSON.JsonDecode(packagetextString, ref jsonOk);
+                if(jsonOk)
+                {
+                    Directory.CreateDirectory(pl.targetDirectory);
+                    StreamWriter packagetext = new StreamWriter(pl.targetPackageTextFile);
+                    packagetextString = null;
+                    foreach (string p in PackageTextArray)
+                    {
+                        packagetextString += p;
+                        packagetextString += System.Environment.NewLine;
+                    }
+                    Debug.Log("isOk " + jsonOk);
+                    packagetext.Write(packagetextString);
+                    packagetext.Close();
+
+                    Debug.Log(pl.targetDirectory);
+                    
+                    AssetDatabase.ExportPackage(includeFileList.ToArray(), exportdirectory, ExportPackageOptions.Default);
+
+                    EditorUtility.RevealInFinder(exportdirectory);
+                }
+                else
+                {
+                    EditorUtility.DisplayDialog("Build Canceled Text File Error", "Did you use any { or } or : or " + '"' + "\ninside the info section?", "Ok", "");
                 }
 
-                StreamWriter packagetext = new StreamWriter(pl.targetPackageTextFile);
-
-                foreach (string p in PackageTextArray)
-                {
-                    packagetext.WriteLine(p);
-                }
-                packagetext.Close();
-
-                EditorUtility.RevealInFinder(exportdirectory);
             }
-            Canceled = false;
         }
-
         #endregion
-
     }
 }
