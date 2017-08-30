@@ -39,6 +39,14 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
         public List<string> modulesList = new List<string>();
         [SerializeField]
         public List<string> ecoFilterList = new List<string>();
+        [SerializeField]
+        public List<string> foldersToInclude = new List<string>();
+        [SerializeField]
+        public List<string> filesToInclude = new List<string>();
+        [SerializeField]
+        public List<string> foldersToExclude = new List<string>();
+        [SerializeField]
+        public List<string> filesToExclude = new List<string>();
         #endregion
 
         #region Strings

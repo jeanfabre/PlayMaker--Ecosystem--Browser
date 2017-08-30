@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Net.FabreJean.PlayMaker.Ecosystem
 {
-    
+
     [CustomEditor(typeof(PackageList))]
     public class EcosystemPackager : Editor
     {
@@ -85,34 +85,34 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             // Set Package type
             GUILayout.BeginHorizontal();
             GUILayout.Label("Package Type", GUILayout.Width(150));
-           pl.packagetypeselected = EditorGUILayout.Popup(pl.packagetypeselected, pl.packagetypeselection);
+            pl.packagetypeselected = EditorGUILayout.Popup(pl.packagetypeselected, pl.packagetypeselection);
             if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
             {
                 Application.OpenURL("http://www.jinxtergames.com/");
 
             }
-            
+
             GUILayout.EndHorizontal();
             GUILayout.Space(1);
             GUILayout.EndVertical();
 
             //Category
-            EditorGUI.BeginDisabledGroup(pl.categoryString != "");
-                GUILayout.BeginVertical("box");
-                GUILayout.Space(1);
-                GUILayout.BeginHorizontal();
-                GUILayout.Label("Select Category", GUILayout.Width(150));
-                GUILayout.BeginVertical();
-                pl.categorySelected = EditorGUILayout.Popup(pl.categorySelected, pl.categoryList);
-                GUILayout.EndVertical();
-                if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
-                {
-                    Application.OpenURL("http://www.jinxtergames.com/");
-                }
-                GUILayout.EndHorizontal();
-                GUILayout.Space(1);
+            EditorGUI.BeginDisabledGroup(pl.categoryString != "" && pl.categoryString != null);
+            GUILayout.BeginVertical("box");
+            GUILayout.Space(1);
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Select Category", GUILayout.Width(150));
+            GUILayout.BeginVertical();
+            pl.categorySelected = EditorGUILayout.Popup(pl.categorySelected, pl.categoryList);
+            GUILayout.EndVertical();
+            if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
+            {
+                Application.OpenURL("http://www.jinxtergames.com/");
+            }
+            GUILayout.EndHorizontal();
+            GUILayout.Space(1);
 
-                GUILayout.Space(1);
+            GUILayout.Space(1);
             EditorGUI.EndDisabledGroup();
             // Category
             GUILayout.BeginHorizontal();
@@ -184,7 +184,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             GUILayout.EndHorizontal();
 
             // Ping
-            
+
             GUILayout.Space(8);
             GUILayout.BeginHorizontal();
             GUILayout.Label("Ping Type", GUILayout.Width(150));
@@ -323,7 +323,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             GUILayout.EndHorizontal();
             GUILayout.Space(2);
             // Show Each YouTube Link
-            if(pl.youTubeLists.Count > 0)
+            if (pl.youTubeLists.Count > 0)
             {
                 GUILayout.BeginVertical("box");
                 GUILayout.Space(5);
@@ -359,7 +359,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             GUILayout.EndHorizontal();
             GUILayout.Space(2);
             // Show Each WebLink
-            if(pl.webLinkList.Count > 0)
+            if (pl.webLinkList.Count > 0)
             {
                 GUILayout.BeginVertical("box");
                 GUILayout.Space(5);
@@ -399,47 +399,38 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             // include dropbox
             GUILayout.BeginVertical("box");
             GUI.color = Color.green;
-            EditorGUILayout.LabelField("Drop files or folder to include");
-            additem = (Object)EditorGUILayout.ObjectField(additem, typeof(Object), false);
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            EditorGUILayout.LabelField("Included Files And Folders", EditorStyles.boldLabel);
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+            InCludeDropAreaGUI();
             GUI.color = new Color(1, 1, 1, 1);
-            addItemPath = AssetDatabase.GetAssetPath(additem);
-            if (additem != null)
-            {
-                if (AssetDatabase.IsValidFolder(AssetDatabase.GetAssetPath(additem)))
-                {
-                    IncludeFolder();
-                }
-                else
-                {
-                    IncludeFile();
-                }
-            }
+            GUILayout.Space(5);
             GUILayout.EndVertical();
             GUILayout.Space(5);
 
             // exclude dropbox
             GUILayout.BeginVertical("box");
             GUI.color = Color.red;
-            EditorGUILayout.LabelField("Drop files or folder to exclude");
-            additem = (Object)EditorGUILayout.ObjectField(additem, typeof(Object), false);
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            EditorGUILayout.LabelField("Excluded Files And Folders", EditorStyles.boldLabel);
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+            ExCludeDropAreaGUI();
             GUI.color = new Color(1, 1, 1, 1);
-            addItemPath = AssetDatabase.GetAssetPath(additem);
-            if (additem != null)
-            {
-                if (AssetDatabase.IsValidFolder(AssetDatabase.GetAssetPath(additem)))
-                {
-                    ExcludeFolder();
-                }
-                else
-                {
-                    ExcludeFile();
-                }
-            }
+            GUILayout.Space(5);
             GUILayout.EndVertical();
+            GUILayout.Space(5);
+            GUILayout.EndVertical();
+            // End Add Buttons
+
             // End Add Buttons
 
             #region fileList
             // Include folder List
+            GUILayout.BeginVertical("box");
             GUILayout.BeginVertical();
             GUILayout.Label("Included Folder List");
             GUILayout.EndVertical();
@@ -456,7 +447,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                 }
                 GUI.color = new Color(1, 1, 1, 1);
                 GUILayout.EndHorizontal();
-                
+
             }
 
             // Include File List
@@ -466,11 +457,11 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 
             for (int CountC = 0; CountC < pl.includeFiles.Count; CountC++)
             {
-                
+
                 GUILayout.BeginHorizontal();
                 GUI.color = Color.green;
                 pl.includeFiles[CountC] = EditorGUILayout.TextField(pl.includeFiles[CountC], GUILayout.MinWidth(200));
-                
+
                 if (GUILayout.Button("X", GUILayout.Width(16), GUILayout.Height(15)))
                 {
                     RemoveIncludeFile(CountC);
@@ -478,10 +469,12 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                 }
                 GUI.color = new Color(1, 1, 1, 1);
                 GUILayout.EndHorizontal();
-                
+
             }
+            GUILayout.EndVertical();
 
             // Exclude folder List
+            GUILayout.BeginVertical("box");
             GUILayout.BeginVertical();
             GUILayout.Label("Excluded Folder List");
             GUILayout.EndVertical();
@@ -528,31 +521,47 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 
                 #region Quotation Checker
                 string charsToCheck = "\"";
-                if (pl.categoryString.Contains(charsToCheck))
+
+                if (pl.categoryString != null)
                 {
-                    EditorUtility.DisplayDialog("Quotation marks are not allowed", "Quotation marks will break the Json file", "Ok", "");
-                    pl.categoryString = pl.categoryString.Remove(pl.categoryString.Length - 1);
-                    GUI.FocusControl(null);
-                }
-                if (pl.type.Contains(charsToCheck))
-                {
-                    EditorUtility.DisplayDialog("Quotation marks are not allowed", "Quotation marks will break the Json file", "Ok", "");
-                    pl.type = pl.type.Remove(pl.type.Length - 1);
-                    GUI.FocusControl(null);
-                }
-                if (pl.version.Contains(charsToCheck))
-                {
-                    EditorUtility.DisplayDialog("Quotation marks are not allowed", "Quotation marks will break the Json file", "Ok", "");
-                    pl.version = pl.version.Remove(pl.version.Length - 1);
-                    GUI.FocusControl(null);
-                }
-                if (pl.keyWords.Contains(charsToCheck))
-                {
-                    EditorUtility.DisplayDialog("Quotation marks are not allowed", "Quotation marks will break the Json file", "Ok", "");
-                    pl.keyWords = pl.keyWords.Remove(pl.keyWords.Length - 1);
-                    GUI.FocusControl(null);
+                    if (pl.categoryString.Contains(charsToCheck))
+                    {
+                        EditorUtility.DisplayDialog("Quotation marks are not allowed", "Quotation marks will break the Json file", "Ok", "");
+                        pl.categoryString = pl.categoryString.Remove(pl.categoryString.Length - 1);
+                        GUI.FocusControl(null);
+                    }
                 }
 
+                if(pl.type != null)
+                {
+                    if (pl.type.Contains(charsToCheck))
+                    {
+                        EditorUtility.DisplayDialog("Quotation marks are not allowed", "Quotation marks will break the Json file", "Ok", "");
+                        pl.type = pl.type.Remove(pl.type.Length - 1);
+                        GUI.FocusControl(null);
+                    }
+                }
+
+                if(pl.version != null)
+                {
+                    if (pl.version.Contains(charsToCheck))
+                    {
+                        EditorUtility.DisplayDialog("Quotation marks are not allowed", "Quotation marks will break the Json file", "Ok", "");
+                        pl.version = pl.version.Remove(pl.version.Length - 1);
+                        GUI.FocusControl(null);
+                    }
+                }
+
+                if(pl.keyWords != null)
+                {
+                    if (pl.keyWords.Contains(charsToCheck))
+                    {
+                        EditorUtility.DisplayDialog("Quotation marks are not allowed", "Quotation marks will break the Json file", "Ok", "");
+                        pl.keyWords = pl.keyWords.Remove(pl.keyWords.Length - 1);
+                        GUI.FocusControl(null);
+                    }
+                }
+                
                 for (int i = 0; i < pl.ecoFilterList.Count; i++)
                 {
                     if (pl.ecoFilterList[i].Contains(charsToCheck))
@@ -597,6 +606,113 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             }
             #endregion
         }
+
+        #region drobox
+        // TEST DROPBOX
+        public void InCludeDropAreaGUI()
+        {
+            Event evt = Event.current;
+            Rect drop_area = GUILayoutUtility.GetRect(0.0f, 60.0f, GUILayout.ExpandWidth(true));
+            GUI.Box(drop_area, "\nDrop you files\n and folders in here");
+            //  
+            //  GUILayout.Box("\nDrop you files\n and folders in here", GUILayout.Height(60), GUILayout.ExpandWidth(true));
+            //   GUILayout.EndHorizontal();
+
+            switch (evt.type)
+            {
+                case EventType.DragUpdated:
+                case EventType.DragPerform:
+                    if (!drop_area.Contains(evt.mousePosition))
+                        return;
+
+                    DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
+
+                    if (evt.type == EventType.DragPerform)
+                    {
+                        DragAndDrop.AcceptDrag();
+
+                        foreach (Object dragged_object in DragAndDrop.objectReferences)
+                        {
+
+                            if (AssetDatabase.IsValidFolder(AssetDatabase.GetAssetPath(dragged_object)))
+                            {
+                                addItemPath = AssetDatabase.GetAssetPath(dragged_object);
+                                string get_Folder = addItemPath;
+                                pl.foldersToInclude.Add(get_Folder);
+                            }
+                            else
+                            {
+                                addItemPath = AssetDatabase.GetAssetPath(dragged_object);
+                                string get_Folder = addItemPath;
+                                pl.filesToInclude.Add(get_Folder);
+                            }
+                        }
+                    }
+                    break;
+            }
+            if (pl.foldersToInclude.Count > 0 && Event.current.type == EventType.Layout)
+            {
+                IncludeFolder();
+            }
+            if (pl.filesToInclude.Count > 0 && Event.current.type == EventType.Layout)
+            {
+                IncludeFile();
+            }
+        }
+
+        public void ExCludeDropAreaGUI()
+        {
+            Event evt = Event.current;
+            Rect drop_area2 = GUILayoutUtility.GetRect(0.0f, 60.0f, GUILayout.ExpandWidth(true));
+            GUI.Box(drop_area2, "\nDrop you files\n and folders in here");
+            // GUILayout.BeginHorizontal();
+            //  GUILayout.Box("\nDrop you files\n and folders in here", GUILayout.Height(60), GUILayout.ExpandWidth(true));
+            //  GUILayout.EndHorizontal();
+
+            switch (evt.type)
+            {
+                case EventType.DragUpdated:
+                case EventType.DragPerform:
+                    if (!drop_area2.Contains(evt.mousePosition))
+                        return;
+
+                    DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
+
+                    if (evt.type == EventType.DragPerform)
+                    {
+                        DragAndDrop.AcceptDrag();
+                        foreach (Object dragged_object in DragAndDrop.objectReferences)
+                        {
+
+                            if (AssetDatabase.IsValidFolder(AssetDatabase.GetAssetPath(dragged_object)))
+                            {
+                                addItemPath = AssetDatabase.GetAssetPath(dragged_object);
+                                string get_Folder = addItemPath;
+                                pl.foldersToExclude.Add(get_Folder);
+                            }
+                            else
+                            {
+                                addItemPath = AssetDatabase.GetAssetPath(dragged_object);
+                                string get_Folder = addItemPath;
+                                pl.filesToExclude.Add(get_Folder);
+
+                            }
+                        }
+                    }
+                    break;
+            }
+            if (pl.foldersToExclude.Count > 0 && Event.current.type == EventType.Layout)
+            {
+                ExcludeFolder();
+            }
+            if (pl.filesToExclude.Count > 0 && Event.current.type == EventType.Layout)
+            {
+                ExcludeFile();
+            }
+        }
+        // TEST END DROPBOX
+        #endregion
+
         // End Inspector
         #region Add Strings, Folders, Files
         // Add EcoFilter String
@@ -634,53 +750,109 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
         }
 
         // Add Include Folder
+        // Add Include Folder
         private void IncludeFolder()
         {
-            // string get_Folder = EditorUtility.OpenFolderPanel("Select Folder To Include", Application.dataPath, "*.*");
-            string get_Folder = addItemPath;
-            int index = get_Folder.IndexOf("Assets");
-            folderToAdd = get_Folder.Substring(index);
-            additem = null;
-            pl.includeFolders.Add(folderToAdd);
+            for (int i = 0; i < pl.foldersToInclude.Count; i++)
+            {
+                string get_Folder = pl.foldersToInclude[i];
+                int index = get_Folder.IndexOf("Assets");
+                folderToAdd = get_Folder.Substring(index);
+                additem = null;
+                if (pl.includeFolders.Contains(folderToAdd) || pl.excludeFolders.Contains(folderToAdd))
+                {
+                    bool option = EditorUtility.DisplayDialog("Folder Exitsts", "This Folder is already included in a list", "Add Anyway", "Don't Add");
+                    if (option)
+                    {
+                        pl.includeFolders.Add(folderToAdd);
+                    }
+                }
+                else
+                {
+                    pl.includeFolders.Add(folderToAdd);
+                }
+            }
             EditorUtility.SetDirty(pl);
             Repaint();
-
+            pl.foldersToInclude.Clear();
         }
         // Add Include File
         private void IncludeFile()
         {
-            //   string get_Folder = EditorUtility.OpenFilePanel("Select File To Include", Application.dataPath, "*.*");
-            string get_Folder = addItemPath;
-            int index = get_Folder.IndexOf("Assets");
-            fileToAdd = get_Folder.Substring(index);
-            additem = null;
-            pl.includeFiles.Add(fileToAdd);
+            for (int i = 0; i < pl.filesToInclude.Count; i++)
+            {
+                string get_Folder = pl.filesToInclude[i];
+                int index = get_Folder.IndexOf("Assets");
+                fileToAdd = get_Folder.Substring(index);
+                additem = null;
+                if (pl.includeFiles.Contains(fileToAdd) || pl.excludeFiles.Contains(fileToAdd))
+                {
+                    bool option = EditorUtility.DisplayDialog("File Exitsts", "This File is already included in a list", "Add Anyway", "Don't Add");
+                    if (option)
+                    {
+                        pl.includeFiles.Add(fileToAdd);
+                    }
+                }
+                else
+                {
+                    pl.includeFiles.Add(fileToAdd);
+                }
+            }
             EditorUtility.SetDirty(pl);
             Repaint();
+            pl.filesToInclude.Clear();
         }
         // Add Exclude Folder
         private void ExcludeFolder()
         {
-            //string get_Folder = EditorUtility.OpenFolderPanel("Select Folder To Exclude", Application.dataPath, "*.*");
-            string get_Folder = addItemPath;
-            int index = get_Folder.IndexOf("Assets");
-            folderToAdd = get_Folder.Substring(index);
-            additem = null;
-            pl.excludeFolders.Add(folderToAdd);
+            for (int i = 0; i < pl.foldersToExclude.Count; i++)
+            {
+                string get_Folder = pl.foldersToExclude[i];
+                int index = get_Folder.IndexOf("Assets");
+                folderToAdd = get_Folder.Substring(index);
+                additem = null;
+                if (pl.includeFolders.Contains(folderToAdd) || pl.excludeFolders.Contains(folderToAdd))
+                {
+                    bool option = EditorUtility.DisplayDialog("Folder Exitsts", "This Folder is already included in a list", "Add Anyway", "Don't Add");
+                    if (option)
+                    {
+                        pl.excludeFolders.Add(folderToAdd);
+                    }
+                }
+                else
+                {
+                    pl.excludeFolders.Add(folderToAdd);
+                }
+            }
             EditorUtility.SetDirty(pl);
             Repaint();
+            pl.foldersToExclude.Clear();
         }
         // Add Exclude File
         private void ExcludeFile()
         {
-            // string get_Folder = EditorUtility.OpenFilePanel("Select File To Exclude", Application.dataPath, "*.*");
-            string get_Folder = addItemPath;
-            int index = get_Folder.IndexOf("Assets");
-            fileToAdd = get_Folder.Substring(index);
-            additem = null;
-            pl.excludeFiles.Add(fileToAdd);
+            for (int i = 0; i < pl.filesToExclude.Count; i++)
+            {
+                string get_Folder = pl.filesToExclude[i];
+                int index = get_Folder.IndexOf("Assets");
+                fileToAdd = get_Folder.Substring(index);
+                additem = null;
+                if (pl.includeFiles.Contains(fileToAdd) || pl.excludeFiles.Contains(fileToAdd))
+                {
+                    bool option = EditorUtility.DisplayDialog("File Exitsts", "This File is already included in a list", "Add Anyway", "Don't Add");
+                    if (option)
+                    {
+                        pl.excludeFiles.Add(fileToAdd);
+                    }
+                }
+                else
+                {
+                    pl.excludeFiles.Add(fileToAdd);
+                }
+            }
             EditorUtility.SetDirty(pl);
             Repaint();
+            pl.filesToExclude.Clear();
         }
         #endregion
 
@@ -807,15 +979,10 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                 foreach (FileInfo f in info)
                 {
                     string get_File = f.FullName;
-                    if (get_File.Contains("PlayMaker.dll"))
-                    {
-                        Debug.LogError("Your Package containt a PlayMaker.dll file Which is not allow to be shared. Please remove from your list");
-                        return;
-                    }
+
                     int index = get_File.IndexOf("Assets");
                     fileToAdd = get_File.Substring(index);
                     fileToAdd = fileToAdd.Replace('\\', '/');
-
                     includeFileList.Add(fileToAdd);
 
                 }
@@ -869,6 +1036,20 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                     }
                 }
             }
+
+            for (int i = 0; i < includeFileList.Count; i++)
+            {
+                if (includeFileList[i].Contains("PlayMaker.dll"))
+                {
+                    Debug.Log("the folder" + includeFileList[i]);
+                    Debug.LogError("Your Package containt a PlayMaker.dll file Which is not allow to be shared. Please remove from your list");
+                    Object obj = AssetDatabase.LoadAssetAtPath(includeFileList[i], typeof(Object));
+                    Debug.Log(obj);
+                    EditorGUIUtility.PingObject(obj);
+                    return;
+                }
+                
+            }
             CreateTextFile();
         }
 
@@ -886,7 +1067,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             if (pl.pmMinVersion[pl.pmMinVersionSelected] != "") PackageTextArray.Add("\"" + "PlayMakerMinimumVersion" + "\"" + ":" + "\"" + pl.pmMinVersion[pl.pmMinVersionSelected] + "\"" + ",");
             if (unityPackage != "") PackageTextArray.Add("\"" + "unitypackage" + "\"" + ":" + "\"" + unityPackage + "\"" + ",");
 
-           switch(pl.Pingtypeselected)
+            switch (pl.Pingtypeselected)
             {
                 case 1:
                     if (pl.assetPath != null)
@@ -905,7 +1086,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                     }
                     break;
             }
-            
+
 
             // For each EcoFilter
             for (int count = 0; count < pl.ecoFilterList.Count; count++)
@@ -929,7 +1110,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             for (int count = 0; count < pl.youTubeLists.Count; count++)
             {
                 string ytLinkString = pl.youTubeLists[count];
-                if(ytLinkString != "")
+                if (ytLinkString != "")
                 {
                     PackageTextArray.Add("\"" + "YoutubeVideos" + "\"" + ":[" + "\"" + ytLinkString + "\"" + "],");
                 }
@@ -957,7 +1138,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             string exportdirectory = pl.targetDirectory + "/" + pl.packageName + ".unitypackage";
             if (Directory.Exists(pl.targetDirectory))
             {
-                
+
                 if (File.Exists(exportdirectory) && pl.fileExistsCheck == true)
                 {
 
@@ -984,13 +1165,13 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             }
             if (!Canceled)
             {
-                
+
 
                 // Complete Json Txt in packagetextString below
 
                 bool jsonOk = false;
                 JSON.JsonDecode(packagetextString, ref jsonOk);
-                if(jsonOk)
+                if (jsonOk)
                 {
                     Directory.CreateDirectory(pl.targetDirectory);
                     StreamWriter packagetext = new StreamWriter(pl.targetPackageTextFile);
@@ -1005,7 +1186,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                     packagetext.Close();
 
                     Debug.Log(pl.targetDirectory);
-                    
+
                     AssetDatabase.ExportPackage(includeFileList.ToArray(), exportdirectory, ExportPackageOptions.Default);
 
                     EditorUtility.RevealInFinder(exportdirectory);
