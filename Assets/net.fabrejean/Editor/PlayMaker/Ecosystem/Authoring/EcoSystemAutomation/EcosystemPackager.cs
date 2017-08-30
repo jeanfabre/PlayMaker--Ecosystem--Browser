@@ -262,6 +262,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                     if (GUILayout.Button("X", GUILayout.Width(16), GUILayout.Height(15)))
                     {
                         RemoveEcoFilterString(CountA);
+                        GUI.FocusControl(null);
                     }
                     GUILayout.Label("", GUILayout.Width(5));
                     GUILayout.EndHorizontal();
@@ -297,6 +298,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                     if (GUILayout.Button("X", GUILayout.Width(16), GUILayout.Height(15)))
                     {
                         RemoveModuleString(CountA);
+                        GUI.FocusControl(null);
                     }
                     GUILayout.Label("", GUILayout.Width(5));
                     GUILayout.EndHorizontal();
@@ -334,6 +336,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                     if (GUILayout.Button("X", GUILayout.Width(16), GUILayout.Height(15)))
                     {
                         RemoveYouTubeString(CountA);
+                        GUI.FocusControl(null);
                     }
                     GUILayout.Label("", GUILayout.Width(5));
                     GUILayout.EndHorizontal();
@@ -368,6 +371,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                     if (GUILayout.Button("X", GUILayout.Width(16), GUILayout.Height(15)))
                     {
                         RemoveWebLinkString(CountA);
+                        GUI.FocusControl(null);
                     }
                     GUILayout.Label("", GUILayout.Width(5));
                     GUILayout.EndHorizontal();
@@ -434,6 +438,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             GUILayout.EndVertical();
             // End Add Buttons
 
+            #region fileList
             // Include folder List
             GUILayout.BeginVertical();
             GUILayout.Label("Included Folder List");
@@ -442,15 +447,38 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             for (int CountA = 0; CountA < pl.includeFolders.Count; CountA++)
             {
                 GUILayout.BeginHorizontal();
-                //   pl.includeFolders[CountA].includeFolderString = EditorGUILayout.TextField(pl.includeFolders[CountA].includeFolderString, GUILayout.MinWidth(200));
-                // test
+                GUI.color = Color.green;
                 pl.includeFolders[CountA] = EditorGUILayout.TextField(pl.includeFolders[CountA], GUILayout.MinWidth(200));
                 if (GUILayout.Button("X", GUILayout.Width(16), GUILayout.Height(15)))
                 {
                     RemoveIncludeFolder(CountA);
                     return;
                 }
+                GUI.color = new Color(1, 1, 1, 1);
                 GUILayout.EndHorizontal();
+                
+            }
+
+            // Include File List
+            GUILayout.BeginVertical();
+            GUILayout.Label("Included File List");
+            GUILayout.EndVertical();
+
+            for (int CountC = 0; CountC < pl.includeFiles.Count; CountC++)
+            {
+                
+                GUILayout.BeginHorizontal();
+                GUI.color = Color.green;
+                pl.includeFiles[CountC] = EditorGUILayout.TextField(pl.includeFiles[CountC], GUILayout.MinWidth(200));
+                
+                if (GUILayout.Button("X", GUILayout.Width(16), GUILayout.Height(15)))
+                {
+                    RemoveIncludeFile(CountC);
+                    return;
+                }
+                GUI.color = new Color(1, 1, 1, 1);
+                GUILayout.EndHorizontal();
+                
             }
 
             // Exclude folder List
@@ -461,29 +489,14 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             for (int CountB = 0; CountB < pl.excludeFolders.Count; CountB++)
             {
                 GUILayout.BeginHorizontal();
+                GUI.color = Color.red;
                 pl.excludeFolders[CountB] = EditorGUILayout.TextField(pl.excludeFolders[CountB], GUILayout.MinWidth(200));
                 if (GUILayout.Button("X", GUILayout.Width(16), GUILayout.Height(15)))
                 {
                     RemoveExcludeFolder(CountB);
                     return;
                 }
-                GUILayout.EndHorizontal();
-            }
-
-            // Include File List
-            GUILayout.BeginVertical();
-            GUILayout.Label("Included File List");
-            GUILayout.EndVertical();
-
-            for (int CountC = 0; CountC < pl.includeFiles.Count; CountC++)
-            {
-                GUILayout.BeginHorizontal();
-                pl.includeFiles[CountC] = EditorGUILayout.TextField(pl.includeFiles[CountC], GUILayout.MinWidth(200));
-                if (GUILayout.Button("X", GUILayout.Width(16), GUILayout.Height(15)))
-                {
-                    RemoveIncludeFile(CountC);
-                    return;
-                }
+                GUI.color = new Color(1, 1, 1, 1);
                 GUILayout.EndHorizontal();
             }
 
@@ -495,21 +508,92 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             for (int CountD = 0; CountD < pl.excludeFiles.Count; CountD++)
             {
                 GUILayout.BeginHorizontal();
+                GUI.color = Color.red;
                 pl.excludeFiles[CountD] = EditorGUILayout.TextField(pl.excludeFiles[CountD], GUILayout.MinWidth(200));
                 if (GUILayout.Button("X", GUILayout.Width(16), GUILayout.Height(15)))
                 {
                     RemoveExcludeFile(CountD);
                     return;
                 }
+                GUI.color = new Color(1, 1, 1, 1);
                 GUILayout.EndHorizontal();
             }
             GUILayout.EndVertical();
-            
+            #endregion
 
             if (EditorGUI.EndChangeCheck())
             {
                 EditorUtility.SetDirty(pl);
                 Repaint();
+
+                #region Quotation Checker
+                string charsToCheck = "\"";
+                if (pl.categoryString.Contains(charsToCheck))
+                {
+                    EditorUtility.DisplayDialog("Quotation marks are not allowed", "Quotation marks will break the Json file", "Ok", "");
+                    pl.categoryString = pl.categoryString.Remove(pl.categoryString.Length - 1);
+                    GUI.FocusControl(null);
+                }
+                if (pl.type.Contains(charsToCheck))
+                {
+                    EditorUtility.DisplayDialog("Quotation marks are not allowed", "Quotation marks will break the Json file", "Ok", "");
+                    pl.type = pl.type.Remove(pl.type.Length - 1);
+                    GUI.FocusControl(null);
+                }
+                if (pl.version.Contains(charsToCheck))
+                {
+                    EditorUtility.DisplayDialog("Quotation marks are not allowed", "Quotation marks will break the Json file", "Ok", "");
+                    pl.version = pl.version.Remove(pl.version.Length - 1);
+                    GUI.FocusControl(null);
+                }
+                if (pl.keyWords.Contains(charsToCheck))
+                {
+                    EditorUtility.DisplayDialog("Quotation marks are not allowed", "Quotation marks will break the Json file", "Ok", "");
+                    pl.keyWords = pl.keyWords.Remove(pl.keyWords.Length - 1);
+                    GUI.FocusControl(null);
+                }
+
+                for (int i = 0; i < pl.ecoFilterList.Count; i++)
+                {
+                    if (pl.ecoFilterList[i].Contains(charsToCheck))
+                    {
+                        EditorUtility.DisplayDialog("Quotation marks are not allowed", "Quotation marks will break the Json file", "Ok", "");
+                        pl.ecoFilterList[i] = pl.ecoFilterList[i].Remove(pl.ecoFilterList[i].Length - 1);
+                        GUI.FocusControl(null);
+                    }
+                }
+
+                for (int i = 0; i < pl.modulesList.Count; i++)
+                {
+                    if (pl.modulesList[i].Contains(charsToCheck))
+                    {
+                        EditorUtility.DisplayDialog("Quotation marks are not allowed", "Quotation marks will break the Json file", "Ok", "");
+                        pl.modulesList[i] = pl.modulesList[i].Remove(pl.modulesList[i].Length - 1);
+                        GUI.FocusControl(null);
+                    }
+                }
+
+                for (int i = 0; i < pl.youTubeLists.Count; i++)
+                {
+                    if (pl.youTubeLists[i].Contains(charsToCheck))
+                    {
+                        EditorUtility.DisplayDialog("Quotation marks are not allowed", "Quotation marks will break the Json file", "Ok", "");
+                        pl.youTubeLists[i] = pl.youTubeLists[i].Remove(pl.youTubeLists[i].Length - 1);
+                        GUI.FocusControl(null);
+                    }
+                }
+
+                for (int i = 0; i < pl.youTubeLists.Count; i++)
+                {
+                    if (pl.webLinkList[i].Contains(charsToCheck))
+                    {
+                        EditorUtility.DisplayDialog("Quotation marks are not allowed", "Quotation marks will break the Json file", "Ok", "");
+                        pl.webLinkList[i] = pl.webLinkList[i].Remove(pl.webLinkList[i].Length - 1);
+                        GUI.FocusControl(null);
+                    }
+                }
+                #endregion
+
             }
             #endregion
         }
