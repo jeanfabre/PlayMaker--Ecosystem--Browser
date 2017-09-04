@@ -166,7 +166,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 
             GUILayout.Space(1);
             EditorGUI.EndDisabledGroup();
-            // Category
+            // Custom Category
             GUILayout.BeginHorizontal();
             GUILayout.Label("Custom Category", GUILayout.Width(150));
             pl.categoryString = EditorGUILayout.TextField(pl.categoryString, GUILayout.MinWidth(5));
@@ -1021,6 +1021,13 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             string selectedRepString = "HutongGames.PlayMaker.Ecosystem.Publishing." + selectedRepEnum;
 
             selectedRepResult = EditorPrefs.GetString(selectedRepString);
+            if(selectedRepResult == "")
+            {
+             EditorUtility.DisplayDialog("\nWrong Target Repository", "Create Package aborted\n\nis the target repository valid (not missing)", "Ok");
+                return;
+
+            }
+
 
             pl.targetDirectory = selectedRepResult + "/PlayMaker/Ecosystem/" + packageTypeDirectory + "/" + pl.categoryList[pl.categorySelected];
             unityPackage = "/PlayMaker/Ecosystem/" + packageTypeDirectory + "/" + pl.categoryList[pl.categorySelected];
