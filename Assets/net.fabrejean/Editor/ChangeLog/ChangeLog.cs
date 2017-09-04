@@ -33,7 +33,7 @@ namespace Net.FabreJean.UnityEditor
 
 
 		/// <summary>
-		/// Creates a new automation plan from the editor's context menu.
+		/// Creates a new changelog from the editor's context menu.
 		/// </summary>
 		[MenuItem("Assets/Create/ChangeLog/New Change Log",false, 10)]
 		public static void Create ()
