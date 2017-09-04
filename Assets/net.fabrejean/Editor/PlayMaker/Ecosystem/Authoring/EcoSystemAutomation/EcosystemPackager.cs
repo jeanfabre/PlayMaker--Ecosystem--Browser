@@ -30,6 +30,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
         private string packageTypeDirectory;
         private string packageTypeExtention;
         private string packagetextString;
+        private string selectedRepResult;
 
         private void OnEnable()
         {
@@ -1009,17 +1010,22 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                     break;
 
             } //Switch end
-            string exportdirectory = Directory.GetCurrentDirectory();
-            pl.targetDirectory = exportdirectory + "/PlayMaker/Ecosystem/" + packageTypeDirectory + "/" + pl.categoryList[pl.categorySelected];
-            unityPackage = "/PlayMaker/Ecosystem/" + packageTypeDirectory + "/" + pl.categoryList[pl.categorySelected];
-            Debug.Log(exportdirectory);
-            return;
         }
 
 
 
         private void CreatePackage()
         {
+            // Target Repository
+            string selectedRepEnum = pl.targetRepository.ToString();
+            string selectedRepString = "HutongGames.PlayMaker.Ecosystem.Publishing." + selectedRepEnum;
+
+            selectedRepResult = EditorPrefs.GetString(selectedRepString);
+
+            pl.targetDirectory = selectedRepResult + "/PlayMaker/Ecosystem/" + packageTypeDirectory + "/" + pl.categoryList[pl.categorySelected];
+            unityPackage = "/PlayMaker/Ecosystem/" + packageTypeDirectory + "/" + pl.categoryList[pl.categorySelected];
+            Debug.Log(selectedRepResult);
+
             includeFileList.Clear();
             //Include folders and check for playmaker.dll
             for (int count = 0; count < pl.includeFolders.Count; count++)
