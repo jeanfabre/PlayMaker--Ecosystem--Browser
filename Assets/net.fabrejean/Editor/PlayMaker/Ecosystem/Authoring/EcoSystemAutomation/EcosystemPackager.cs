@@ -4,6 +4,8 @@ using System.Collections;
 using System.IO;
 using System.Collections.Generic;
 
+using HutongGames.PlayMaker.Ecosystem.Publishing;
+
 namespace Net.FabreJean.PlayMaker.Ecosystem
 {
 
@@ -17,6 +19,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
         private List<string> includeFileList = new List<string>();
         List<string> PackageTextArray = new List<string>();
         private string packageType;
+
         private string get_targetDirectory;
         private string unityPackage;
         private Texture folderImage;
@@ -33,9 +36,15 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             pl = (PackageList)target;
             folderImage = (Texture)AssetDatabase.LoadAssetAtPath("Assets/EcoSystemAutomation/Editor/Images/folderIcon.png", typeof(Texture));
         }
+
+
         // Inspector
         public override void OnInspectorGUI()
         {
+
+
+
+
             EditorGUI.BeginChangeCheck();
             #region Top Buttons
             GUILayout.BeginHorizontal("box");
@@ -95,6 +104,48 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             GUILayout.EndHorizontal();
             GUILayout.Space(1);
             GUILayout.EndVertical();
+
+
+			// Target Repository
+			GUILayout.BeginVertical("box");
+           	GUILayout.Space(1);
+			GUILayout.BeginHorizontal();
+           	GUILayout.Label("Target Repository", GUILayout.Width(150));
+           
+			pl.targetRepository = (Authoring.Repositories)EditorGUILayout.EnumPopup(pl.targetRepository);
+
+		
+			GUILayout.EndHorizontal();
+
+          	GUILayout.Space(1);
+			if (!Authoring.UserHasRepository(pl.targetRepository))
+			{
+
+
+				GUILayout.BeginHorizontal();
+					GUILayout.Label(" ", GUILayout.Width(150));
+					GUI.color = Color.red;
+					GUILayout.Label("missing Repository","Box");
+					GUI.color = Color.white;
+					if (GUILayout.Button("Fix", GUILayout.Width(30), GUILayout.Height(15)))
+					{
+						EditorApplication.ExecuteMenuItem("PlayMaker/Addons/Ecosystem/Authoring/Repositories browser");
+					}
+
+					if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
+					{
+						Application.OpenURL("http://www.jinxtergames.com/");
+					}
+
+				GUILayout.EndHorizontal();
+
+			
+
+				GUILayout.Space(1);
+			}
+
+			GUILayout.EndVertical();
+          
 
             //Category
             EditorGUI.BeginDisabledGroup(pl.categoryString != "" && pl.categoryString != null);

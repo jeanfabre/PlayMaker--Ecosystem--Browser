@@ -3,6 +3,8 @@ using UnityEngine;
 using UnityEditor;
 using Net.FabreJean.UnityEditor;
 
+using HutongGames.PlayMaker.Ecosystem.Publishing;
+
 namespace Net.FabreJean.PlayMaker.Ecosystem
 {
 #if UNITY_4_7
@@ -60,6 +62,8 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
         public string packageName;
         [SerializeField]
         public string targetDirectory;
+		[SerializeField]
+		public Authoring.Repositories targetRepository;
         [SerializeField]
         public string categoryString;
         [SerializeField]
