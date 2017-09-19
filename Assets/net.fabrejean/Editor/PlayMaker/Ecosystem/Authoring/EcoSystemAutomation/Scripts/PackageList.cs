@@ -118,6 +118,16 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
         public Object pingMenu;
         [SerializeField]
         public bool fileExistsCheck = true;
+        [SerializeField]
+        public bool expandedList = false;
+        [SerializeField]
+        public bool showIncludeFolderList = true;
+        [SerializeField]
+        public bool showIncludeFileList = true;
+        [SerializeField]
+        public bool showExcludeFolderList = true;
+        [SerializeField]
+        public bool showExcludeFileList = true;
         #endregion
     }
 }

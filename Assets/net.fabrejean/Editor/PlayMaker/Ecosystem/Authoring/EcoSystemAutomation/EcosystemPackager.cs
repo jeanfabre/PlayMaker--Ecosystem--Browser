@@ -31,6 +31,10 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
         private string packageTypeExtention;
         private string packagetextString;
         private string selectedRepResult;
+        private string displayExcludeFileList;
+        private string displayIncludeFileList;
+        private string displayIncludeFolderList;
+        private string displayExcludeFolderList;
 
         private void OnEnable()
         {
@@ -477,92 +481,246 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             GUILayout.Space(5);
             GUILayout.EndVertical();
             // End Add Buttons
-
-            // End Add Buttons
+            #endregion
 
             #region fileList
-            // Include folder List
             GUILayout.BeginVertical("box");
-            GUILayout.BeginVertical();
-            GUILayout.Label("Included Folder List");
-            GUILayout.EndVertical();
 
-            for (int CountA = 0; CountA < pl.includeFolders.Count; CountA++)
+            // Include Folder List
+            GUILayout.Space(5);
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            GUILayout.Label("Included Folder List", EditorStyles.boldLabel);
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button(displayIncludeFolderList, GUILayout.Width(50)))
             {
-                GUILayout.BeginHorizontal();
-                GUI.color = Color.green;
-                pl.includeFolders[CountA] = EditorGUILayout.TextField(pl.includeFolders[CountA], GUILayout.MinWidth(200));
-                if (GUILayout.Button("X", GUILayout.Width(16), GUILayout.Height(15)))
-                {
-                    RemoveIncludeFolder(CountA);
-                    return;
-                }
-                GUI.color = new Color(1, 1, 1, 1);
-                GUILayout.EndHorizontal();
-
+                pl.showIncludeFolderList = !pl.showIncludeFolderList;
             }
+            GUILayout.EndHorizontal();
+
+            if (pl.showIncludeFolderList)
+            {
+                displayIncludeFolderList = "Hide";
+
+                if (pl.includeFolders.Count > 0)
+                {
+                    GUILayout.BeginVertical("box");
+                    GUILayout.Space(5);
+                    GUI.color = Color.green;
+                    for (int CountA = 0; CountA < pl.includeFolders.Count; CountA++)
+                    {
+                        GUILayout.BeginHorizontal("box");
+                        string assetPath = AssetDatabase.GUIDToAssetPath(pl.includeFolders[CountA]);
+                        if (GUILayout.Button(assetPath, "label", GUILayout.MaxWidth(200), GUILayout.ExpandWidth(true)))
+                        {
+
+                            HighlightIncludeFolder(CountA);
+                            return;
+                        }
+
+                        GUI.color = new Color(1, 1, 1, 1);
+                        if (GUILayout.Button("X", GUILayout.Width(16), GUILayout.Height(15)))
+                        {
+                            RemoveIncludeFolder(CountA);
+                            return;
+                        }
+                        GUI.color = Color.green;
+                        GUILayout.EndHorizontal();
+                    }
+                    GUI.color = new Color(1, 1, 1, 1);
+                    GUILayout.Space(5);
+                    GUILayout.EndVertical();
+                }
+                else
+                {
+                    GUILayout.BeginHorizontal("box");
+                    GUILayout.FlexibleSpace();
+                    GUILayout.Label("No Folders included");
+                    GUILayout.FlexibleSpace();
+                    GUILayout.EndHorizontal();
+                }
+            }
+            else
+            {
+                displayIncludeFolderList = "Show";
+            }
+            GUILayout.Space(5);
+            GUILayout.EndVertical();
 
             // Include File List
-            GUILayout.BeginVertical();
-            GUILayout.Label("Included File List");
-            GUILayout.EndVertical();
-
-            for (int CountC = 0; CountC < pl.includeFiles.Count; CountC++)
+            GUILayout.BeginVertical("box");
+            GUILayout.Space(5);
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            GUILayout.Label("Included File List", EditorStyles.boldLabel);
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button(displayIncludeFileList, GUILayout.Width(50)))
             {
-
-                GUILayout.BeginHorizontal();
-                GUI.color = Color.green;
-                pl.includeFiles[CountC] = EditorGUILayout.TextField(pl.includeFiles[CountC], GUILayout.MinWidth(200));
-
-                if (GUILayout.Button("X", GUILayout.Width(16), GUILayout.Height(15)))
-                {
-                    RemoveIncludeFile(CountC);
-                    return;
-                }
-                GUI.color = new Color(1, 1, 1, 1);
-                GUILayout.EndHorizontal();
-
+                pl.showIncludeFileList = !pl.showIncludeFileList;
             }
-            GUILayout.EndVertical();
+            GUILayout.EndHorizontal();
+            if (pl.showIncludeFileList)
+            {
+                displayIncludeFileList = "Hide";
 
+                if (pl.includeFiles.Count > 0)
+                {
+                    GUILayout.BeginVertical("box");
+                    GUILayout.Space(5);
+                    GUI.color = Color.green;
+                    for (int CountA = 0; CountA < pl.includeFiles.Count; CountA++)
+                    {
+                        GUILayout.BeginHorizontal("box");
+                        string assetPath = AssetDatabase.GUIDToAssetPath(pl.includeFiles[CountA]);
+                        if (GUILayout.Button(assetPath, "label", GUILayout.MinWidth(200), GUILayout.ExpandWidth(true)))
+                        {
+                            HighlightIncludeFile(CountA);
+                            return;
+                        }
+                        GUI.color = new Color(1, 1, 1, 1);
+
+                        if (GUILayout.Button("X", GUILayout.Width(16), GUILayout.Height(15)))
+                        {
+                            RemoveIncludeFile(CountA);
+                            return;
+                        }
+                        GUI.color = Color.green;
+                        GUILayout.EndHorizontal();
+                    }
+                    GUI.color = new Color(1, 1, 1, 1);
+                    GUILayout.Space(5);
+                    GUILayout.EndVertical();
+                }
+                else
+                {
+                    GUILayout.BeginHorizontal("box");
+                    GUILayout.FlexibleSpace();
+                    GUILayout.Label("No Files included");
+                    GUILayout.FlexibleSpace();
+                    GUILayout.EndHorizontal();
+                }
+            }
+            else
+            {
+                displayIncludeFileList = "Show";
+            }
+            GUILayout.Space(5);
+
+            GUILayout.EndVertical();
             // Exclude folder List
             GUILayout.BeginVertical("box");
-            GUILayout.BeginVertical();
-            GUILayout.Label("Excluded Folder List");
-            GUILayout.EndVertical();
-
-            for (int CountB = 0; CountB < pl.excludeFolders.Count; CountB++)
+            GUILayout.Space(5);
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            GUILayout.Label("Excluded Folder List", EditorStyles.boldLabel);
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button(displayExcludeFolderList, GUILayout.Width(50)))
             {
-                GUILayout.BeginHorizontal();
-                GUI.color = Color.red;
-                pl.excludeFolders[CountB] = EditorGUILayout.TextField(pl.excludeFolders[CountB], GUILayout.MinWidth(200));
-                if (GUILayout.Button("X", GUILayout.Width(16), GUILayout.Height(15)))
-                {
-                    RemoveExcludeFolder(CountB);
-                    return;
-                }
-                GUI.color = new Color(1, 1, 1, 1);
-                GUILayout.EndHorizontal();
+                pl.showExcludeFolderList = !pl.showExcludeFolderList;
             }
-
+            GUILayout.EndHorizontal();
+            if (pl.showExcludeFolderList)
+            {
+                displayExcludeFolderList = "Hide";
+                if (pl.excludeFolders.Count > 0)
+                {
+                    GUILayout.BeginVertical("box");
+                    GUILayout.Space(5);
+                    GUI.color = Color.red;
+                    for (int CountA = 0; CountA < pl.excludeFolders.Count; CountA++)
+                    {
+                        GUILayout.BeginHorizontal("box");
+                        string assetPath = AssetDatabase.GUIDToAssetPath(pl.excludeFolders[CountA]);
+                        if (GUILayout.Button(assetPath, "label", GUILayout.MinWidth(200), GUILayout.ExpandWidth(true)))
+                        {
+                            HighlightExcludeFolder(CountA);
+                            return;
+                        }
+                        GUI.color = new Color(1, 1, 1, 1);
+                        if (GUILayout.Button("X", GUILayout.Width(16), GUILayout.Height(15)))
+                        {
+                            RemoveExcludeFolder(CountA);
+                            return;
+                        }
+                        GUI.color = Color.red;
+                        GUILayout.EndHorizontal();
+                    }
+                    GUI.color = new Color(1, 1, 1, 1);
+                    GUILayout.Space(5);
+                    GUILayout.EndVertical();
+                }
+                else
+                {
+                    GUILayout.BeginHorizontal("box");
+                    GUILayout.FlexibleSpace();
+                    GUILayout.Label("No Folders included");
+                    GUILayout.FlexibleSpace();
+                    GUILayout.EndHorizontal();
+                }
+            }
+            else
+            {
+                displayExcludeFolderList = "Show";
+            }
+            GUILayout.Space(5);
+            GUILayout.EndVertical();
             // Exclude File List
-            GUILayout.BeginVertical();
-            GUILayout.Label("Excluded File List");
-            GUILayout.EndVertical();
-
-            for (int CountD = 0; CountD < pl.excludeFiles.Count; CountD++)
+            GUILayout.BeginVertical("box");
+            GUILayout.Space(5);
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            GUILayout.Label("Excluded File List", EditorStyles.boldLabel);
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button(displayExcludeFileList, GUILayout.Width(50)))
             {
-                GUILayout.BeginHorizontal();
-                GUI.color = Color.red;
-                pl.excludeFiles[CountD] = EditorGUILayout.TextField(pl.excludeFiles[CountD], GUILayout.MinWidth(200));
-                if (GUILayout.Button("X", GUILayout.Width(16), GUILayout.Height(15)))
-                {
-                    RemoveExcludeFile(CountD);
-                    return;
-                }
-                GUI.color = new Color(1, 1, 1, 1);
-                GUILayout.EndHorizontal();
+                pl.showExcludeFileList = !pl.showExcludeFileList;
             }
+            GUILayout.EndHorizontal();
+            if (pl.showExcludeFileList)
+            {
+                displayExcludeFileList = "Hide";
+
+                if (pl.excludeFiles.Count > 0)
+                {
+                    GUILayout.BeginVertical("box");
+                    GUILayout.Space(5);
+                    GUI.color = Color.red;
+                    for (int CountA = 0; CountA < pl.excludeFiles.Count; CountA++)
+                    {
+                        GUILayout.BeginHorizontal("box");
+                        string assetPath = AssetDatabase.GUIDToAssetPath(pl.excludeFiles[CountA]);
+                        if (GUILayout.Button(assetPath, "label", GUILayout.MinWidth(200), GUILayout.ExpandWidth(true)))
+                        {
+                            HighlightExcludeFile(CountA);
+                            return;
+                        }
+                        GUI.color = new Color(1, 1, 1, 1);
+                        if (GUILayout.Button("X", GUILayout.Width(16), GUILayout.Height(15)))
+                        {
+                            RemoveExcludeFile(CountA);
+                            return;
+                        }
+                        GUI.color = Color.red;
+                        GUILayout.EndHorizontal();
+                    }
+                    GUI.color = new Color(1, 1, 1, 1);
+                    GUILayout.Space(5);
+                    GUILayout.EndVertical();
+                }
+                else
+                {
+                    GUILayout.BeginHorizontal("box");
+                    GUILayout.FlexibleSpace();
+                    GUILayout.Label("No Files included");
+                    GUILayout.FlexibleSpace();
+                    GUILayout.EndHorizontal();
+                }
+            }
+            else
+            {
+                displayExcludeFileList = "Show";
+            }
+            GUILayout.Space(5);
             GUILayout.EndVertical();
             #endregion
 
@@ -656,7 +814,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                 #endregion
 
             }
-            #endregion
+            
         }
 
         #region drobox
@@ -685,7 +843,6 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 
                         foreach (Object dragged_object in DragAndDrop.objectReferences)
                         {
-
                             if (AssetDatabase.IsValidFolder(AssetDatabase.GetAssetPath(dragged_object)))
                             {
                                 addItemPath = AssetDatabase.GetAssetPath(dragged_object);
@@ -802,27 +959,33 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
         }
 
         // Add Include Folder
-        // Add Include Folder
         private void IncludeFolder()
         {
             for (int i = 0; i < pl.foldersToInclude.Count; i++)
             {
-                string get_Folder = pl.foldersToInclude[i];
-                int index = get_Folder.IndexOf("Assets");
-                folderToAdd = get_Folder.Substring(index);
-                additem = null;
+                folderToAdd = AssetDatabase.AssetPathToGUID(pl.foldersToInclude[i]);
+
                 if (pl.includeFolders.Contains(folderToAdd) || pl.excludeFolders.Contains(folderToAdd))
                 {
-                    bool option = EditorUtility.DisplayDialog("Folder Exitsts", "This Folder is already included in a list", "Add Anyway", "Don't Add");
-                    if (option)
+                    if (pl.includeFolders.Contains(folderToAdd))
                     {
-                        pl.includeFolders.Add(folderToAdd);
+                        EditorUtility.DisplayDialog("Folder Exists", pl.foldersToInclude[i] + "\n\n already included in the Include Folder", "Ok", "");
+                    }
+                    if (pl.excludeFolders.Contains(folderToAdd))
+                    {
+                        bool option = EditorUtility.DisplayDialog("Folder Exists", pl.foldersToInclude[i] + "\n\n already included in the Exclude Folders\n\nDo you want to remove from the Exclude Folders and add here?", "Yes", "No");
+                        if (option)
+                        {
+                            pl.excludeFolders.Remove(folderToAdd);
+                            pl.includeFolders.Add(folderToAdd);
+                        }
                     }
                 }
                 else
                 {
                     pl.includeFolders.Add(folderToAdd);
                 }
+
             }
             EditorUtility.SetDirty(pl);
             Repaint();
@@ -833,15 +996,19 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
         {
             for (int i = 0; i < pl.filesToInclude.Count; i++)
             {
-                string get_Folder = pl.filesToInclude[i];
-                int index = get_Folder.IndexOf("Assets");
-                fileToAdd = get_Folder.Substring(index);
-                additem = null;
-                if (pl.includeFiles.Contains(fileToAdd) || pl.excludeFiles.Contains(fileToAdd))
+                fileToAdd = AssetDatabase.AssetPathToGUID(pl.filesToInclude[i]);
+
+
+                if (pl.includeFiles.Contains(fileToAdd))
                 {
-                    bool option = EditorUtility.DisplayDialog("File Exitsts", "This File is already included in a list", "Add Anyway", "Don't Add");
+                    EditorUtility.DisplayDialog("File Exists", pl.filesToInclude[i] + "\n\n already included in the Include Files", "Ok", "");
+                }
+                else if (pl.excludeFiles.Contains(fileToAdd))
+                {
+                    bool option = EditorUtility.DisplayDialog("File Exists", pl.filesToInclude[i] + "\n\n already included in the Exclude files\n\nDo you want to remove from the exclude files and add here?", "Yes", "No");
                     if (option)
                     {
+                        pl.excludeFiles.Remove(fileToAdd);
                         pl.includeFiles.Add(fileToAdd);
                     }
                 }
@@ -859,15 +1026,18 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
         {
             for (int i = 0; i < pl.foldersToExclude.Count; i++)
             {
-                string get_Folder = pl.foldersToExclude[i];
-                int index = get_Folder.IndexOf("Assets");
-                folderToAdd = get_Folder.Substring(index);
-                additem = null;
-                if (pl.includeFolders.Contains(folderToAdd) || pl.excludeFolders.Contains(folderToAdd))
+                folderToAdd = AssetDatabase.AssetPathToGUID(pl.foldersToExclude[i]);
+
+                if (pl.excludeFolders.Contains(folderToAdd))
                 {
-                    bool option = EditorUtility.DisplayDialog("Folder Exitsts", "This Folder is already included in a list", "Add Anyway", "Don't Add");
+                    EditorUtility.DisplayDialog("Folder Exists", pl.foldersToExclude[i] + "\n\n already included in the Include Folders", "Ok", "");
+                }
+                else if (pl.includeFolders.Contains(folderToAdd))
+                {
+                    bool option = EditorUtility.DisplayDialog("Folder Exists", pl.foldersToExclude[i] + "\n\n already included in the Include Folders\n\nDo you want to remove from the Include Folder and add here?", "Yes", "No");
                     if (option)
                     {
+                        pl.includeFolders.Remove(folderToAdd);
                         pl.excludeFolders.Add(folderToAdd);
                     }
                 }
@@ -875,6 +1045,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                 {
                     pl.excludeFolders.Add(folderToAdd);
                 }
+
             }
             EditorUtility.SetDirty(pl);
             Repaint();
@@ -885,15 +1056,18 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
         {
             for (int i = 0; i < pl.filesToExclude.Count; i++)
             {
-                string get_Folder = pl.filesToExclude[i];
-                int index = get_Folder.IndexOf("Assets");
-                fileToAdd = get_Folder.Substring(index);
-                additem = null;
-                if (pl.includeFiles.Contains(fileToAdd) || pl.excludeFiles.Contains(fileToAdd))
+                fileToAdd = AssetDatabase.AssetPathToGUID(pl.filesToExclude[i]);
+
+                if (pl.excludeFiles.Contains(fileToAdd))
                 {
-                    bool option = EditorUtility.DisplayDialog("File Exitsts", "This File is already included in a list", "Add Anyway", "Don't Add");
+                    EditorUtility.DisplayDialog("File Exists", pl.filesToExclude[i] + "\n\n already included in the Exclude files", "Ok", "");
+                }
+                else if (pl.includeFiles.Contains(fileToAdd))
+                {
+                    bool option = EditorUtility.DisplayDialog("File Exists", pl.filesToExclude[i] + "\n\n already included in the Include files\n\nDo you want to remove from the Include files and add here?", "Yes", "No");
                     if (option)
                     {
+                        pl.includeFiles.Remove(fileToAdd);
                         pl.excludeFiles.Add(fileToAdd);
                     }
                 }
@@ -901,10 +1075,39 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                 {
                     pl.excludeFiles.Add(fileToAdd);
                 }
+
             }
             EditorUtility.SetDirty(pl);
             Repaint();
             pl.filesToExclude.Clear();
+        }
+        #endregion
+
+        #region Highlight Folders
+
+        // Remove Include Folder
+        private void HighlightIncludeFolder(int index)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(pl.includeFolders[index]);
+            EditorGUIUtility.PingObject(AssetDatabase.LoadAssetAtPath(path, typeof(Object)));
+        }
+        // Remove Exclude Folder
+        private void HighlightExcludeFolder(int index)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(pl.excludeFolders[index]);
+            EditorGUIUtility.PingObject(AssetDatabase.LoadAssetAtPath(path, typeof(Object)));
+        }
+        // Remove Include File
+        private void HighlightIncludeFile(int index)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(pl.includeFiles[index]);
+            EditorGUIUtility.PingObject(AssetDatabase.LoadAssetAtPath(path, typeof(Object)));
+        }
+        // Remove Exclude File
+        private void HighlightExcludeFile(int index)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(pl.excludeFiles[index]);
+            EditorGUIUtility.PingObject(AssetDatabase.LoadAssetAtPath(path, typeof(Object)));
         }
         #endregion
 
@@ -1037,7 +1240,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             //Include folders and check for playmaker.dll
             for (int count = 0; count < pl.includeFolders.Count; count++)
             {
-                string directoryPath = pl.includeFolders[count];
+                string directoryPath = AssetDatabase.GUIDToAssetPath(pl.includeFolders[count]);
                 DirectoryInfo dir = new DirectoryInfo(directoryPath);
                 FileInfo[] info = dir.GetFiles("*.*", SearchOption.AllDirectories);
                 foreach (FileInfo f in info)
@@ -1055,7 +1258,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             //Include files
             for (int count = 0; count < pl.includeFiles.Count; count++)
             {
-                string filePathString = pl.includeFiles[count];
+                string filePathString = AssetDatabase.GUIDToAssetPath(pl.includeFiles[count]);
                 if (!includeFileList.Contains(filePathString))
                 {
                     includeFileList.Add(filePathString);
@@ -1064,7 +1267,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             // Exclude folders
             for (int count = 0; count < pl.excludeFolders.Count; count++)
             {
-                string directoryPath = pl.excludeFolders[count];
+                string directoryPath = AssetDatabase.GUIDToAssetPath(pl.excludeFolders[count]);
                 DirectoryInfo dir = new DirectoryInfo(directoryPath);
                 FileInfo[] info = dir.GetFiles("*.*", SearchOption.AllDirectories);
                 foreach (FileInfo f in info)
@@ -1090,7 +1293,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             for (int count = 0; count < pl.excludeFiles.Count; count++)
             {
 
-                string filePathString = pl.excludeFiles[count];
+                string filePathString = AssetDatabase.GUIDToAssetPath(pl.excludeFiles[count]);
                 if (includeFileList.Contains(filePathString))
                 {
                     int index = includeFileList.IndexOf(filePathString);
