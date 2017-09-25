@@ -121,11 +121,6 @@ namespace HutongGames.PlayMaker.Ecosystem.Publishing
 			_scroll = GUILayout.BeginScrollView(_scroll);
 			
 			GUI.skin = editorSkin; // should design the scroll widgets so that it can be matching the skin.
-			
-			if (ShowHelp)
-			{	
-				BuildHelpUI();
-			}
 
 			if (Authoring.repositories != null)
 			{
@@ -138,23 +133,6 @@ namespace HutongGames.PlayMaker.Ecosystem.Publishing
 				}
 			}
 			GUILayout.FlexibleSpace();
-			
-			
-			if (ShowHelp)
-			{
-				GUILayout.BeginHorizontal();
-					GUILayout.BeginVertical();
-						GUILayout.FlexibleSpace();
-						GUILayout.Label("","Label Jean Fabre Sign");
-					GUILayout.EndVertical();
-					GUILayout.BeginVertical();
-						GUILayout.FlexibleSpace();
-						GUILayout.Label("","Label Jean Fabre Url");
-					GUILayout.EndVertical();
-					GUILayout.FlexibleSpace();
-				GUILayout.EndHorizontal();
-				
-			}
 
 			GUILayout.EndScrollView();
 			
@@ -209,74 +187,7 @@ namespace HutongGames.PlayMaker.Ecosystem.Publishing
 			
 			
 	    }
-		
-		void BuildHelpUI()
-		{
 
-			GUILayout.Space(8);
-				
-			
-			GUILayout.BeginHorizontal();
-				GUILayout.Space(15);
-				GUILayout.Box(GUIContent.none,"Table Row Green Alone Help",GUILayout.Width(65));
-				GUILayout.Label("Opened. All is ok","Label Row Plain");
-			GUILayout.EndHorizontal();
-			
-			GUILayout.BeginHorizontal();
-				GUILayout.Space(15);
-				GUILayout.Box(GUIContent.none,"Table Row Orange Alone Help",GUILayout.Width(65));
-				GUILayout.Label("New, not saved yet","Label Row Plain");
-				
-			GUILayout.EndHorizontal();
-			
-			GUILayout.BeginHorizontal();
-				GUILayout.Space(15);
-				GUILayout.Box(GUIContent.none,"Table Row Red Alone Help",GUILayout.Width(65));
-				GUILayout.Label("Opened, not found in assets","Label Row Plain");
-			GUILayout.EndHorizontal();
-				
-			
-			if (ShowBuildSettings)
-			{
-				GUILayout.BeginHorizontal();
-					GUILayout.Space(15);
-				
-					GUIStyleArrowInBuildSettings.overflow.bottom = 50;
-					GUIStyleArrowInBuildSettings.overflow.right = 40;
-				
-					GUILayout.Label(GUIContent.none,GUIStyleArrowInBuildSettings);
-					GUILayout.Space(40);
-					GUILayout.Label("In the build settings","Label Row Plain",GUILayout.Height(10));
-				GUILayout.EndHorizontal();
-				
-				GUILayout.BeginHorizontal();
-					GUILayout.Space(35);
-					GUIStyleArrowInBuildSettings.overflow.bottom = 29;
-						GUIStyleArrowInBuildSettings.overflow.right = 20;
-					GUILayout.Label(GUIContent.none,GUIStyleArrowInBuildSettings);
-					GUILayout.Space(20);
-					GUILayout.Label("Is enabled in Build","Label Row Plain",GUILayout.Height(10));
-				GUILayout.EndHorizontal();
-				
-				GUILayout.BeginHorizontal();
-					GUILayout.Space(55);
-					GUIStyleArrowInBuildSettings.overflow.bottom = 8;
-					GUIStyleArrowInBuildSettings.overflow.right = 0;
-					GUILayout.Label(GUIContent.none,GUIStyleArrowInBuildSettings);
-					GUILayout.Label("Scene Path, Click to Ping","Label Row Plain",GUILayout.Height(10));
-				GUILayout.EndHorizontal();
-	 
-			}else{
-				GUILayout.BeginHorizontal();
-					GUILayout.Space(15);
-					GUIStyleArrowInBuildSettings.overflow.bottom = 8;
-					GUIStyleArrowInBuildSettings.overflow.right = 0;
-					GUILayout.Label(GUIContent.none,GUIStyleArrowInBuildSettings);
-					GUILayout.Label("Scene Path, Click to Ping","Label Row Plain",GUILayout.Height(10));
-				GUILayout.EndHorizontal();
-			}
-			
-		}
 		
 		void BuildRepositoryEntryUI(int repositoryIndex)
 		{
@@ -314,54 +225,7 @@ namespace HutongGames.PlayMaker.Ecosystem.Publishing
 			
 			GUIContent bgContent = GUIContent.none;
 			GUILayout.BeginHorizontal(bgContent,"Table Row "+rowStyleType+" "+rowStyle);
-
-			/*
-			if (ShowBuildSettings)
-			{
-				if (canIncludeInBuild)
-				{
-					bool inBuild = RepositoriesOnComputer[repositoryIndex]!=0;
-					bool addtoBuild = GUILayout.Toggle(inBuild,"",GUILayout.Width(15f));
-					if(addtoBuild!=inBuild)
-					{
-						if (addtoBuild)
-						{
-							AddSceneToBuild(repositoriesPaths[repositoryIndex]);
-							
-						}else{
-							RemoveSceneFromBuild(repositoriesPaths[repositoryIndex]);
-						}
-						OnProjectChange();
-						
-						GUIUtility.ExitGUI();
-						return;
-					}
-				}else
-				{
-					GUILayout.Toggle(false,"","Toggle Disabled",GUILayout.Width(15f));
-				}
-				
-				bool inBuildEnabled = RepositoriesOnComputer[repositoryIndex]==1;
-				bool inBuildEnable = inBuildEnabled;
-				
-				if (!name.Equals("") && RepositoriesOnComputer[repositoryIndex]== 1 )
-				{
-					inBuildEnable = GUILayout.Toggle(inBuildEnabled,"",GUILayout.Width(15f));
-				}else if (!name.Equals("") && RepositoriesOnComputer[repositoryIndex]== -1){
-					inBuildEnable = GUILayout.Toggle(inBuildEnabled,"",GUILayout.Width(15f));
-				}else{
-					GUILayout.Toggle(false,"","Toggle Disabled",GUILayout.Width(15f));
-				}
-				
-				if (inBuildEnabled!=inBuildEnable)
-				{
-					EnableSceneFromBuild(repositoriesPaths[repositoryIndex],inBuildEnable);
-					OnProjectChange();
-				}
-			}
-			*/
 		
-
 			GUIContent _label = new GUIContent(name);
 			var labelDimensions = GUI.skin.label.CalcSize(_label);
 			
@@ -407,49 +271,9 @@ namespace HutongGames.PlayMaker.Ecosystem.Publishing
 		}
 		
 
-		private static void AddSceneToBuild(string scenePath)
+		void OnScanComputerChange()
 		{
-			//Debug.Log("AddSceneToBuild "+scenePath);
 			
-			var original = EditorBuildSettings.scenes; 
-			var newSettings = new EditorBuildSettingsScene[original.Length + 1];
-			
-			System.Array.Copy(original, newSettings, original.Length);
-			
-			var sceneToAdd = new EditorBuildSettingsScene(scenePath, true);
-			
-			newSettings[newSettings.Length - 1] = sceneToAdd;
-			
-			EditorBuildSettings.scenes = newSettings;
-			
-			
-		}
-		
-		private static void RemoveSceneFromBuild(string scenePath)
-		{
-			EditorBuildSettingsScene[] copy = EditorBuildSettings.scenes; 
-			int index = Array.FindIndex(copy, scene => scene.path == scenePath);
-			if (index==-1)
-			{
-				if (debug) Debug.LogError("Scene not found in Assets!");
-				return;
-			}
-			ArrayUtility.RemoveAt<EditorBuildSettingsScene>(ref copy,index);
-			EditorBuildSettings.scenes = copy;
-
-		}
-		
-		private static void EnableSceneFromBuild(string scenePath,bool enable)
-		{
-			EditorBuildSettingsScene[] copy = EditorBuildSettings.scenes; 
-			int index = Array.FindIndex(copy, scene => scene.path == scenePath);
-			if (index==-1)
-			{
-				if (debug) Debug.LogError("Scene not found in Assets!");
-				return;
-			}
-			copy[index].enabled = enable;
-			EditorBuildSettings.scenes = copy;
 		}
 		
 
@@ -458,12 +282,12 @@ namespace HutongGames.PlayMaker.Ecosystem.Publishing
 		 
 			GUILayout.BeginHorizontal(EditorStyles.toolbar);
 					
-				/*
-				if (GUILayout.Button("Refresh", EditorStyles.toolbarButton)) 
+				
+				if (GUILayout.Button("Scan Computer", EditorStyles.toolbarButton)) 
 				{
-					OnProjectChange();
+					OnScanComputerChange();
 				}
-				*/
+				
 				GUILayout.FlexibleSpace();
 				
 				bool _newShowHelp = GUILayout.Toggle(ShowHelp,"Help",EditorStyles.toolbarButton);

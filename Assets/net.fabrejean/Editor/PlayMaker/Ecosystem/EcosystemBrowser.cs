@@ -143,9 +143,18 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 
 		public static EcosystemBrowser Instance;
 
+		[MenuItem ("PlayMaker/Addons/TouchBar/Ecosystem Browser Toggle %&e",false,1000)]
+		static void ToggleWindow () {
+			if (Instance != null) {
+				Instance.Close ();
+				return;
+			}
+
+			Init ();
+		}
+
 		[MenuItem ("PlayMaker/Addons/Ecosystem/Ecosystem Browser &e",false,1000)]
 		static void Init () {
-		
 			//Debug.Log("################ Init");
 
 			RefreshDisclaimerPref();
