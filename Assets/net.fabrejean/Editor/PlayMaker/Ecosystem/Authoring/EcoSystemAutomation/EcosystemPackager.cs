@@ -1332,7 +1332,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             if (pl.version != "") PackageTextArray.Add("\"" + "Version" + "\"" + ":" + "\"" + pl.version + "\"" + ",");
             if (pl.uMinVersion[pl.uMinVersionSelected] != "") PackageTextArray.Add("\"" + "UnityMinimumVersion" + "\"" + ":" + "\"" + pl.uMinVersion[pl.uMinVersionSelected] + "\"" + ",");
             if (pl.pmMinVersion[pl.pmMinVersionSelected] != "") PackageTextArray.Add("\"" + "PlayMakerMinimumVersion" + "\"" + ":" + "\"" + pl.pmMinVersion[pl.pmMinVersionSelected] + "\"" + ",");
-            if (unityPackage != "") PackageTextArray.Add("\"" + "unitypackage" + "\"" + ":" + "\"" + unityPackage + "\"" + ",");
+			if (unityPackage != "") PackageTextArray.Add("\"" + "unitypackage" + "\"" + ":" + "\"" + unityPackage + "/" + pl.packageName + ".unitypackage" + "\"" +  ",");
 
             switch (pl.Pingtypeselected)
             {
@@ -1435,22 +1435,24 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 
 
                 // Complete Json Txt in packagetextString below
+				packagetextString = null;
+				int i = 1;
+				foreach (string p in PackageTextArray)
+				{
+					packagetextString += p;
+					if (i < PackageTextArray.Count) {
+						packagetextString += System.Environment.NewLine;
+					}
+					i++;
+				}
 
                 bool jsonOk = false;
                 JSON.JsonDecode(packagetextString, ref jsonOk);
                 if (jsonOk)
                 {
                     Directory.CreateDirectory(pl.targetDirectory);
-                    StreamWriter packagetext = new StreamWriter(pl.targetPackageTextFile);
-                    packagetextString = null;
-                    foreach (string p in PackageTextArray)
-                    {
-                        packagetextString += p;
-                        packagetextString += System.Environment.NewLine;
-                    }
-                    Debug.Log("isOk " + jsonOk);
-                    packagetext.Write(packagetextString);
-                    packagetext.Close();
+
+					File.WriteAllText(pl.targetPackageTextFile, packagetextString);
 
                     Debug.Log(pl.targetDirectory);
 

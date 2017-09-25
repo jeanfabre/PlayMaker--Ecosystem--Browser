@@ -68,7 +68,7 @@ namespace HutongGames.PlayMaker.Ecosystem.Publishing
 		/// </summary>
 		protected virtual void OnEnable()
 		{
-			Debug.Log("################ OnEnable");
+		//	Debug.Log("################ OnEnable");
 
 			// get editor prefs
 			GetEditorPrefs();
