@@ -53,6 +53,8 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 
         #region Strings
         [SerializeField]
+        public string author;
+        [SerializeField]
         public string type;
         [SerializeField]
         public string version;
@@ -128,6 +130,8 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
         public bool showExcludeFolderList = true;
         [SerializeField]
         public bool showExcludeFileList = true;
+        [SerializeField]
+        public bool foldout = true;
         #endregion
     }
 }

@@ -35,6 +35,8 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
         private string displayIncludeFileList;
         private string displayIncludeFolderList;
         private string displayExcludeFolderList;
+        private int widthQM = 18; // width question marks
+        private int heightQM = 15; // height question marks
 
         private void OnEnable()
         {
@@ -70,7 +72,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             GUILayout.BeginHorizontal();
             GUILayout.Label("Package Name", GUILayout.Width(150));
             pl.packageName = EditorGUILayout.TextField(pl.packageName, GUILayout.MinWidth(5));
-            if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
+            if (GUILayout.Button("?", GUILayout.Width(widthQM), GUILayout.Height(heightQM)))
             {
                 Application.OpenURL("http://www.jinxtergames.com/");
             }
@@ -86,7 +88,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                        {
                            OnSetTargetDirectory();
                        }
-                       if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
+                       if (GUILayout.Button("?", GUILayout.Width(widthQM), GUILayout.Height(heightQM)))
                        {
                            Application.OpenURL("http://www.jinxtergames.com/");
                        }
@@ -100,7 +102,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             GUILayout.BeginHorizontal();
             GUILayout.Label("Package Type", GUILayout.Width(150));
             pl.packagetypeselected = EditorGUILayout.Popup(pl.packagetypeselected, pl.packagetypeselection);
-            if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
+            if (GUILayout.Button("?", GUILayout.Width(widthQM), GUILayout.Height(heightQM)))
             {
                 Application.OpenURL("http://www.jinxtergames.com/");
 
@@ -137,7 +139,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 						EditorApplication.ExecuteMenuItem("PlayMaker/Addons/Ecosystem/Authoring/Repositories browser");
 					}
 
-					if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
+					if (GUILayout.Button("?", GUILayout.Width(widthQM), GUILayout.Height(heightQM)))
 					{
 						Application.OpenURL("http://www.jinxtergames.com/");
 					}
@@ -161,7 +163,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             GUILayout.BeginVertical();
             pl.categorySelected = EditorGUILayout.Popup(pl.categorySelected, pl.categoryList);
             GUILayout.EndVertical();
-            if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
+            if (GUILayout.Button("?", GUILayout.Width(widthQM), GUILayout.Height(heightQM)))
             {
                 Application.OpenURL("http://www.jinxtergames.com/");
             }
@@ -174,7 +176,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             GUILayout.BeginHorizontal();
             GUILayout.Label("Custom Category", GUILayout.Width(150));
             pl.categoryString = EditorGUILayout.TextField(pl.categoryString, GUILayout.MinWidth(5));
-            if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
+            if (GUILayout.Button("?", GUILayout.Width(widthQM), GUILayout.Height(heightQM)))
             {
                 Application.OpenURL("http://www.jinxtergames.com/");
             }
@@ -184,259 +186,280 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             #endregion
 
             #region Text Edit Input Box
-            // Type
             GUILayout.BeginVertical("box");
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Type", GUILayout.Width(150));
-            pl.type = EditorGUILayout.TextField(pl.type, GUILayout.MinWidth(5));
-            if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
-            {
-                Application.OpenURL("http://www.jinxtergames.com/");
-            }
+            GUILayout.Space(10);
+            pl.foldout = EditorGUILayout.Foldout(pl.foldout, "Info setup");
             GUILayout.EndHorizontal();
-
-
-            // Version
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Version", GUILayout.Width(150));
-            pl.version = EditorGUILayout.TextField(pl.version, GUILayout.MinWidth(5));
-            if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
+            if (pl.foldout)
             {
-                Application.OpenURL("http://www.jinxtergames.com/");
-            }
-            GUILayout.EndHorizontal();
+                
+            
+                // Author
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("Author", GUILayout.Width(150));
+                pl.author = EditorGUILayout.TextField(pl.author, GUILayout.MinWidth(5));
+                if (GUILayout.Button("?", GUILayout.Width(widthQM), GUILayout.Height(heightQM)))
+                {
+                    Application.OpenURL("http://www.jinxtergames.com/");
+                }
+                GUILayout.EndHorizontal();
 
-            // Keywords
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Keywords", GUILayout.Width(150));
-            pl.keyWords = EditorGUILayout.TextField(pl.keyWords);
-            if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
-            {
-                Application.OpenURL("http://www.jinxtergames.com/");
-            }
-            GUILayout.EndHorizontal();
-
-            // Unity Minimum Version
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Unity Minimum Version", GUILayout.Width(150));
-            GUILayout.BeginVertical();
-            pl.uMinVersionSelected = EditorGUILayout.Popup(pl.uMinVersionSelected, pl.uMinVersion);
-            GUILayout.EndVertical();
-            if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
-            {
-                Application.OpenURL("http://www.jinxtergames.com/");
-            }
-            GUILayout.EndHorizontal();
-
-            // PlayMaker Minimum Version
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("PlayMaker Min. Version", GUILayout.Width(150));
-
-            pl.pmMinVersionSelected = EditorGUILayout.Popup(pl.pmMinVersionSelected, pl.pmMinVersion);
-            if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
-            {
-                Application.OpenURL("http://www.jinxtergames.com/");
-            }
-            GUILayout.EndHorizontal();
-
-            // Ping
-
-            GUILayout.Space(8);
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Ping Type", GUILayout.Width(150));
-            pl.Pingtypeselected = EditorGUILayout.Popup(pl.Pingtypeselected, pl.Pingtype);
-            if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
-            {
-                Application.OpenURL("http://www.jinxtergames.com/");
-
-            }
-            GUILayout.EndHorizontal();
-            switch (pl.Pingtypeselected)
-            {
+                // Type
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("Type", GUILayout.Width(150));
+                pl.type = EditorGUILayout.TextField(pl.type, GUILayout.MinWidth(5));
+                if (GUILayout.Button("?", GUILayout.Width(widthQM), GUILayout.Height(heightQM)))
+                {
+                    Application.OpenURL("http://www.jinxtergames.com/");
+                }
+                GUILayout.EndHorizontal();
 
 
-                case 1:
+                // Version
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("Version", GUILayout.Width(150));
+                pl.version = EditorGUILayout.TextField(pl.version, GUILayout.MinWidth(5));
+                if (GUILayout.Button("?", GUILayout.Width(widthQM), GUILayout.Height(heightQM)))
+                {
+                    Application.OpenURL("http://www.jinxtergames.com/");
+                }
+                GUILayout.EndHorizontal();
 
-                    // Ping Asset Path
+                // Keywords
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("Keywords", GUILayout.Width(150));
+                pl.keyWords = EditorGUILayout.TextField(pl.keyWords);
+                if (GUILayout.Button("?", GUILayout.Width(widthQM), GUILayout.Height(heightQM)))
+                {
+                    Application.OpenURL("http://www.jinxtergames.com/");
+                }
+                GUILayout.EndHorizontal();
+
+                // Unity Minimum Version
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("Unity Minimum Version", GUILayout.Width(150));
+                GUILayout.BeginVertical();
+                pl.uMinVersionSelected = EditorGUILayout.Popup(pl.uMinVersionSelected, pl.uMinVersion);
+                GUILayout.EndVertical();
+                if (GUILayout.Button("?", GUILayout.Width(widthQM), GUILayout.Height(heightQM)))
+                {
+                    Application.OpenURL("http://www.jinxtergames.com/");
+                }
+                GUILayout.EndHorizontal();
+
+                // PlayMaker Minimum Version
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("PlayMaker Min. Version", GUILayout.Width(150));
+
+                pl.pmMinVersionSelected = EditorGUILayout.Popup(pl.pmMinVersionSelected, pl.pmMinVersion);
+                if (GUILayout.Button("?", GUILayout.Width(widthQM), GUILayout.Height(heightQM)))
+                {
+                    Application.OpenURL("http://www.jinxtergames.com/");
+                }
+                GUILayout.EndHorizontal();
+
+                // Ping
+
+                GUILayout.Space(8);
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("Ping Type", GUILayout.Width(150));
+                pl.Pingtypeselected = EditorGUILayout.Popup(pl.Pingtypeselected, pl.Pingtype);
+                if (GUILayout.Button("?", GUILayout.Width(widthQM), GUILayout.Height(heightQM)))
+                {
+                    Application.OpenURL("http://www.jinxtergames.com/");
+
+                }
+                GUILayout.EndHorizontal();
+                switch (pl.Pingtypeselected)
+                {
+
+
+                    case 1:
+
+                        // Ping Asset Path
+                        GUILayout.BeginVertical("box");
+                        GUILayout.Space(3);
+                        EditorGUILayout.BeginHorizontal();
+                        GUILayout.Label("Select Asset Path", GUILayout.Width(150));
+                        pl.assetPath = (Object)EditorGUILayout.ObjectField(pl.assetPath, typeof(Object), false);
+                        if (GUILayout.Button("?", GUILayout.Width(widthQM), GUILayout.Height(heightQM)))
+                        {
+                            Application.OpenURL("http://www.jinxtergames.com/");
+                        }
+                        EditorGUILayout.EndHorizontal();
+                        GUILayout.Space(3);
+                        GUILayout.EndVertical();
+                        break;
+
+                    case 2:
+                        // Ping Menu
+                        GUILayout.BeginVertical("box");
+                        GUILayout.Space(3);
+                        EditorGUILayout.BeginHorizontal();
+                        GUILayout.Label("Select Menu", GUILayout.Width(150));
+                        pl.pingMenu = (Object)EditorGUILayout.ObjectField(pl.pingMenu, typeof(Object), false);
+                        if (GUILayout.Button("?", GUILayout.Width(widthQM), GUILayout.Height(heightQM)))
+                        {
+                            Application.OpenURL("http://www.jinxtergames.com/");
+                        }
+                        EditorGUILayout.EndHorizontal();
+                        GUILayout.Space(3);
+                        GUILayout.EndVertical();
+                        break;
+                }
+
+
+
+                // EcoFilter Link's
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("EcoFilter", GUILayout.Width(150));
+                if (GUILayout.Button("Add", GUILayout.Height(16), GUILayout.MinWidth(5)))
+                {
+                    AddEcoFilterString();
+                }
+                if (GUILayout.Button("?", GUILayout.Width(widthQM), GUILayout.Height(heightQM)))
+                {
+                    Application.OpenURL("http://www.jinxtergames.com/");
+                }
+                GUILayout.EndHorizontal();
+                GUILayout.Space(2);
+                // Show Each EcoFilter Link
+                if (pl.ecoFilterList.Count > 0)
+                {
                     GUILayout.BeginVertical("box");
-                    GUILayout.Space(3);
-                    EditorGUILayout.BeginHorizontal();
-                    GUILayout.Label("Select Asset Path", GUILayout.Width(150));
-                    pl.assetPath = (Object)EditorGUILayout.ObjectField(pl.assetPath, typeof(Object), false);
-                    if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
+                    GUILayout.Space(5);
+                    for (int CountA = 0; CountA < pl.ecoFilterList.Count; CountA++)
                     {
-                        Application.OpenURL("http://www.jinxtergames.com/");
-                    }
-                    EditorGUILayout.EndHorizontal();
-                    GUILayout.Space(3);
-                    GUILayout.EndVertical();
-                    break;
+                        GUILayout.BeginHorizontal();
+                        GUILayout.Label("", GUILayout.Width(5));
 
-                case 2:
-                    // Ping Menu
+                        pl.ecoFilterList[CountA] = EditorGUILayout.TextField(pl.ecoFilterList[CountA]);
+                        if (GUILayout.Button("X", GUILayout.Width(16), GUILayout.Height(15)))
+                        {
+                            RemoveEcoFilterString(CountA);
+                            GUI.FocusControl(null);
+                        }
+                        GUILayout.Label("", GUILayout.Width(5));
+                        GUILayout.EndHorizontal();
+                    }
+                    GUILayout.Space(5);
+                    GUILayout.EndVertical();
+                }
+
+                // Modules Link's
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("Modules", GUILayout.Width(150));
+                if (GUILayout.Button("Add", GUILayout.Height(16), GUILayout.MinWidth(5)))
+                {
+                    AddModuleString();
+                }
+                if (GUILayout.Button("?", GUILayout.Width(widthQM), GUILayout.Height(heightQM)))
+                {
+                    Application.OpenURL("http://www.jinxtergames.com/");
+                }
+                GUILayout.EndHorizontal();
+                GUILayout.Space(2);
+                // Show Each Module Link
+                if (pl.modulesList.Count > 0)
+                {
                     GUILayout.BeginVertical("box");
-                    GUILayout.Space(3);
-                    EditorGUILayout.BeginHorizontal();
-                    GUILayout.Label("Select Menu", GUILayout.Width(150));
-                    pl.pingMenu = (Object)EditorGUILayout.ObjectField(pl.pingMenu, typeof(Object), false);
-                    if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
+                    GUILayout.Space(5);
+                    for (int CountA = 0; CountA < pl.modulesList.Count; CountA++)
                     {
-                        Application.OpenURL("http://www.jinxtergames.com/");
+                        GUILayout.BeginHorizontal();
+                        GUILayout.Label("", GUILayout.Width(5));
+
+                        pl.modulesList[CountA] = EditorGUILayout.TextField(pl.modulesList[CountA]);
+                        if (GUILayout.Button("X", GUILayout.Width(16), GUILayout.Height(15)))
+                        {
+                            RemoveModuleString(CountA);
+                            GUI.FocusControl(null);
+                        }
+                        GUILayout.Label("", GUILayout.Width(5));
+                        GUILayout.EndHorizontal();
                     }
-                    EditorGUILayout.EndHorizontal();
-                    GUILayout.Space(3);
+                    GUILayout.Space(5);
                     GUILayout.EndVertical();
-                    break;
-            }
+                }
 
 
 
-            // EcoFilter Link's
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("EcoFilter", GUILayout.Width(150));
-            if (GUILayout.Button("Add", GUILayout.Height(16), GUILayout.MinWidth(5)))
-            {
-                AddEcoFilterString();
-            }
-            if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
-            {
-                Application.OpenURL("http://www.jinxtergames.com/");
-            }
-            GUILayout.EndHorizontal();
-            GUILayout.Space(2);
-            // Show Each EcoFilter Link
-            if (pl.ecoFilterList.Count > 0)
-            {
-                GUILayout.BeginVertical("box");
-                GUILayout.Space(5);
-                for (int CountA = 0; CountA < pl.ecoFilterList.Count; CountA++)
+                // YouTube Link's
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("YouTube Video Links", GUILayout.Width(150));
+                if (GUILayout.Button("Add", GUILayout.Height(16), GUILayout.MinWidth(5)))
                 {
-                    GUILayout.BeginHorizontal();
-                    GUILayout.Label("", GUILayout.Width(5));
-
-                    pl.ecoFilterList[CountA] = EditorGUILayout.TextField(pl.ecoFilterList[CountA]);
-                    if (GUILayout.Button("X", GUILayout.Width(16), GUILayout.Height(15)))
+                    AddYoutubeString();
+                }
+                if (GUILayout.Button("?", GUILayout.Width(widthQM), GUILayout.Height(heightQM)))
+                {
+                    Application.OpenURL("http://www.jinxtergames.com/");
+                }
+                GUILayout.EndHorizontal();
+                GUILayout.Space(2);
+                // Show Each YouTube Link
+                if (pl.youTubeLists.Count > 0)
+                {
+                    GUILayout.BeginVertical("box");
+                    GUILayout.Space(5);
+                    for (int CountA = 0; CountA < pl.youTubeLists.Count; CountA++)
                     {
-                        RemoveEcoFilterString(CountA);
-                        GUI.FocusControl(null);
+                        GUILayout.BeginHorizontal();
+                        GUILayout.Label("", GUILayout.Width(5));
+
+                        pl.youTubeLists[CountA] = EditorGUILayout.TextField(pl.youTubeLists[CountA]);
+                        if (GUILayout.Button("X", GUILayout.Width(16), GUILayout.Height(15)))
+                        {
+                            RemoveYouTubeString(CountA);
+                            GUI.FocusControl(null);
+                        }
+                        GUILayout.Label("", GUILayout.Width(5));
+                        GUILayout.EndHorizontal();
                     }
-                    GUILayout.Label("", GUILayout.Width(5));
-                    GUILayout.EndHorizontal();
+                    GUILayout.Space(5);
+                    GUILayout.EndVertical();
+                }
+
+                // Web Link's
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("Web Links", GUILayout.Width(150));
+                if (GUILayout.Button("Add", GUILayout.Height(16), GUILayout.MinWidth(5)))
+                {
+                    AddWebLinkString();
+                }
+                if (GUILayout.Button("?", GUILayout.Width(widthQM), GUILayout.Height(heightQM)))
+                {
+                    Application.OpenURL("http://www.jinxtergames.com/");
+                }
+                GUILayout.EndHorizontal();
+                GUILayout.Space(2);
+                // Show Each WebLink
+                if (pl.webLinkList.Count > 0)
+                {
+                    GUILayout.BeginVertical("box");
+                    GUILayout.Space(5);
+                    for (int CountA = 0; CountA < pl.webLinkList.Count; CountA++)
+                    {
+                        GUILayout.BeginHorizontal();
+                        GUILayout.Label("", GUILayout.Width(5));
+                        pl.webLinkList[CountA] = EditorGUILayout.TextField(pl.webLinkList[CountA]);
+                        if (GUILayout.Button("X", GUILayout.Width(16), GUILayout.Height(15)))
+                        {
+                            RemoveWebLinkString(CountA);
+                            GUI.FocusControl(null);
+                        }
+                        GUILayout.Label("", GUILayout.Width(5));
+                        GUILayout.EndHorizontal();
+                    }
+                    GUILayout.Space(5);
+                    GUILayout.EndVertical();
                 }
                 GUILayout.Space(5);
-                GUILayout.EndVertical();
+               
             }
-
-            // Modules Link's
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Modules", GUILayout.Width(150));
-            if (GUILayout.Button("Add", GUILayout.Height(16), GUILayout.MinWidth(5)))
-            {
-                AddModuleString();
-            }
-            if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
-            {
-                Application.OpenURL("http://www.jinxtergames.com/");
-            }
-            GUILayout.EndHorizontal();
-            GUILayout.Space(2);
-            // Show Each Module Link
-            if (pl.modulesList.Count > 0)
-            {
-                GUILayout.BeginVertical("box");
-                GUILayout.Space(5);
-                for (int CountA = 0; CountA < pl.modulesList.Count; CountA++)
-                {
-                    GUILayout.BeginHorizontal();
-                    GUILayout.Label("", GUILayout.Width(5));
-
-                    pl.modulesList[CountA] = EditorGUILayout.TextField(pl.modulesList[CountA]);
-                    if (GUILayout.Button("X", GUILayout.Width(16), GUILayout.Height(15)))
-                    {
-                        RemoveModuleString(CountA);
-                        GUI.FocusControl(null);
-                    }
-                    GUILayout.Label("", GUILayout.Width(5));
-                    GUILayout.EndHorizontal();
-                }
-                GUILayout.Space(5);
-                GUILayout.EndVertical();
-            }
-
-
-
-            // YouTube Link's
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("YouTube Video Links", GUILayout.Width(150));
-            if (GUILayout.Button("Add", GUILayout.Height(16), GUILayout.MinWidth(5)))
-            {
-                AddYoutubeString();
-            }
-            if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
-            {
-                Application.OpenURL("http://www.jinxtergames.com/");
-            }
-            GUILayout.EndHorizontal();
-            GUILayout.Space(2);
-            // Show Each YouTube Link
-            if (pl.youTubeLists.Count > 0)
-            {
-                GUILayout.BeginVertical("box");
-                GUILayout.Space(5);
-                for (int CountA = 0; CountA < pl.youTubeLists.Count; CountA++)
-                {
-                    GUILayout.BeginHorizontal();
-                    GUILayout.Label("", GUILayout.Width(5));
-
-                    pl.youTubeLists[CountA] = EditorGUILayout.TextField(pl.youTubeLists[CountA]);
-                    if (GUILayout.Button("X", GUILayout.Width(16), GUILayout.Height(15)))
-                    {
-                        RemoveYouTubeString(CountA);
-                        GUI.FocusControl(null);
-                    }
-                    GUILayout.Label("", GUILayout.Width(5));
-                    GUILayout.EndHorizontal();
-                }
-                GUILayout.Space(5);
-                GUILayout.EndVertical();
-            }
-
-            // Web Link's
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Web Links", GUILayout.Width(150));
-            if (GUILayout.Button("Add", GUILayout.Height(16), GUILayout.MinWidth(5)))
-            {
-                AddWebLinkString();
-            }
-            if (GUILayout.Button("?", GUILayout.Width(16), GUILayout.Height(15)))
-            {
-                Application.OpenURL("http://www.jinxtergames.com/");
-            }
-            GUILayout.EndHorizontal();
-            GUILayout.Space(2);
-            // Show Each WebLink
-            if (pl.webLinkList.Count > 0)
-            {
-                GUILayout.BeginVertical("box");
-                GUILayout.Space(5);
-                for (int CountA = 0; CountA < pl.webLinkList.Count; CountA++)
-                {
-                    GUILayout.BeginHorizontal();
-                    GUILayout.Label("", GUILayout.Width(5));
-                    pl.webLinkList[CountA] = EditorGUILayout.TextField(pl.webLinkList[CountA]);
-                    if (GUILayout.Button("X", GUILayout.Width(16), GUILayout.Height(15)))
-                    {
-                        RemoveWebLinkString(CountA);
-                        GUI.FocusControl(null);
-                    }
-                    GUILayout.Label("", GUILayout.Width(5));
-                    GUILayout.EndHorizontal();
-                }
-                GUILayout.Space(5);
-                GUILayout.EndVertical();
-            }
-            GUILayout.Space(5);
             GUILayout.EndVertical();
+
             #endregion
 
             #region Set Folders And Files
@@ -452,6 +475,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             GUILayout.EndHorizontal();
             GUILayout.Space(5);
 
+            GUILayout.BeginHorizontal();
             // include dropbox
             GUILayout.BeginVertical("box");
             GUI.color = Color.green;
@@ -481,6 +505,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             GUILayout.Space(5);
             GUILayout.EndVertical();
             // End Add Buttons
+            GUILayout.EndHorizontal();
             #endregion
 
             #region fileList
@@ -742,7 +767,17 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                     }
                 }
 
-                if(pl.type != null)
+                if (pl.author != null)
+                {
+                    if (pl.author.Contains(charsToCheck))
+                    {
+                        EditorUtility.DisplayDialog("Quotation marks are not allowed", "Quotation marks will break the Json file", "Ok", "");
+                        pl.author = pl.author.Remove(pl.author.Length - 1);
+                        GUI.FocusControl(null);
+                    }
+                }
+
+                if (pl.type != null)
                 {
                     if (pl.type.Contains(charsToCheck))
                     {
@@ -1219,6 +1254,14 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 
         private void CreatePackage()
         {
+            // Check For Package Name
+            if (pl.packageName == "" || pl.packageName == null)
+            {
+                EditorUtility.DisplayDialog("No Package Name", "There is no package Name defined\n\nPlease provide a package name", "Ok", "");
+                return;
+            }
+
+
             // Target Repository
             string selectedRepEnum = pl.targetRepository.ToString();
             string selectedRepString = "HutongGames.PlayMaker.Ecosystem.Publishing." + selectedRepEnum;
@@ -1323,11 +1366,13 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
         // Create the Text file
         private void CreateTextFile()
         {
+
             pl.targetPackageTextFile = pl.targetDirectory + "/" + pl.packageName + packageTypeExtention;
             PackageTextArray.Clear();
 
             PackageTextArray.Add("{");
             if (packageType != "") PackageTextArray.Add("\"" + "__ECO__" + "\"" + ":" + "\"" + packageType + "\"" + ",");
+            if (pl.author != "") PackageTextArray.Add("\"" + "Type" + "\"" + ":" + "\"" + pl.author + "\"" + ",");
             if (pl.type != "") PackageTextArray.Add("\"" + "Type" + "\"" + ":" + "\"" + pl.type + "\"" + ",");
             if (pl.version != "") PackageTextArray.Add("\"" + "Version" + "\"" + ":" + "\"" + pl.version + "\"" + ",");
             if (pl.uMinVersion[pl.uMinVersionSelected] != "") PackageTextArray.Add("\"" + "UnityMinimumVersion" + "\"" + ":" + "\"" + pl.uMinVersion[pl.uMinVersionSelected] + "\"" + ",");
