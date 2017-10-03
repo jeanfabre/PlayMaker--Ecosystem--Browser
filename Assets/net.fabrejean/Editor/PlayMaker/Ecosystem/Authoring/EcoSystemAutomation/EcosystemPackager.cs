@@ -32,6 +32,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
         private string packagetextString;
         private string selectedRepResult;
         private string displayLists;
+        private string infoSetup;
         private string displaySetFoldersAndFiles;
         private int widthQM = 18; // width question marks
         private int heightQM = 15; // height question marks
@@ -187,12 +188,19 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             #region Text Edit Input Box
             GUILayout.BeginVertical("box");
             GUILayout.BeginHorizontal();
-            GUILayout.Space(10);
-            pl.foldout = EditorGUILayout.Foldout(pl.foldout, "Info setup");
+            GUILayout.FlexibleSpace();
+            EditorGUILayout.LabelField("Info setup", EditorStyles.boldLabel);
+
+            if (GUILayout.Button(infoSetup, GUILayout.Width(50), GUILayout.Height(15)))
+            {
+                pl.foldout = !pl.foldout;
+            }
             GUILayout.EndHorizontal();
+            
             if (pl.foldout)
             {
-
+                GUILayout.Space(5);
+                infoSetup = "Hide";
 
                 // Author
                 GUILayout.BeginHorizontal();
@@ -454,19 +462,22 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                     GUILayout.Space(5);
                     GUILayout.EndVertical();
                 }
-                GUILayout.Space(5);
+                
 
+            }
+            else
+            {
+                GUILayout.Space(3);
+                infoSetup = "Show";
             }
             GUILayout.EndVertical();
 
             #endregion
 
             #region Set Folders And Files
-            GUILayout.Space(10);
             // Add Buttons
 
             GUILayout.BeginVertical("box");
-            GUILayout.Space(2);
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
             EditorGUILayout.LabelField("Set Folders And Files", EditorStyles.boldLabel);
@@ -517,16 +528,18 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                 GUI.color = new Color(1, 1, 1, 1);
                 GUILayout.Space(5);
                 GUILayout.EndVertical();
+                GUILayout.EndHorizontal();
             }
             else
             {
                 displaySetFoldersAndFiles = "Show";
+                GUILayout.EndHorizontal();
+                GUILayout.Space(3);
+
             }
-
+            GUILayout.EndHorizontal();
             // End Add Buttons
-            GUILayout.EndHorizontal();
 
-            GUILayout.EndHorizontal();
 
             #endregion
 
@@ -534,9 +547,8 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             GUILayout.BeginVertical("box");
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
-            GUILayout.Label("Included / Excluded Lists", EditorStyles.boldLabel);
-            GUILayout.FlexibleSpace();
-            if (GUILayout.Button(displayLists, GUILayout.Width(50)))
+            EditorGUILayout.LabelField("Included / Excluded Lists", EditorStyles.boldLabel);
+            if (GUILayout.Button(displayLists, GUILayout.Width(50), GUILayout.Height(15)))
             {
                 pl.showList = !pl.showList;
             }
@@ -742,11 +754,10 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             }
             else
             {
+                
                 displayLists = "Show";
             }
-            
-                GUILayout.EndVertical();
- 
+            GUILayout.EndVertical();
             GUILayout.EndVertical();
             #endregion
 
@@ -847,7 +858,6 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                     }
                 }
                 #endregion
-
             }
         }
 
