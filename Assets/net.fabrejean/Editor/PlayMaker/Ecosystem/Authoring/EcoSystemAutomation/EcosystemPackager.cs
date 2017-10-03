@@ -31,17 +31,17 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
         private string packageTypeExtention;
         private string packagetextString;
         private string selectedRepResult;
-        private string displayExcludeFileList;
-        private string displayIncludeFileList;
-        private string displayIncludeFolderList;
-        private string displayExcludeFolderList;
+        private string displayLists;
+        private string displaySetFoldersAndFiles;
         private int widthQM = 18; // width question marks
         private int heightQM = 15; // height question marks
+        private GUIStyle dropboxTextStyle;
 
         private void OnEnable()
         {
             pl = (PackageList)target;
             folderImage = (Texture)AssetDatabase.LoadAssetAtPath("Assets/EcoSystemAutomation/Editor/Images/folderIcon.png", typeof(Texture));
+
         }
 
 
@@ -50,9 +50,8 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
         {
 
 
-
-
             EditorGUI.BeginChangeCheck();
+
             #region Top Buttons
             GUILayout.BeginHorizontal("box");
             GUILayout.Label("Check if file exist", GUILayout.Width(100));
@@ -113,46 +112,46 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             GUILayout.EndVertical();
 
 
-			// Target Repository
-			GUILayout.BeginVertical("box");
-           	GUILayout.Space(1);
-			GUILayout.BeginHorizontal();
-           	GUILayout.Label("Target Repository", GUILayout.Width(150));
-           
-			pl.targetRepository = (Authoring.Repositories)EditorGUILayout.EnumPopup(pl.targetRepository);
+            // Target Repository
+            GUILayout.BeginVertical("box");
+            GUILayout.Space(1);
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Target Repository", GUILayout.Width(150));
 
-		
-			GUILayout.EndHorizontal();
-
-          	GUILayout.Space(1);
-			if (!Authoring.UserHasRepository(pl.targetRepository))
-			{
+            pl.targetRepository = (Authoring.Repositories)EditorGUILayout.EnumPopup(pl.targetRepository);
 
 
-				GUILayout.BeginHorizontal();
-					GUILayout.Label(" ", GUILayout.Width(150));
-					GUI.color = Color.red;
-					GUILayout.Label("missing Repository","Box");
-					GUI.color = Color.white;
-					if (GUILayout.Button("Fix", GUILayout.Width(30), GUILayout.Height(15)))
-					{
-						EditorApplication.ExecuteMenuItem("PlayMaker/Addons/Ecosystem/Authoring/Repositories browser");
-					}
+            GUILayout.EndHorizontal();
 
-					if (GUILayout.Button("?", GUILayout.Width(widthQM), GUILayout.Height(heightQM)))
-					{
-						Application.OpenURL("http://www.jinxtergames.com/");
-					}
+            GUILayout.Space(1);
+            if (!Authoring.UserHasRepository(pl.targetRepository))
+            {
 
-				GUILayout.EndHorizontal();
 
-			
+                GUILayout.BeginHorizontal();
+                GUILayout.Label(" ", GUILayout.Width(150));
+                GUI.color = Color.red;
+                GUILayout.Label("missing Repository", "Box");
+                GUI.color = Color.white;
+                if (GUILayout.Button("Fix", GUILayout.Width(30), GUILayout.Height(15)))
+                {
+                    EditorApplication.ExecuteMenuItem("PlayMaker/Addons/Ecosystem/Authoring/Repositories browser");
+                }
 
-				GUILayout.Space(1);
-			}
+                if (GUILayout.Button("?", GUILayout.Width(widthQM), GUILayout.Height(heightQM)))
+                {
+                    Application.OpenURL("http://www.jinxtergames.com/");
+                }
 
-			GUILayout.EndVertical();
-          
+                GUILayout.EndHorizontal();
+
+
+
+                GUILayout.Space(1);
+            }
+
+            GUILayout.EndVertical();
+
 
             //Category
             EditorGUI.BeginDisabledGroup(pl.categoryString != "" && pl.categoryString != null);
@@ -193,8 +192,8 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             GUILayout.EndHorizontal();
             if (pl.foldout)
             {
-                
-            
+
+
                 // Author
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("Author", GUILayout.Width(150));
@@ -456,7 +455,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                     GUILayout.EndVertical();
                 }
                 GUILayout.Space(5);
-               
+
             }
             GUILayout.EndVertical();
 
@@ -471,61 +470,90 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
             EditorGUILayout.LabelField("Set Folders And Files", EditorStyles.boldLabel);
-            GUILayout.FlexibleSpace();
-            GUILayout.EndHorizontal();
-            GUILayout.Space(5);
+            //  GUILayout.FlexibleSpace();
+            if (GUILayout.Button(displaySetFoldersAndFiles, GUILayout.Width(50), GUILayout.Height(15)))
+            {
+                pl.showSetFoldersAndFiles = !pl.showSetFoldersAndFiles;
+            }
 
-            GUILayout.BeginHorizontal();
-            // include dropbox
-            GUILayout.BeginVertical("box");
-            GUI.color = Color.green;
-            GUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
-            EditorGUILayout.LabelField("Included Files And Folders", EditorStyles.boldLabel);
-            GUILayout.FlexibleSpace();
-            GUILayout.EndHorizontal();
-            InCludeDropAreaGUI();
-            GUI.color = new Color(1, 1, 1, 1);
-            GUILayout.Space(5);
-            GUILayout.EndVertical();
-            GUILayout.Space(5);
+            if (pl.showSetFoldersAndFiles)
+            {
+                displaySetFoldersAndFiles = "Hide";
 
-            // exclude dropbox
-            GUILayout.BeginVertical("box");
-            GUI.color = Color.red;
-            GUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
-            EditorGUILayout.LabelField("Excluded Files And Folders", EditorStyles.boldLabel);
-            GUILayout.FlexibleSpace();
-            GUILayout.EndHorizontal();
-            ExCludeDropAreaGUI();
-            GUI.color = new Color(1, 1, 1, 1);
-            GUILayout.Space(5);
-            GUILayout.EndVertical();
-            GUILayout.Space(5);
-            GUILayout.EndVertical();
+                GUILayout.EndHorizontal();
+                GUILayout.Space(5);
+
+                GUILayout.BeginHorizontal();
+                //dropboxes
+                dropboxTextStyle = new GUIStyle(GUI.skin.label);
+                dropboxTextStyle.fontStyle = FontStyle.Bold;
+                GUILayout.BeginVertical();
+
+                GUILayout.BeginHorizontal();
+
+                GUILayout.BeginVertical("box");
+                GUILayout.BeginHorizontal();
+                GUILayout.Space(5);
+                GUILayout.Label("Include", dropboxTextStyle, GUILayout.MinWidth(90));
+                GUILayout.FlexibleSpace();
+                GUILayout.EndHorizontal();
+                GUILayout.Space(2);
+                GUI.color = Color.green;
+                InCludeDropAreaGUI();
+                GUI.color = new Color(1, 1, 1, 1);
+                GUILayout.EndVertical();
+                GUILayout.Space(5);
+                GUILayout.BeginVertical("box");
+                GUILayout.BeginHorizontal();
+                GUILayout.Space(5);
+                GUILayout.Label("Exclude", dropboxTextStyle, GUILayout.MinWidth(90));
+                GUILayout.FlexibleSpace();
+                GUILayout.EndHorizontal();
+                GUILayout.Space(2);
+                GUI.color = Color.red;
+                ExCludeDropAreaGUI();
+                GUILayout.EndVertical();
+                GUILayout.EndHorizontal();
+                GUI.color = new Color(1, 1, 1, 1);
+                GUILayout.Space(5);
+                GUILayout.EndVertical();
+            }
+            else
+            {
+                displaySetFoldersAndFiles = "Show";
+            }
+
             // End Add Buttons
             GUILayout.EndHorizontal();
+
+            GUILayout.EndHorizontal();
+
             #endregion
 
             #region fileList
             GUILayout.BeginVertical("box");
-
-            // Include Folder List
-            GUILayout.Space(5);
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
-            GUILayout.Label("Included Folder List", EditorStyles.boldLabel);
+            GUILayout.Label("Included / Excluded Lists", EditorStyles.boldLabel);
             GUILayout.FlexibleSpace();
-            if (GUILayout.Button(displayIncludeFolderList, GUILayout.Width(50)))
+            if (GUILayout.Button(displayLists, GUILayout.Width(50)))
             {
-                pl.showIncludeFolderList = !pl.showIncludeFolderList;
+                pl.showList = !pl.showList;
             }
             GUILayout.EndHorizontal();
+            GUILayout.BeginVertical();
 
-            if (pl.showIncludeFolderList)
+
+            if (pl.showList)
             {
-                displayIncludeFolderList = "Hide";
+                // Include Folder List
+                GUILayout.Space(5);
+                GUILayout.BeginHorizontal();
+                GUILayout.FlexibleSpace();
+                GUILayout.Label("Included Folder List", EditorStyles.boldLabel);
+                GUILayout.FlexibleSpace();
+                GUILayout.EndHorizontal();
+
 
                 if (pl.includeFolders.Count > 0)
                 {
@@ -564,29 +592,19 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                     GUILayout.FlexibleSpace();
                     GUILayout.EndHorizontal();
                 }
-            }
-            else
-            {
-                displayIncludeFolderList = "Show";
-            }
-            GUILayout.Space(5);
-            GUILayout.EndVertical();
+                GUILayout.EndVertical();
 
-            // Include File List
-            GUILayout.BeginVertical("box");
-            GUILayout.Space(5);
-            GUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
-            GUILayout.Label("Included File List", EditorStyles.boldLabel);
-            GUILayout.FlexibleSpace();
-            if (GUILayout.Button(displayIncludeFileList, GUILayout.Width(50)))
-            {
-                pl.showIncludeFileList = !pl.showIncludeFileList;
-            }
-            GUILayout.EndHorizontal();
-            if (pl.showIncludeFileList)
-            {
-                displayIncludeFileList = "Hide";
+                // Include File List
+                GUILayout.BeginVertical();
+
+                GUILayout.Space(5);
+                GUILayout.BeginHorizontal();
+                GUILayout.FlexibleSpace();
+                GUILayout.Label("Included File List", EditorStyles.boldLabel);
+                GUILayout.FlexibleSpace();
+                GUILayout.EndHorizontal();
+
+                displayLists = "Hide";
 
                 if (pl.includeFiles.Count > 0)
                 {
@@ -624,29 +642,18 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                     GUILayout.FlexibleSpace();
                     GUILayout.EndHorizontal();
                 }
-            }
-            else
-            {
-                displayIncludeFileList = "Show";
-            }
-            GUILayout.Space(5);
 
-            GUILayout.EndVertical();
-            // Exclude folder List
-            GUILayout.BeginVertical("box");
-            GUILayout.Space(5);
-            GUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
-            GUILayout.Label("Excluded Folder List", EditorStyles.boldLabel);
-            GUILayout.FlexibleSpace();
-            if (GUILayout.Button(displayExcludeFolderList, GUILayout.Width(50)))
-            {
-                pl.showExcludeFolderList = !pl.showExcludeFolderList;
-            }
-            GUILayout.EndHorizontal();
-            if (pl.showExcludeFolderList)
-            {
-                displayExcludeFolderList = "Hide";
+
+                GUILayout.EndVertical();
+                // Exclude folder List
+                GUILayout.BeginVertical();
+                GUILayout.Space(5);
+                GUILayout.BeginHorizontal();
+                GUILayout.FlexibleSpace();
+                GUILayout.Label("Excluded Folder List", EditorStyles.boldLabel);
+                GUILayout.FlexibleSpace();
+                GUILayout.EndHorizontal();
+
                 if (pl.excludeFolders.Count > 0)
                 {
                     GUILayout.BeginVertical("box");
@@ -682,28 +689,19 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                     GUILayout.FlexibleSpace();
                     GUILayout.EndHorizontal();
                 }
-            }
-            else
-            {
-                displayExcludeFolderList = "Show";
-            }
-            GUILayout.Space(5);
-            GUILayout.EndVertical();
-            // Exclude File List
-            GUILayout.BeginVertical("box");
-            GUILayout.Space(5);
-            GUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
-            GUILayout.Label("Excluded File List", EditorStyles.boldLabel);
-            GUILayout.FlexibleSpace();
-            if (GUILayout.Button(displayExcludeFileList, GUILayout.Width(50)))
-            {
-                pl.showExcludeFileList = !pl.showExcludeFileList;
-            }
-            GUILayout.EndHorizontal();
-            if (pl.showExcludeFileList)
-            {
-                displayExcludeFileList = "Hide";
+
+                GUILayout.Space(5);
+                GUILayout.EndVertical();
+                // Exclude File List
+                GUILayout.BeginVertical();
+                GUILayout.Space(5);
+                GUILayout.BeginHorizontal();
+                GUILayout.FlexibleSpace();
+                GUILayout.Label("Excluded File List", EditorStyles.boldLabel);
+                GUILayout.FlexibleSpace();
+                GUILayout.EndHorizontal();
+
+                displayLists = "Hide";
 
                 if (pl.excludeFiles.Count > 0)
                 {
@@ -740,12 +738,15 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                     GUILayout.FlexibleSpace();
                     GUILayout.EndHorizontal();
                 }
+                GUILayout.Space(5);
             }
             else
             {
-                displayExcludeFileList = "Show";
+                displayLists = "Show";
             }
-            GUILayout.Space(5);
+            
+                GUILayout.EndVertical();
+ 
             GUILayout.EndVertical();
             #endregion
 
@@ -753,7 +754,6 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             {
                 EditorUtility.SetDirty(pl);
                 Repaint();
-
                 #region Quotation Checker
                 string charsToCheck = "\"";
 
@@ -787,7 +787,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                     }
                 }
 
-                if(pl.version != null)
+                if (pl.version != null)
                 {
                     if (pl.version.Contains(charsToCheck))
                     {
@@ -797,7 +797,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                     }
                 }
 
-                if(pl.keyWords != null)
+                if (pl.keyWords != null)
                 {
                     if (pl.keyWords.Contains(charsToCheck))
                     {
@@ -806,7 +806,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                         GUI.FocusControl(null);
                     }
                 }
-                
+
                 for (int i = 0; i < pl.ecoFilterList.Count; i++)
                 {
                     if (pl.ecoFilterList[i].Contains(charsToCheck))
@@ -849,7 +849,6 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                 #endregion
 
             }
-            
         }
 
         #region drobox
@@ -857,7 +856,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
         public void InCludeDropAreaGUI()
         {
             Event evt = Event.current;
-            Rect drop_area = GUILayoutUtility.GetRect(0.0f, 60.0f, GUILayout.ExpandWidth(true));
+            Rect drop_area = GUILayoutUtility.GetRect(0.0f, 60.0f, GUILayout.MinWidth(90));
             GUI.Box(drop_area, "\nDrop you files\n and folders in here");
             //  
             //  GUILayout.Box("\nDrop you files\n and folders in here", GUILayout.Height(60), GUILayout.ExpandWidth(true));
@@ -878,17 +877,22 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 
                         foreach (Object dragged_object in DragAndDrop.objectReferences)
                         {
-                            if (AssetDatabase.IsValidFolder(AssetDatabase.GetAssetPath(dragged_object)))
+                            addItemPath = AssetDatabase.GetAssetPath(dragged_object);
+
+                            if (AssetDatabase.IsValidFolder(addItemPath))
                             {
-                                addItemPath = AssetDatabase.GetAssetPath(dragged_object);
-                                string get_Folder = addItemPath;
-                                pl.foldersToInclude.Add(get_Folder);
+                                string teststring = AssetDatabase.GetAssetPath(dragged_object);
+                                Debug.Log("dragged object = " + teststring);
+                                pl.foldersToInclude.Add(addItemPath);
+                            }
+                            else if (File.Exists(addItemPath))
+                            {
+                                Debug.Log("dragged item = " + addItemPath);
+                                pl.filesToInclude.Add(addItemPath);
                             }
                             else
                             {
-                                addItemPath = AssetDatabase.GetAssetPath(dragged_object);
-                                string get_Folder = addItemPath;
-                                pl.filesToInclude.Add(get_Folder);
+                                EditorUtility.DisplayDialog("Invalid File Or Folder", "You dropped in invalid files or folders\n\nDrop only files from the Project folder.", "Ok", "");
                             }
                         }
                     }
@@ -907,7 +911,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
         public void ExCludeDropAreaGUI()
         {
             Event evt = Event.current;
-            Rect drop_area2 = GUILayoutUtility.GetRect(0.0f, 60.0f, GUILayout.ExpandWidth(true));
+            Rect drop_area2 = GUILayoutUtility.GetRect(0.0f, 60.0f, GUILayout.MinWidth(90));
             GUI.Box(drop_area2, "\nDrop you files\n and folders in here");
             // GUILayout.BeginHorizontal();
             //  GUILayout.Box("\nDrop you files\n and folders in here", GUILayout.Height(60), GUILayout.ExpandWidth(true));
@@ -1267,9 +1271,9 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             string selectedRepString = "HutongGames.PlayMaker.Ecosystem.Publishing." + selectedRepEnum;
 
             selectedRepResult = EditorPrefs.GetString(selectedRepString);
-            if(selectedRepResult == "")
+            if (selectedRepResult == "")
             {
-             EditorUtility.DisplayDialog("\nWrong Target Repository", "Create Package aborted\n\nis the target repository valid (not missing)", "Ok");
+                EditorUtility.DisplayDialog("\nWrong Target Repository", "Create Package aborted\n\nis the target repository valid (not missing)", "Ok");
                 return;
 
             }
@@ -1358,7 +1362,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                     EditorGUIUtility.PingObject(obj);
                     return;
                 }
-                
+
             }
             CreateTextFile();
         }
@@ -1377,7 +1381,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             if (pl.version != "") PackageTextArray.Add("\"" + "Version" + "\"" + ":" + "\"" + pl.version + "\"" + ",");
             if (pl.uMinVersion[pl.uMinVersionSelected] != "") PackageTextArray.Add("\"" + "UnityMinimumVersion" + "\"" + ":" + "\"" + pl.uMinVersion[pl.uMinVersionSelected] + "\"" + ",");
             if (pl.pmMinVersion[pl.pmMinVersionSelected] != "") PackageTextArray.Add("\"" + "PlayMakerMinimumVersion" + "\"" + ":" + "\"" + pl.pmMinVersion[pl.pmMinVersionSelected] + "\"" + ",");
-			if (unityPackage != "") PackageTextArray.Add("\"" + "unitypackage" + "\"" + ":" + "\"" + unityPackage + "/" + pl.packageName + ".unitypackage" + "\"" +  ",");
+            if (unityPackage != "") PackageTextArray.Add("\"" + "unitypackage" + "\"" + ":" + "\"" + unityPackage + "/" + pl.packageName + ".unitypackage" + "\"" + ",");
 
             switch (pl.Pingtypeselected)
             {
@@ -1480,16 +1484,17 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 
 
                 // Complete Json Txt in packagetextString below
-				packagetextString = null;
-				int i = 1;
-				foreach (string p in PackageTextArray)
-				{
-					packagetextString += p;
-					if (i < PackageTextArray.Count) {
-						packagetextString += System.Environment.NewLine;
-					}
-					i++;
-				}
+                packagetextString = null;
+                int i = 1;
+                foreach (string p in PackageTextArray)
+                {
+                    packagetextString += p;
+                    if (i < PackageTextArray.Count)
+                    {
+                        packagetextString += System.Environment.NewLine;
+                    }
+                    i++;
+                }
 
                 bool jsonOk = false;
                 JSON.JsonDecode(packagetextString, ref jsonOk);
@@ -1497,7 +1502,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                 {
                     Directory.CreateDirectory(pl.targetDirectory);
 
-					File.WriteAllText(pl.targetPackageTextFile, packagetextString);
+                    File.WriteAllText(pl.targetPackageTextFile, packagetextString);
 
                     Debug.Log(pl.targetDirectory);
 

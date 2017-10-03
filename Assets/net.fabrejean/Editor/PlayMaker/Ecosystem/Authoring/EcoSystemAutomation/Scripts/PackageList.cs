@@ -123,13 +123,9 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
         [SerializeField]
         public bool expandedList = false;
         [SerializeField]
-        public bool showIncludeFolderList = true;
+        public bool showList = true;
         [SerializeField]
-        public bool showIncludeFileList = true;
-        [SerializeField]
-        public bool showExcludeFolderList = true;
-        [SerializeField]
-        public bool showExcludeFileList = true;
+        public bool showSetFoldersAndFiles = true;
         [SerializeField]
         public bool foldout = true;
         #endregion
