@@ -1288,9 +1288,9 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 
             }
 
-
-            pl.targetDirectory = selectedRepResult + "/PlayMaker/Ecosystem/" + packageTypeDirectory + "/" + pl.categoryList[pl.categorySelected];
-            unityPackage = "/PlayMaker/Ecosystem/" + packageTypeDirectory + "/" + pl.categoryList[pl.categorySelected];
+			string _category = string.IsNullOrEmpty (pl.categoryString) ? pl.categoryList [pl.categorySelected] : pl.categoryString;
+			pl.targetDirectory = selectedRepResult + "/PlayMaker/Ecosystem/" + packageTypeDirectory + "/" + _category;
+			unityPackage = "/PlayMaker/Ecosystem/" + packageTypeDirectory + "/" + _category;
             Debug.Log(selectedRepResult);
 
             includeFileList.Clear();
@@ -1386,7 +1386,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 
             PackageTextArray.Add("{");
             if (packageType != "") PackageTextArray.Add("\"" + "__ECO__" + "\"" + ":" + "\"" + packageType + "\"" + ",");
-            if (pl.author != "") PackageTextArray.Add("\"" + "Type" + "\"" + ":" + "\"" + pl.author + "\"" + ",");
+            if (pl.author != "") PackageTextArray.Add("\"" + "Author" + "\"" + ":" + "\"" + pl.author + "\"" + ",");
             if (pl.type != "") PackageTextArray.Add("\"" + "Type" + "\"" + ":" + "\"" + pl.type + "\"" + ",");
             if (pl.version != "") PackageTextArray.Add("\"" + "Version" + "\"" + ":" + "\"" + pl.version + "\"" + ",");
             if (pl.uMinVersion[pl.uMinVersionSelected] != "") PackageTextArray.Add("\"" + "UnityMinimumVersion" + "\"" + ":" + "\"" + pl.uMinVersion[pl.uMinVersionSelected] + "\"" + ",");
