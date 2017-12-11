@@ -247,7 +247,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("Unity Minimum Version", GUILayout.Width(150));
                 GUILayout.BeginVertical();
-                pl.uMinVersionSelected = EditorGUILayout.Popup(pl.uMinVersionSelected, pl.uMinVersion);
+				pl.uMinVersionSelected = EditorGUILayout.Popup(pl.uMinVersionSelected, PackageList.uMinVersion);
                 GUILayout.EndVertical();
                 if (GUILayout.Button("?", GUILayout.Width(widthQM), GUILayout.Height(heightQM)))
                 {
@@ -259,7 +259,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("PlayMaker Min. Version", GUILayout.Width(150));
 
-                pl.pmMinVersionSelected = EditorGUILayout.Popup(pl.pmMinVersionSelected, pl.pmMinVersion);
+				pl.pmMinVersionSelected = EditorGUILayout.Popup(pl.pmMinVersionSelected, PackageList.pmMinVersion);
                 if (GUILayout.Button("?", GUILayout.Width(widthQM), GUILayout.Height(heightQM)))
                 {
                     Application.OpenURL("http://www.jinxtergames.com/");
@@ -1389,8 +1389,8 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
             if (pl.author != "") PackageTextArray.Add("\"" + "Author" + "\"" + ":" + "\"" + pl.author + "\"" + ",");
             if (pl.type != "") PackageTextArray.Add("\"" + "Type" + "\"" + ":" + "\"" + pl.type + "\"" + ",");
             if (pl.version != "") PackageTextArray.Add("\"" + "Version" + "\"" + ":" + "\"" + pl.version + "\"" + ",");
-            if (pl.uMinVersion[pl.uMinVersionSelected] != "") PackageTextArray.Add("\"" + "UnityMinimumVersion" + "\"" + ":" + "\"" + pl.uMinVersion[pl.uMinVersionSelected] + "\"" + ",");
-            if (pl.pmMinVersion[pl.pmMinVersionSelected] != "") PackageTextArray.Add("\"" + "PlayMakerMinimumVersion" + "\"" + ":" + "\"" + pl.pmMinVersion[pl.pmMinVersionSelected] + "\"" + ",");
+			if (PackageList.uMinVersion[pl.uMinVersionSelected] != "") PackageTextArray.Add("\"" + "UnityMinimumVersion" + "\"" + ":" + "\"" + PackageList.uMinVersion[pl.uMinVersionSelected] + "\"" + ",");
+			if (PackageList.pmMinVersion[pl.pmMinVersionSelected] != "") PackageTextArray.Add("\"" + "PlayMakerMinimumVersion" + "\"" + ":" + "\"" + PackageList.pmMinVersion[pl.pmMinVersionSelected] + "\"" + ",");
             if (unityPackage != "") PackageTextArray.Add("\"" + "unitypackage" + "\"" + ":" + "\"" + unityPackage + "/" + pl.packageName + ".unitypackage" + "\"" + ",");
 
             switch (pl.Pingtypeselected)
