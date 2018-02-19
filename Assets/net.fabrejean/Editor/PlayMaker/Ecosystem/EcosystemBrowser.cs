@@ -60,9 +60,10 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 
 		static public string __REST_URL_BASE__ = "http://www.fabrejean.net/projects/playmaker_ecosystem/";
 
-		string searchString = "";
+        // DJAYDINO Changed string to static string
+        static string searchString = "";
 
-		string lastSearchString = "";
+        string lastSearchString = "";
 
 		string rawSearchResult="";
 
@@ -91,8 +92,9 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 
 		private bool filterTouched;
 
-		private List<PlayMakerEcosystemFilters> searchFilters;
-		private List<string> repositoryMask;
+        // DJAYDINO Changed private to private static
+        private static List<PlayMakerEcosystemFilters> searchFilters;
+        private List<string> repositoryMask;
 	
 		private Rect ActionListRect;
 
@@ -2257,8 +2259,38 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			
 			Repaint();
 		}
-			
-		void SearchRep()
+
+        // ADDED BY DJAYDINO
+        public static void AutoSearchRep(string autoSearchString, int selectedFilter)
+        {
+
+
+            searchString = autoSearchString;
+            searchFilters = new List<PlayMakerEcosystemFilters>();
+            switch (selectedFilter)
+            {
+                case 1:
+                    searchFilters.Add(PlayMakerEcosystemFilters.Actions);
+                    break;
+                case 2:
+                    searchFilters.Add(PlayMakerEcosystemFilters.Packages);
+
+                    break;
+                case 3:
+                    searchFilters.Add(PlayMakerEcosystemFilters.Samples);
+
+                    break;
+                case 4:
+                    searchFilters.Add(PlayMakerEcosystemFilters.Templates);
+
+                    break;
+            }
+            EcosystemBrowser.Instance.SearchRep();
+
+        }
+        // END ADDED BY DJAYDINO
+
+        void SearchRep()
 		{
 			ShowActionDetails = false;
 			SelectedIndex = -1;
