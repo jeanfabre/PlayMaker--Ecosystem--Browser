@@ -1,11 +1,13 @@
 #Ecosystem Change log
 
-###0.5.4
-**Release:** 12/02/2018  
+###0.6
+**Release:** 26/02/2018 
 
-**New:** Added new function to be able to auto search from another script
-**Changed :** string searchString = "";  TO static string searchString = ""; (to be able to access from another scrips)
-**Changed :** private List<PlayMakerEcosystemFilters> searchFilters;  TO  private static List<PlayMakerEcosystemFilters> searchFilters;  (to be able to access from another scrips)
+**New:** Added new function to be able to auto search from another script. 
+**New:** New Scripting define symbols for `ECOSYSTEM` and `ECOSYSTEM_0_6`. 
+
+**Changed :** string searchString = "";  TO static string searchString = ""; (to be able to access from another scrips).  
+**Changed :** private List<PlayMakerEcosystemFilters> searchFilters;  TO  private static List<PlayMakerEcosystemFilters> searchFilters;  (to be able to access from another scrips)  
 
 
 ###0.5.3
