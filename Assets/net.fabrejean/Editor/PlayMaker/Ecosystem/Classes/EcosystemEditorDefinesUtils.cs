@@ -9,6 +9,7 @@ namespace Net.FabreJean.UnityEditor
 		static EcosystemEditorDefinesUtils ()
 		{
 
+			/*
 			#if ! ECOSYSTEM 
 			Debug.Log("Setting Up Ecosystem Scripting define symbol 'ECOSYSTEM'"); 
 				Utils.MountScriptingDefineSymbolToAllTargets("ECOSYSTEM");
@@ -25,6 +26,7 @@ namespace Net.FabreJean.UnityEditor
 			Utils.MountScriptingDefineSymbolToAllTargets("ECOSYSTEM_0_6_OR_NEWER");
 			#endif
 
+*/
 		}
 
 
