@@ -6,9 +6,10 @@
 **New:** Added new function to be able to auto search from another script. 
 **New:** New Scripting define symbols for `ECOSYSTEM` and `ECOSYSTEM_0_6`. 
 
-**Changed :** string searchString = "";  TO static string searchString = ""; (to be able to access from another scrips).  
-**Changed :** private List<PlayMakerEcosystemFilters> searchFilters;  TO  private static List<PlayMakerEcosystemFilters> searchFilters;  (to be able to access from another scrips)  
+**Change:** string searchString = "";  TO static string searchString = ""; (to be able to access from another scrips).  
+**Change:** private List<PlayMakerEcosystemFilters> searchFilters;  TO  private static List<PlayMakerEcosystemFilters> searchFilters;  (to be able to access from another scrips)   
 
+**Update:** Scripting define symbols routine to mount and unmount updated ( taken from Playmaker Editor Utils)
 
 ###0.5.3
 **Release:** 03/08/2017  
