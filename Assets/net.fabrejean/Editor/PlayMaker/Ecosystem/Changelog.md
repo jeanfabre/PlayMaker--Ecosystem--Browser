@@ -1,5 +1,13 @@
 #Ecosystem Change log
 
+###0.5.4
+**Release:** 12/02/2018  
+
+**New:** Added new function to be able to auto search from another script
+**Changed :** string searchString = "";  TO static string searchString = ""; (to be able to access from another scrips)
+**Changed :** private List<PlayMakerEcosystemFilters> searchFilters;  TO  private static List<PlayMakerEcosystemFilters> searchFilters;  (to be able to access from another scrips)
+
+
 ###0.5.3
 **Release:** 03/08/2017  
 
