@@ -1,4 +1,7 @@
-﻿using UnityEditor;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 namespace Net.FabreJean.UnityEditor
@@ -8,11 +11,10 @@ namespace Net.FabreJean.UnityEditor
 	{
 		static EcosystemEditorDefinesUtils ()
 		{
-
-			/*
+			
 			#if ! ECOSYSTEM 
 			Debug.Log("Setting Up Ecosystem Scripting define symbol 'ECOSYSTEM'"); 
-				Utils.MountScriptingDefineSymbolToAllTargets("ECOSYSTEM");
+			Utils.MountScriptingDefineSymbolToAllTargets ("ECOSYSTEM");
 			#endif
 
 
@@ -25,10 +27,6 @@ namespace Net.FabreJean.UnityEditor
 			Debug.Log("Setting Up Ecosystem Scripting define symbol 'ECOSYSTEM_0_6_OR_NEWER'"); 
 			Utils.MountScriptingDefineSymbolToAllTargets("ECOSYSTEM_0_6_OR_NEWER");
 			#endif
-
-*/
 		}
-
-
 	}
 }

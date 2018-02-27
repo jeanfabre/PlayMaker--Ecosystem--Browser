@@ -261,34 +261,48 @@ namespace Net.FabreJean.UnityEditor
 
 		}
 
+		/// <summary>
+		/// Mounts the scripting define symbol to all targets. Taken from Hutonggames PlayMaker PlayMakerDefines.cs
+		/// </summary>
+		/// <param name="defineSymbol">Define symbol.</param>
 		public static void MountScriptingDefineSymbolToAllTargets(string defineSymbol)
 		{
-			foreach (BuildTargetGroup _group in Enum.GetValues(typeof(BuildTargetGroup)))
+			foreach (BuildTargetGroup group in Enum.GetValues(typeof(BuildTargetGroup)))
 			{
-				if (IsValidBuildTargetGroup(_group)) continue;
-				
-				List<string> _defineSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(_group).Split(';').Select(d => d.Trim()).ToList();
-				
-				if (!_defineSymbols.Contains(defineSymbol))
+				if (!IsValidBuildTargetGroup(group)) continue;
+
+				var defineSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(group).Split(';').Select(d => d.Trim()).ToList();
+				if (!defineSymbols.Contains(defineSymbol))
 				{
-					_defineSymbols.Add(defineSymbol);
-					PlayerSettings.SetScriptingDefineSymbolsForGroup(_group, string.Join(";", _defineSymbols.ToArray()));
+					defineSymbols.Add(defineSymbol);
+					try
+					{
+						PlayerSettings.SetScriptingDefineSymbolsForGroup(group, string.Join(";", defineSymbols.ToArray()));
+					}
+					catch (Exception)
+					{
+						Debug.Log("Could not set PLAYMAKER defines for build target group: " + group);
+						throw;
+					}                  
 				}
 			}
 		}
-		
+
+		/// <summary>
+		/// Unmount scripting define symbol to all targets. Taken from Hutonggames PlayMaker PlayMakerDefines.cs
+		/// </summary>
+		/// <param name="defineSymbol">Define symbol.</param>
 		public static void UnMountScriptingDefineSymbolToAllTargets(string defineSymbol)
 		{
-			foreach (BuildTargetGroup _group in Enum.GetValues(typeof(BuildTargetGroup)))
+			foreach (BuildTargetGroup group in Enum.GetValues(typeof(BuildTargetGroup)))
 			{
-				if (IsValidBuildTargetGroup(_group)) continue;
-				
-				List<string> _defineSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(_group).Split(';').Select(d => d.Trim()).ToList();
-				
-				if (_defineSymbols.Contains(defineSymbol))
+				if (!IsValidBuildTargetGroup(group)) continue;
+
+				var defineSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(group).Split(';').Select(d => d.Trim()).ToList();
+				if (defineSymbols.Contains(defineSymbol))
 				{
-					_defineSymbols.Remove(defineSymbol);
-					PlayerSettings.SetScriptingDefineSymbolsForGroup(_group, string.Join(";", _defineSymbols.ToArray()));
+					defineSymbols.Remove(defineSymbol);
+					PlayerSettings.SetScriptingDefineSymbolsForGroup(group, string.Join(";", defineSymbols.ToArray()));
 				}
 			}
 		}
