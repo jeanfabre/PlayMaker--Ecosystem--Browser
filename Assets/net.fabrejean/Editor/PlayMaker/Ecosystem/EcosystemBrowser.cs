@@ -54,7 +54,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 		static int PlayMakerEcosystemFiltersLength = 0;// deduced from the enum when editor inits
 
 		//TODO: implement fully
-		private enum PlayMakerEcosystemRepositoryMasks {Unity3x,Unity4x,Unity5x,Unity2017x,PlayMakerBeta};
+		private enum PlayMakerEcosystemRepositoryMasks {Unity3x,Unity4x,Unity5x,Unity2017x,Unity2018x,PlayMakerBeta};
 
 		static private bool _disclaimer_pass = false;
 
@@ -220,6 +220,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 		void OnGUI_Disclaimer()
 		{
+
 			GUILayout.BeginVertical();
 
 			if ( _disclaimerMarkdownGUI == null )
@@ -2363,6 +2364,14 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				mask += "U4";
 				mask += "U5";
 				mask += "U2017";
+			}
+
+			if (Application.unityVersion.StartsWith("2018."))
+			{
+				mask += "U4";
+				mask += "U5";
+				mask += "U2017";
+				mask += "U2018";
 			}
 
 			if (

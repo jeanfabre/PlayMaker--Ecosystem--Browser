@@ -1,5 +1,10 @@
 #Ecosystem Change log
 
+###0.6.1
+**Release:** 28/03/2018 
+
+**New:** Support for Unity 2018 
+
 ###0.6
 **Release:** 26/02/2018 
 
