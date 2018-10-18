@@ -20,12 +20,12 @@ namespace HutongGames.PlayMaker.Ecosystem.Publishing
 			Unity_5_Actions,
 			Unity_5_Packages,
 			Unity_2017_Actions,
-			Unity_UI
+			Unity_UI,
+			Unity_2018_Actions
 		}
 
 		public static string GetGithubUrl(Repositories rep)
 		{
-		
 			return "";
 		}
 

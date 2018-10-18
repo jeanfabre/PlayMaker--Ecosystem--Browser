@@ -91,12 +91,12 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
         [SerializeField]
         public int Pingtypeselected = 0;
  
-		public static string[] uMinVersion = new[] { "4.7", "5.0", "5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "2017.1","2017.2","2017.3" };
+		public static string[] uMinVersion = new[] { "4.7", "5.0", "5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "2017.1","2017.2","2017.3","2017.4","2018","2018.1","2018.2","2018.3" };
 
         [SerializeField]
         public int uMinVersionSelected = 0;
 
-		public static string[] pmMinVersion = new[] { "1.8.0", "1.8.1", "1.8.2", "1.8.3", "1.8.4", "1.8.5","1.8.6"};
+		public static string[] pmMinVersion = new[] { "1.8.0", "1.8.1", "1.8.2", "1.8.3", "1.8.4", "1.8.5","1.8.6","1.9"};
 
         [SerializeField]
         public int pmMinVersionSelected = 0;
