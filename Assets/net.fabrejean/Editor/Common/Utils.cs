@@ -341,7 +341,7 @@ namespace Net.FabreJean.UnityEditor
 			return attributes.Length > 0;
 		}
 
-		/* NOTE: IsObsolete is complicated by the definition of BuildTargetGroup enum. 
+        /* NOTE: IsObsolete is complicated by the definition of BuildTargetGroup enum. 
          * E.g., in Unity 5.4:
          * 
           public enum BuildTargetGroup
@@ -372,5 +372,28 @@ namespace Net.FabreJean.UnityEditor
   
          */
 
-	}
+
+        [MenuItem("PlayMaker/Addons/Assets/Toggle Ignore StreamingAssets Folder", false, 1000)]
+        static void ToggleIgnoreStreamingAssetsFolder()
+        {
+
+            string _assetPath = Application.streamingAssetsPath;
+
+            Debug.Log(_assetPath);
+
+            // check if path exists
+            if (Directory.Exists(_assetPath))
+            {
+                Debug.Log("Disabling");
+                Directory.Move(_assetPath, _assetPath + "~");
+                AssetDatabase.Refresh();
+            }
+            else if (Directory.Exists(_assetPath + "~"))
+            {
+                Debug.Log("Enabling");
+                Directory.Move(_assetPath + "~", _assetPath);
+                AssetDatabase.Refresh();
+            }
+        }
+    }
 }

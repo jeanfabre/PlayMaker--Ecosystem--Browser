@@ -1,5 +1,16 @@
 #Ecosystem Change log
 
+###0.6.3
+**Release:** 8/11/2018 
+
+**Update:** Remove WWW obsolete warnings on 2018.3 and newer
+
+###0.6.2
+**Release:** 18/10/2018 
+
+**New:** authoring tool updated for latest unity and playmaker versions and 2018 github rep
+
+
 ###0.6.1
 **Release:** 28/03/2018 
 

@@ -10,6 +10,8 @@ using System.Text.RegularExpressions;
 
 using Net.FabreJean.UnityEditor;
 
+#pragma warning disable 618
+
 namespace Net.FabreJean.PlayMaker.Ecosystem
 {
 

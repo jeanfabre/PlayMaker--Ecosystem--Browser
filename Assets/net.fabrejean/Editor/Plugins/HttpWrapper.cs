@@ -2,6 +2,8 @@
 using UnityEngine;
 using System.Collections;
 
+#pragma warning disable 618
+
 namespace Net.FabreJean.UnityEditor
 {
 	public class HttpWrapper {

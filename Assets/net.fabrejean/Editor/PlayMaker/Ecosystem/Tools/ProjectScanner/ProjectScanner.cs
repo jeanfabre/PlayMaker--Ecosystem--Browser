@@ -12,6 +12,8 @@ using UnityEditor;
 using Net.FabreJean.UnityEditor;
 using MyUtils = Net.FabreJean.UnityEditor.Utils;
 
+#pragma warning disable 618
+
 namespace Net.FabreJean.PlayMaker.Ecosystem
 {
 	public class ProjectScanner

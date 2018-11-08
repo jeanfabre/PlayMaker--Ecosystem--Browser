@@ -7,6 +7,8 @@ using System.Text.RegularExpressions;
 using UnityEditor;
 using System.IO;
 
+#pragma warning disable 618
+
 namespace Net.FabreJean.UnityEditor
 {
 	/// <summary>

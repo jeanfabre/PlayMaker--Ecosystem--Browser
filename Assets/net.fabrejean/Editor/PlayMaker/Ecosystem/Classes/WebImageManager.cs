@@ -5,6 +5,8 @@ using System.Collections.Generic;
 
 using  Net.FabreJean.UnityEditor;
 
+#pragma warning disable 618
+
 public class WebImageManager {
 
 	/*

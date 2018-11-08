@@ -17,6 +17,8 @@ using Net.FabreJean.UnityEditor.MarkdownSharp;
 
 //using Net.FabreJean.UnityEditor.Parse;
 
+#pragma warning disable 618
+
 namespace Net.FabreJean.PlayMaker.Ecosystem
 {
 	public class EcosystemBrowser : EditorWindow {
