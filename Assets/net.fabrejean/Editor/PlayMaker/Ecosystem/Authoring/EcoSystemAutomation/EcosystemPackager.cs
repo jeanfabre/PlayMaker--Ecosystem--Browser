@@ -5,6 +5,7 @@ using System.IO;
 using System.Collections.Generic;
 
 using HutongGames.PlayMaker.Ecosystem.Publishing;
+using Net.FabreJean.UnityEditor;
 
 namespace Net.FabreJean.PlayMaker.Ecosystem
 {

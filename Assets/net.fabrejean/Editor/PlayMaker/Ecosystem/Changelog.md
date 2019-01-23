@@ -1,5 +1,10 @@
 #Ecosystem Change log
 
+###0.6.4
+**Release:** 23/01/2019 
+
+**Fixed:** moved JSON into namespace  Net.FabreJean.UnityEditor to avoid conflict with other publishers using JSON too.
+
 ###0.6.3
 **Release:** 8/11/2018 
 
