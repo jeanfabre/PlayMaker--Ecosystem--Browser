@@ -2376,6 +2376,15 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				mask += "U2018";
 			}
 
+			if (Application.unityVersion.StartsWith("2019."))
+			{
+				mask += "U4";
+				mask += "U5";
+				mask += "U2017";
+				mask += "U2018";
+				mask += "U2019";
+			}
+			
 			if (
 				MyUtils.GetPlayMakerVersion().Contains("b")
 				)
