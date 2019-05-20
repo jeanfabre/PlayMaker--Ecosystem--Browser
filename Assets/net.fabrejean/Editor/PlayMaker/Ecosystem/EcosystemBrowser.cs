@@ -634,7 +634,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			
 			
 			
-			if(rowsArea!=null && rowIndex<rowsArea.Length && Event.current.type == EventType.repaint)
+			if(rowsArea!=null && rowIndex<rowsArea.Length && Event.current.type == EventType.Repaint)
 			{
 				rowsArea[rowIndex] = GUILayoutUtility.GetLastRect();
 			}
@@ -924,7 +924,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			OnGUI_BottomPanel();
 
 			// User click on a row.
-			if (Event.current.type == EventType.mouseDown && mouseOverRowIndex!=-1)
+			if (Event.current.type == EventType.MouseDown && mouseOverRowIndex!=-1)
 			{
 				SelectedIndex = -1;
 
@@ -2241,7 +2241,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 
 
-			if(rowsArea!=null && rowIndex<rowsArea.Length && Event.current.type == EventType.repaint)
+			if(rowsArea!=null && rowIndex<rowsArea.Length && Event.current.type == EventType.Repaint)
 			{
 				rowsArea[rowIndex] = GUILayoutUtility.GetLastRect();
 			}

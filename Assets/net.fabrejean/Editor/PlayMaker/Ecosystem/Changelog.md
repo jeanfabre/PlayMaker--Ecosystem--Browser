@@ -1,5 +1,10 @@
 #Ecosystem Change log
 
+###0.6.6
+**Release:** 20/05/2019 
+
+**Update:** Removed some updateable api to prevent mess in 2019 and up when api updater doesn't perform
+
 ###0.6.5
 **Release:** 30/04/2019 
 
