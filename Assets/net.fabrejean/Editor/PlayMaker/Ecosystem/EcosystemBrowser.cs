@@ -1,4 +1,8 @@
-﻿using System;
+﻿#if UNITY_2017 && UNITY_2017_1 || UNITY_2017_2_OR_NEWER
+#define ECOSYSTEM_CUSTOM_WWW
+#endif
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -15,9 +19,11 @@ using Net.FabreJean.UnityEditor;
 
 using Net.FabreJean.UnityEditor.MarkdownSharp;
 
+
 //using Net.FabreJean.UnityEditor.Parse;
 
 #pragma warning disable 618
+
 
 namespace Net.FabreJean.PlayMaker.Ecosystem
 {
@@ -69,7 +75,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 
 		string rawSearchResult="";
 
-		#if UNITY_2017 && UNITY_2017_1
+		#if ECOSYSTEM_CUSTOM_WWW
 			HutongGames.PlayMaker.Ecosystem.Utils.WWW wwwSearch;
 		#else
 			WWW wwwSearch;
@@ -86,7 +92,7 @@ namespace Net.FabreJean.PlayMaker.Ecosystem
 
 		Dictionary<string,Item> itemsLUT;
 
-		#if UNITY_2017 && UNITY_2017_1
+		#if ECOSYSTEM_CUSTOM_WWW
 			List<HutongGames.PlayMaker.Ecosystem.Utils.WWW> downloads;
 		#else
 			List<WWW> downloads;
@@ -712,9 +718,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 		void OnGUI_Main()
 		{
-
-
-			#if FALSE && UNITY_2017 && ! UNITY_2017_2_OR_NEWER
+#if FALSE && UNITY_2017 && ! UNITY_2017_2_OR_NEWER
 			
 			GUILayout.Space(10);
 			GUILayout.BeginHorizontal();
@@ -923,6 +927,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 			OnGUI_BottomPanel();
 
+			
 			// User click on a row.
 			if (Event.current.type == EventType.MouseDown && mouseOverRowIndex!=-1)
 			{
@@ -976,7 +981,9 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			}else{
 				//	GUI.FocusControl("SearchField");
 			}
-			
+
+
+
 			/*
 				if (rssFeed!=null)
 				{
@@ -2385,6 +2392,16 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				mask += "U2019";
 			}
 			
+			if (Application.unityVersion.StartsWith("2020."))
+			{
+				mask += "U4";
+				mask += "U5";
+				mask += "U2017";
+				mask += "U2018";
+				mask += "U2019";
+				mask += "U2020";
+			}
+			
 			if (
 				MyUtils.GetPlayMakerVersion().Contains("b")
 				)
@@ -2424,7 +2441,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 			wwwSearch = new WWW(url,_form.data);
 			#else
 
-				#if UNITY_2017 && UNITY_2017_1
+				#if ECOSYSTEM_CUSTOM_WWW
 					wwwSearch = new HutongGames.PlayMaker.Ecosystem.Utils.WWW(url);
 				#else
 					wwwSearch = new WWW(url);
@@ -2497,7 +2514,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 					//Debug.Log("Checking download "+i);
 					int i =0;
 
-				#if UNITY_2017 && UNITY_2017_1
+				#if ECOSYSTEM_CUSTOM_WWW
 					HutongGames.PlayMaker.Ecosystem.Utils.WWW _www = downloads[i];
 				#else
 					WWW _www = downloads[i];
@@ -2621,9 +2638,12 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				i++;
 			}
 
-		
+			_searchParsed = true;
+
 		}
 
+		private bool _searchParsed;
+		
 		#region ITEM
 
 		void DeleteItem(Item item)
@@ -2778,7 +2798,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 
 			if (downloads==null)
 			{
-				#if UNITY_2017 && UNITY_2017_1
+				#if ECOSYSTEM_CUSTOM_WWW
 					downloads = new List<HutongGames.PlayMaker.Ecosystem.Utils.WWW>();
 				#else
 					downloads = new List<WWW>();
@@ -2797,7 +2817,7 @@ In doubt, do not use this and get in touch with us to learn more before you work
 				string _url_uid = (www_uid++).ToString();
 				url = EcosystemUtils.AddParameterToUrlQuery(url,"uid",_url_uid);
 
-				#if UNITY_2017 && UNITY_2017_1
+				#if ECOSYSTEM_CUSTOM_WWW
 					downloads.Add(new HutongGames.PlayMaker.Ecosystem.Utils.WWW(url));
 				#else
 					downloads.Add(new WWW(url));

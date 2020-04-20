@@ -1,4 +1,4 @@
-﻿#if UNITY_2017 && UNITY_2017_1
+﻿#if UNITY_2017_2_OR_NEWER
 
 using System;
 using System.Net;

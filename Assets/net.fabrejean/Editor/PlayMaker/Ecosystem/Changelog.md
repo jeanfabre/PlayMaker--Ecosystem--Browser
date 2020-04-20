@@ -1,5 +1,16 @@
 #Ecosystem Change log
 
+###0.6.8
+**Release:** 20/04/2020 
+
+**Fix:** Added 2020 support
+
+
+###0.6.7
+**Release:** 03/04/2020 
+
+**Fix:** Fixed 2019 WWW url weird bug where it doesn't keep the original url passed
+
 ###0.6.6
 **Release:** 20/05/2019 
 
