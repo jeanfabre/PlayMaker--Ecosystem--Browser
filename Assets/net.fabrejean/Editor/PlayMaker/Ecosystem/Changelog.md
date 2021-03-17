@@ -1,5 +1,22 @@
 #Ecosystem Change log
 
+###0.6.11
+**Release:** 17/03/2021
+
+**Fix:** fixed 2021 support
+
+###0.6.10
+**Release:** 17/03/2021
+
+**Update:** made unity version tag optional ( can be toggled in settings menu)
+
+###0.6.9
+**Release:** 15/03/2021
+
+**Update:** removed obsolete code, moved to Unity 2018
+
+**Fix:** fixed 2020 support
+
 ###0.6.8
 **Release:** 20/04/2020 
 
